@@ -1,6 +1,6 @@
-﻿namespace APIClub.Models
+﻿namespace APIClub.Dtos.Socios
 {
-    public class Socio
+    public class PreviewSocioDto
     {
         public int Id { get; set; }
         public string? Nombre { get; set; }
@@ -11,10 +11,6 @@
         public string? Lote { get; set; }
         public string? Localidad { get; set; }
         public DateOnly? FechaAsociacion { get; set; }
-
-        // Relaciones
-        public List<Cuota> HistorialCuotas { get; set; } = new List<Cuota>();
-        
 
     }
 }

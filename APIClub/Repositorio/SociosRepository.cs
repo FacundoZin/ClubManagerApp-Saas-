@@ -20,6 +20,13 @@ namespace APIClub.Repositorio
             await _Dbcontext.SaveChangesAsync();
         }
 
+        public async Task<Socio?> GetSocioByDni(string dni)
+        {
+            return await _Dbcontext.Socios
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.Dni == dni);
+        }
+
         public async Task<bool> SocioExists(string dni)
         {
             return await _Dbcontext.Socios.AnyAsync(s => s.Dni == dni);

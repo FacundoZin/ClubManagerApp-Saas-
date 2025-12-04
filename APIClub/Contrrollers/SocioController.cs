@@ -28,5 +28,21 @@ namespace APIClub.Contrrollers
 
             return Ok(result.Data);
         }
+
+
+        [HttpGet("{dni}")]
+        public async Task<IActionResult> GetSocioByDni(string dni)
+        {
+            var result = await _SocioService.GetSocioByDni(dni);
+
+            if (result.Exit != true)
+            {
+                // Usa el mismo manejo de errores que en CargarSocio
+                return StatusCode(result.Errorcode, result.Errormessage);
+            }
+
+            // Si todo salió bien, devolvés el DTO con código 200
+            return Ok(result.Data);
+        }
     }
 }

@@ -6,5 +6,6 @@ namespace APIClub.Interfaces.Repository
     {
         Task cargarSocio(Socio socio);
         Task<bool> SocioExists(string dni);
+        Task<Socio?> GetSocioByDni(string dni); 
     }
 }
