@@ -1,0 +1,32 @@
+﻿using APIClub.Dtos.Socios;
+using APIClub.Interfaces.Services;
+using APIClub.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace APIClub.Contrrollers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class SocioController : ControllerBase
+    {
+        private readonly ISocioService _SocioService;
+        public SocioController(ISocioService socioService)
+        {
+            _SocioService = socioService;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CargarSocio([FromBody] CreateSocioDto dto)
+        {
+            var result = await _SocioService.cargarSocio(dto);
+
+            if (result.Exit != true)
+            {
+                return StatusCode(result.Errorcode, result.Errormessage);
+            }
+
+            return Ok(result.Data);
+        }
+    }
+}

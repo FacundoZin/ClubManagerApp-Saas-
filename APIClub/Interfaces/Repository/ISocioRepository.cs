@@ -1,0 +1,10 @@
+﻿using APIClub.Models;
+
+namespace APIClub.Interfaces.Repository
+{
+    public interface ISocioRepository
+    {
+        Task cargarSocio(Socio socio);
+        Task<bool> SocioExists(string dni);
+    }
+}
