@@ -8,10 +8,10 @@ namespace APIClub.Contrrollers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SocioController : ControllerBase
+    public class SociosController : ControllerBase
     {
         private readonly ISocioService _SocioService;
-        public SocioController(ISocioService socioService)
+        public SociosController(ISocioService socioService)
         {
             _SocioService = socioService;
         }

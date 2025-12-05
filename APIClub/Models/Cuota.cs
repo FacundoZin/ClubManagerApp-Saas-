@@ -1,4 +1,5 @@
-﻿using APIClub.Enums;
+﻿
+using APIClub.Enums;
 
 namespace APIClub.Models
 {
@@ -9,7 +10,7 @@ namespace APIClub.Models
         public decimal Monto { get; set; }
         public FormasDePago FormaDePago { get; set; }
         public int Anio { get; set; }
-        public int Trimestre { get; set; }
+        public int Semestre { get; set; }
 
 
         // Relaciones

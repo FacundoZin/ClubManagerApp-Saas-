@@ -49,5 +49,10 @@ namespace APIClub.Repositorio
            _Dbcontext.Socios.Update(socio); 
              await _Dbcontext.SaveChangesAsync();
         }
+
+        public Task<Socio?> GetSocioByIdWithCuotas(int id)
+        {
+            return _Dbcontext.Socios.Include(s => s.HistorialCuotas).FirstOrDefaultAsync(s => s.Id == id);
+        }
     }
 }

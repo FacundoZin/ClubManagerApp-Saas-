@@ -15,6 +15,7 @@ namespace APIClub.Data
         public DbSet<Cuota> Cuotas { get; set; }
         public DbSet<Salon> Salones { get; set; }
         public DbSet<Socio> Socios { get; set; }
+        public DbSet<MontoCuota> MontoCuota { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

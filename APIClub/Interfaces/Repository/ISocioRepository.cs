@@ -10,5 +10,6 @@ namespace APIClub.Interfaces.Repository
         Task<Socio?> GetSocioById(int id);
         Task UpdateSocio(Socio socio);
         Task<bool> SocioExistsForUpdate(string dni, int id);
+        Task<Socio?> GetSocioByIdWithCuotas(int id);
     }
 }
