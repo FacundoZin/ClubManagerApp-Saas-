@@ -54,5 +54,11 @@ namespace APIClub.Repositorio
         {
             return _Dbcontext.Socios.Include(s => s.HistorialCuotas).FirstOrDefaultAsync(s => s.Id == id);
         }
+
+        public async Task RemoveSocios(Socio socio)
+        {
+            _Dbcontext.Socios.Remove(socio);
+            await _Dbcontext.SaveChangesAsync();
+        }
     }
 }

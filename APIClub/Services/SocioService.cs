@@ -3,6 +3,9 @@ using APIClub.Dtos.Socios;
 using APIClub.Interfaces.Repository;
 using APIClub.Interfaces.Services;
 using APIClub.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography.X509Certificates;
 
 namespace APIClub.Services
 {
@@ -118,6 +121,32 @@ namespace APIClub.Services
         
 
         }
-    }
+        public async Task<Result<object>> RemoveSocio(int id)
+        {
+            if (id <= 0)
+            {
+                return Result<object>.Error("El ID proporcionado no es válido.", 400);
+            }
+
+            var socio = await _SocioRepository.GetSocioById(id);
+
+            if (socio is null)
+            {
+                return Result<object>.Error("No se encontró un socio con ese ID.", 404);
+            }
+
+            await _SocioRepository.RemoveSocios(socio);
+
+            return Result<object>.Exito(new
+            {
+                Message = "Socio eliminado correctamente.",
+                SocioId = id
+            });
+        }
+        
+     
+
+
+        }
 }
 

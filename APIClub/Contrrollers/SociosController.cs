@@ -58,5 +58,19 @@ namespace APIClub.Contrrollers
             return Ok(result.Data);
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> RemoveSocio(int id)
+        {
+            var result = await _SocioService.RemoveSocio(id);
+
+            if (!result.Exit)
+            {
+                return StatusCode(result.Errorcode, result.Errormessage);
+            }
+
+            return Ok(result.Data);
+        }
+
+
     }
 }
