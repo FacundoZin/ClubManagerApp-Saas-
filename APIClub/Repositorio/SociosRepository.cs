@@ -72,8 +72,11 @@ namespace APIClub.Repositorio
 
         public async Task<List<Cuota>> GetCuotasSocioById(int socioId)
         {
-        return await _Dbcontext.Cuotas .Where(c => c.SocioId == socioId)
-        .OrderByDescending(c => c.FechaPago) .ToListAsync();
+            return await _Dbcontext.Cuotas
+            .Where(c => c.SocioId == socioId)
+            .OrderByDescending(c => c.FechaPago)
+            .AsNoTracking()
+            .ToListAsync();
         }
     }
 }
