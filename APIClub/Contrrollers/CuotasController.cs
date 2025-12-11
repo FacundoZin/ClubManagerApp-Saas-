@@ -26,6 +26,11 @@ namespace APIClub.Contrrollers
         [HttpPost("pagarCuota")]
         public async Task<IActionResult> RegistrarCuota([FromBody] RegistCuotaRequest request)
         {
+            if(ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var result = await _CuotasService.RegistrarPagoCuoata(request.IdSocio, request.FormaPago);
 
             if (!result.Exit)

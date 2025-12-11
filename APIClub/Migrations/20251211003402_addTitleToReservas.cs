@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace APIClub.Migrations
 {
     /// <inheritdoc />
-    public partial class siembraInicial : Migration
+    public partial class addTitleToReservas : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -91,6 +91,7 @@ namespace APIClub.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    Titulo = table.Column<string>(type: "TEXT", nullable: false),
                     FechaAlquiler = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Importe = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TotalPagado = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -148,11 +149,11 @@ namespace APIClub.Migrations
 
             migrationBuilder.InsertData(
                 table: "ReservasSalones",
-                columns: new[] { "Id", "FechaAlquiler", "Importe", "SalonId", "SocioId", "TotalPagado" },
+                columns: new[] { "Id", "FechaAlquiler", "Importe", "SalonId", "SocioId", "Titulo", "TotalPagado" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2025, 5, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 5000.00m, 1, 1, 0.00m },
-                    { 2, new DateTime(2025, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), 7000.00m, 2, 2, 7000.00m }
+                    { 1, new DateTime(2025, 5, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 5000.00m, 1, 1, "fiesta de 15 cele", 0.00m },
+                    { 2, new DateTime(2025, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), 7000.00m, 2, 2, "baile abuelos", 7000.00m }
                 });
 
             migrationBuilder.CreateIndex(

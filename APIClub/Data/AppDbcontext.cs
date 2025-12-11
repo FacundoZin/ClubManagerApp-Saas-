@@ -168,6 +168,7 @@ namespace APIClub.Data
                 new
                 {
                     Id = 1,
+                    Titulo = "fiesta de 15 cele",
                     FechaAlquiler = DateOnly.FromDateTime(new DateTime(2025, 5, 20)),
                     Importe = 5000.00m,
                     TotalPagado = 0.00m,
@@ -177,6 +178,7 @@ namespace APIClub.Data
                 new
                 {
                     Id = 2,
+                    Titulo = "baile abuelos",
                     FechaAlquiler = DateOnly.FromDateTime(new DateTime(2025, 6, 15)),
                     Importe = 7000.00m,
                     TotalPagado = 7000.00m,

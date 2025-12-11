@@ -19,6 +19,11 @@ namespace APIClub.Contrrollers
         [HttpPost]
         public async Task<IActionResult> CargarSocio([FromBody] CreateSocioDto dto)
         {
+            if(ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var result = await _SocioService.cargarSocio(dto);
 
             if (result.Exit != true)
@@ -44,6 +49,7 @@ namespace APIClub.Contrrollers
             // Si todo salió bien, devolvés el DTO con código 200
             return Ok(result.Data);
         }
+
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateSocio(int id, [FromBody] CreateSocioDto dto)

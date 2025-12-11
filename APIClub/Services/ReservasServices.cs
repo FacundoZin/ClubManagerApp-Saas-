@@ -8,12 +8,12 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace APIClub.Services
 {
-    public class SalonesServices : ISalonesServices
+    public class ReservasServices : ISalonesServices
     {
         private readonly IReservasRepository _ReservasRepository;
         private readonly ISocioRepository _SocioRepository;
 
-        public SalonesServices(IReservasRepository alquilerRepository, ISocioRepository socioRepository)
+        public ReservasServices(IReservasRepository alquilerRepository, ISocioRepository socioRepository)
         {
             _ReservasRepository = alquilerRepository;
             _SocioRepository = socioRepository;
@@ -26,6 +26,7 @@ namespace APIClub.Services
             var dto = alquileres.Select(a => new PreviewReservaBySalonDto
             {
                 Id = a.Id,
+                Titulo = a.Titulo,
                 FechaAlquiler = a.FechaAlquiler,
                 Pagado = a.Importe == a.TotalPagado ? true : false,
                 NombreReservante = $"{a.Socio.Nombre} {a.Socio.Apellido}"
@@ -67,6 +68,7 @@ namespace APIClub.Services
             InfoReservaCompletaDto infoReserva = new InfoReservaCompletaDto();
 
             infoReserva.IdReserva = reserva.Id;
+            infoReserva.Titulo = reserva.Titulo;
             infoReserva.FechaAlquiler = reserva.FechaAlquiler;
             infoReserva.Importe = reserva.Importe;
             infoReserva.Importe = reserva.Importe;
@@ -97,6 +99,7 @@ namespace APIClub.Services
             InfoReservaCompletaDto infoReserva = new InfoReservaCompletaDto();
 
             infoReserva.IdReserva = reserva.Id;
+            infoReserva.Titulo = reserva.Titulo;
             infoReserva.FechaAlquiler = reserva.FechaAlquiler;
             infoReserva.Importe = reserva.Importe;
             infoReserva.Importe = reserva.Importe;
@@ -135,6 +138,7 @@ namespace APIClub.Services
             ReservaSalon reserva = new ReservaSalon();
 
             reserva.FechaAlquiler = dto.Fecha;
+            reserva.Titulo = dto.Titulo;
             reserva.Importe = dto.Importe;
             reserva.TotalPagado = dto.TotalPagado;
             reserva.SocioId = socio.Id;

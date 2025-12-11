@@ -4,6 +4,7 @@
     {
         //info reserva
         public int IdReserva {  get; set; }
+        public string Titulo { get; set; }
         public DateOnly FechaAlquiler { get; set; }
         public decimal Importe { get; set; }
         public decimal TotalPagado { get; set; } = 0;

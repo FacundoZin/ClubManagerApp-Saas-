@@ -8,11 +8,11 @@ namespace APIClub.Contrrollers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SalonController : ControllerBase
+    public class ReservasController : ControllerBase
     {
         private readonly ISalonesServices _SalonesServices;
 
-        public SalonController (ISalonesServices salonesServices)
+        public ReservasController (ISalonesServices salonesServices)
         {
             _SalonesServices = salonesServices;
         }
@@ -64,6 +64,11 @@ namespace APIClub.Contrrollers
         [HttpPost("reserva")]
         public async Task<IActionResult> CrearReserva([FromBody] CreteReservaSalonDto dto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var result = await _SalonesServices.RegistrarReservaSalon(dto);
 
             if (!result.Exit)

@@ -113,6 +113,10 @@ namespace APIClub.Migrations
                     b.Property<int>("SocioId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Titulo")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<decimal>("TotalPagado")
                         .HasColumnType("decimal(18,2)");
 
@@ -132,6 +136,7 @@ namespace APIClub.Migrations
                             Importe = 5000.00m,
                             SalonId = 1,
                             SocioId = 1,
+                            Titulo = "fiesta de 15 cele",
                             TotalPagado = 0.00m
                         },
                         new
@@ -141,6 +146,7 @@ namespace APIClub.Migrations
                             Importe = 7000.00m,
                             SalonId = 2,
                             SocioId = 2,
+                            Titulo = "baile abuelos",
                             TotalPagado = 7000.00m
                         });
                 });
