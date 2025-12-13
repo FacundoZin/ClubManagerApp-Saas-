@@ -1,7 +1,8 @@
 ﻿using APIClub.Common;
-using APIClub.Domain.Interfaces.Repository;
-using APIClub.Domain.Models;
-using APIClub.Domain.Services;
+using APIClub.Domain.GestionSocios.Repositories;
+using APIClub.Domain.ReservasSalones;
+using APIClub.Domain.ReservasSalones.Models;
+using APIClub.Domain.ReservasSalones.Repositories;
 using APIClub.Dtos.Alquiler;
 using APIClub.Dtos.Reservas;
 

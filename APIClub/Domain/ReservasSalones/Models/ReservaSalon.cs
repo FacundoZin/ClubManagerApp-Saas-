@@ -1,4 +1,6 @@
-﻿namespace APIClub.Domain.Models
+﻿using APIClub.Domain.GestionSocios.Models;
+
+namespace APIClub.Domain.ReservasSalones.Models
 {
     public class ReservaSalon
     {

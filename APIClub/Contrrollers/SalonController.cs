@@ -1,4 +1,4 @@
-﻿using APIClub.Domain.Services;
+﻿using APIClub.Domain.ReservasSalones;
 using APIClub.Dtos.Reservas;
 using APIClub.Services;
 using Microsoft.AspNetCore.Http;

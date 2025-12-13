@@ -1,6 +1,8 @@
 using APIClub.Data;
-using APIClub.Domain.Interfaces.Repository;
-using APIClub.Domain.Services;
+using APIClub.Domain.GestionSocios;
+using APIClub.Domain.GestionSocios.Repositories;
+using APIClub.Domain.ReservasSalones;
+using APIClub.Domain.ReservasSalones.Repositories;
 using APIClub.Repositorio;
 using APIClub.Services;
 using Microsoft.EntityFrameworkCore;

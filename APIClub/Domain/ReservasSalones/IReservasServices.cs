@@ -2,7 +2,7 @@
 using APIClub.Dtos.Alquiler;
 using APIClub.Dtos.Reservas;
 
-namespace APIClub.Domain.Services
+namespace APIClub.Domain.ReservasSalones
 {
     public interface IReservasServices
     {

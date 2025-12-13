@@ -1,4 +1,5 @@
-﻿using APIClub.Domain.Models;
+﻿using APIClub.Domain.GestionSocios.Models;
+using APIClub.Domain.ReservasSalones.Models;
 using APIClub.Enums;
 using Microsoft.EntityFrameworkCore;
 using System;

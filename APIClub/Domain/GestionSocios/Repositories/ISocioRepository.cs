@@ -1,6 +1,6 @@
-﻿using APIClub.Domain.Models;
+﻿using APIClub.Domain.GestionSocios.Models;
 
-namespace APIClub.Domain.Interfaces.Repository
+namespace APIClub.Domain.GestionSocios.Repositories
 {
     public interface ISocioRepository
     {

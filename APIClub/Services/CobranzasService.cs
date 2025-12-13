@@ -1,6 +1,6 @@
 ﻿using APIClub.Common;
-using APIClub.Domain.Interfaces.Repository;
-using APIClub.Domain.Services;
+using APIClub.Domain.GestionSocios;
+using APIClub.Domain.GestionSocios.Repositories;
 using APIClub.Dtos.Socios;
 using APIClub.Repositorio;
 using Microsoft.AspNetCore.Mvc;

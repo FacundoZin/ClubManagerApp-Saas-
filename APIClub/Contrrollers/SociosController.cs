@@ -1,4 +1,4 @@
-﻿using APIClub.Domain.Services;
+﻿using APIClub.Domain.GestionSocios;
 using APIClub.Dtos.Socios;
 using APIClub.Services;
 using Microsoft.AspNetCore.Http;

@@ -1,4 +1,4 @@
-﻿namespace APIClub.Domain.Models
+﻿namespace APIClub.Domain.GestionSocios.Models
 {
     public class Socio
     {

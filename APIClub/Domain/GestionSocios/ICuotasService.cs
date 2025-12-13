@@ -1,7 +1,7 @@
 ﻿using APIClub.Common;
 using APIClub.Enums;
 
-namespace APIClub.Domain.Services
+namespace APIClub.Domain.GestionSocios
 {
     public interface ICuotasService
     {

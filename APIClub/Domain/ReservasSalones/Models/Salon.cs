@@ -1,4 +1,4 @@
-﻿namespace APIClub.Domain.Models
+﻿namespace APIClub.Domain.ReservasSalones.Models
 {
     public class Salon
     {

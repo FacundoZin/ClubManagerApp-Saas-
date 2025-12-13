@@ -1,4 +1,4 @@
-﻿namespace APIClub.Domain.Interfaces.Repository
+﻿namespace APIClub.Domain.GestionSocios.Repositories
 {
     public interface ICuotaRepository
     {

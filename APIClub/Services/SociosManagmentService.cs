@@ -1,7 +1,7 @@
 ﻿using APIClub.Common;
-using APIClub.Domain.Interfaces.Repository;
-using APIClub.Domain.Models;
-using APIClub.Domain.Services;
+using APIClub.Domain.GestionSocios;
+using APIClub.Domain.GestionSocios.Models;
+using APIClub.Domain.GestionSocios.Repositories;
 using APIClub.Dtos.Cuota;
 using APIClub.Dtos.Socios;
 

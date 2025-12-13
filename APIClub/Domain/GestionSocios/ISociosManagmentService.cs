@@ -2,7 +2,7 @@
 using APIClub.Dtos.Cuota;
 using APIClub.Dtos.Socios;
 
-namespace APIClub.Domain.Services
+namespace APIClub.Domain.GestionSocios
 {
     public interface ISociosManagmentService
     {
