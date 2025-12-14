@@ -1,4 +1,6 @@
 using APIClub.Data;
+using APIClub.Domain.AlquilerArticulos;
+using APIClub.Domain.AlquilerArticulos.Repositories;
 using APIClub.Domain.GestionSocios;
 using APIClub.Domain.GestionSocios.Repositories;
 using APIClub.Domain.ReservasSalones;
@@ -21,11 +23,13 @@ builder.Services.AddScoped<ISociosManagmentService,SociosManagmentService>();
 builder.Services.AddScoped<ICuotasService,CuotasService>();
 builder.Services.AddScoped<IReservasServices,ReservasServices>();
 builder.Services.AddScoped<ICobranzasServices,CobranzasService>();
+builder.Services.AddScoped<IAlquilerArticulosService,AlquilerArticulosService>();
 
 // registrar repositorios
 builder.Services.AddScoped<ISocioRepository,SociosRepository>();
 builder.Services.AddScoped<ICuotaRepository,CuotaRepository>();
 builder.Services.AddScoped<IReservasRepository,ReservasRepository>();
+builder.Services.AddScoped<IArticuloRepository,ArticuloRepository>();
 
 
 // Add services to the container.

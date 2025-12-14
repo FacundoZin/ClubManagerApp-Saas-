@@ -1,8 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace APIClub.Domain.AlquilerArticulos.Models
+namespace APIClub.Dtos.Articulos
 {
-    public class Articulo
+    public class ArticuloDto
     {
         public int Id { get; set; }
         public string Nombre { get; set; }

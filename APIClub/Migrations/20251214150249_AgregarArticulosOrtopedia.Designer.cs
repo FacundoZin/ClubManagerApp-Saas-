@@ -3,6 +3,7 @@ using System;
 using APIClub.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APIClub.Migrations
 {
     [DbContext(typeof(AppDbcontext))]
-    partial class AppDbcontextModelSnapshot : ModelSnapshot
+    [Migration("20251214150249_AgregarArticulosOrtopedia")]
+    partial class AgregarArticulosOrtopedia
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
@@ -28,7 +31,7 @@ namespace APIClub.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("PrecioAlquiler")
+                    b.Property<decimal>("PrecioAlquiler")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -40,25 +43,25 @@ namespace APIClub.Migrations
                         {
                             Id = 1,
                             Nombre = "Silla de Ruedas",
-                            PrecioAlquiler = 10500
+                            PrecioAlquiler = 1500.00m
                         },
                         new
                         {
                             Id = 2,
                             Nombre = "Andador",
-                            PrecioAlquiler = 8000
+                            PrecioAlquiler = 800.00m
                         },
                         new
                         {
                             Id = 3,
                             Nombre = "Muletas",
-                            PrecioAlquiler = 5000
+                            PrecioAlquiler = 500.00m
                         },
                         new
                         {
                             Id = 4,
                             Nombre = "Bastón",
-                            PrecioAlquiler = 4500
+                            PrecioAlquiler = 300.00m
                         });
                 });
 

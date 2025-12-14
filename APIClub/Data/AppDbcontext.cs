@@ -1,4 +1,5 @@
-﻿using APIClub.Domain.GestionSocios.Models;
+﻿using APIClub.Domain.AlquilerArticulos.Models;
+using APIClub.Domain.GestionSocios.Models;
 using APIClub.Domain.ReservasSalones.Models;
 using APIClub.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,7 @@ namespace APIClub.Data
         public DbSet<Salon> Salones { get; set; }
         public DbSet<Socio> Socios { get; set; }
         public DbSet<MontoCuota> MontoCuota { get; set; }
+        public DbSet<Articulo> Articulos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -83,6 +85,12 @@ namespace APIClub.Data
                 .HasConversion(
                     v => v.ToDateTime(new TimeOnly(0, 0)),
                     v => DateOnly.FromDateTime(v));
+
+            modelBuilder.Entity<Articulo>(entity =>
+            {
+                entity.Property(a => a.Nombre).IsRequired().HasMaxLength(200);
+                entity.Property(a => a.PrecioAlquiler).HasColumnType("decimal(18,2)");
+            });
 
             // ---------------------------
             // Seed data (datos de prueba)
@@ -185,6 +193,34 @@ namespace APIClub.Data
                     TotalPagado = 7000.00m,
                     SocioId = 2,
                     SalonId = 2
+                }
+            );
+
+            // 6) Artículos de ortopedia
+            modelBuilder.Entity<Articulo>().HasData(
+                new Articulo
+                {
+                    Id = 1,
+                    Nombre = "Silla de Ruedas",
+                    PrecioAlquiler = 10500
+                },
+                new Articulo
+                {
+                    Id = 2,
+                    Nombre = "Andador",
+                    PrecioAlquiler = 8000
+                },
+                new Articulo
+                {
+                    Id = 3,
+                    Nombre = "Muletas",
+                    PrecioAlquiler = 5000
+                },
+                new Articulo
+                {
+                    Id = 4,
+                    Nombre = "Bastón",
+                    PrecioAlquiler = 4500
                 }
             );
         }
