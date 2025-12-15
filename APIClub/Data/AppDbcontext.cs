@@ -20,6 +20,9 @@ namespace APIClub.Data
         public DbSet<Socio> Socios { get; set; }
         public DbSet<MontoCuota> MontoCuota { get; set; }
         public DbSet<Articulo> Articulos { get; set; }
+        public DbSet<Alquiler> alquileresArticulos { get; set; }  
+        public DbSet<ItemAlquiler> ItemALquiler {  get; set; }
+        public DbSet<PagoAlquilerDeArticulos> PagosAlquilerDeArticulos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -91,6 +94,58 @@ namespace APIClub.Data
                 entity.Property(a => a.Nombre).IsRequired().HasMaxLength(200);
                 entity.Property(a => a.PrecioAlquiler).HasColumnType("decimal(18,2)");
             });
+
+            modelBuilder.Entity<Articulo>(entity =>
+            {
+                entity.Property(a => a.Nombre)
+                      .IsRequired()
+                      .HasMaxLength(200);
+
+                entity.Property(a => a.PrecioAlquiler)
+                      .IsRequired();
+            });
+
+            modelBuilder.Entity<Alquiler>(entity =>
+            {
+                entity.Property(a => a.Observaciones)
+                      .HasMaxLength(1000);
+
+                entity.HasOne(a => a.Socio)
+                      .WithMany()
+                      .HasForeignKey(a => a.IdSocio)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.Property(a => a.FechaAlquiler)
+                .HasConversion(v => v.ToDateTime(new TimeOnly(0, 0)),
+                v => DateOnly.FromDateTime(v));
+            });
+
+            modelBuilder.Entity<ItemAlquiler>(entity =>
+            {
+                entity.HasOne(i => i.Articulo)
+                      .WithMany()
+                      .HasForeignKey(i => i.ArticuloId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(i => i.Alquiler)
+                      .WithMany(a => a.Items)
+                      .HasForeignKey(i => i.AlquilerId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<PagoAlquilerDeArticulos>(entity =>
+            {
+                entity.Property(p => p.Monto).IsRequired();
+
+                entity.HasOne(p => p.alquiler)
+                      .WithMany(a => a.HistorialDePagos)
+                      .HasForeignKey(p => p.IdAlquiler)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(p => new { p.IdAlquiler, p.Anio, p.Mes })
+                      .IsUnique();
+            });
+
 
             // ---------------------------
             // Seed data (datos de prueba)
@@ -221,6 +276,116 @@ namespace APIClub.Data
                     Id = 4,
                     Nombre = "Bastón",
                     PrecioAlquiler = 4500
+                }
+            );
+
+            modelBuilder.Entity<Alquiler>().HasData(
+                new
+                {
+                    Id = 1,
+                    FechaAlquiler = DateOnly.FromDateTime(new DateTime(2025, 11, 10)),
+                    Observaciones = "Alquiler por 3 días",
+                    IdSocio = 1,
+                    Finalizado = false
+                },
+                new
+                {
+                    Id = 2,
+                    FechaAlquiler = DateOnly.FromDateTime(new DateTime(2025, 10, 05)),
+                    Observaciones = "Préstamo semanal",
+                    IdSocio = 2,
+                    Finalizado = true
+                },
+                new
+                {
+                    Id = 3,
+                    FechaAlquiler = DateOnly.FromDateTime(new DateTime(2025, 9, 20)),
+                    Observaciones = "Rehabilitación post operación",
+                    IdSocio = 1,
+                    Finalizado = false
+                },
+                new
+                {
+                    Id = 4,
+                    FechaAlquiler = DateOnly.FromDateTime(new DateTime(2025, 8, 01)),
+                    Observaciones = "Alquiler viejo ya cerrado",
+                    IdSocio = 2,
+                    Finalizado = true
+                }
+            );
+
+            modelBuilder.Entity<ItemAlquiler>().HasData(
+                new ItemAlquiler
+                {
+                    Id = 1,
+                    AlquilerId = 1,
+                    ArticuloId = 1,
+                    Cantidad = 1
+                },
+                new ItemAlquiler
+                {
+                    Id = 2,
+                    AlquilerId = 1,
+                    ArticuloId = 4, // bastón
+                    Cantidad = 2
+                },
+                new ItemAlquiler
+                {
+                    Id = 3,
+                    AlquilerId = 2,
+                    ArticuloId = 2, // andador
+                    Cantidad = 1
+                },
+                new ItemAlquiler
+                {
+                    Id = 4,
+                    AlquilerId = 3,
+                    ArticuloId = 3, // muletas
+                    Cantidad = 2
+                },
+                new ItemAlquiler
+                {
+                    Id = 5,
+                    AlquilerId = 3,
+                    ArticuloId = 4, // bastón
+                    Cantidad = 1
+                },
+                new ItemAlquiler
+                {
+                    Id = 6,
+                    AlquilerId = 4,
+                    ArticuloId = 1,
+                    Cantidad = 1
+                }
+            );
+
+            modelBuilder.Entity<PagoAlquilerDeArticulos>().HasData(
+                new
+                {
+                    Id = 1,
+                    IdAlquiler = 1,
+                    Anio = 2025,
+                    Mes = 1,
+                    FechaPago = DateOnly.FromDateTime(new DateTime(2025, 1, 5)),
+                    Monto = 10500
+                },
+                new
+                {
+                    Id = 2,
+                    IdAlquiler = 1,
+                    Anio = 2025,
+                    Mes = 2,
+                    FechaPago = DateOnly.FromDateTime(new DateTime(2025, 2, 5)),
+                    Monto = 10500
+                },
+                new
+                {
+                    Id = 3,
+                    IdAlquiler = 1,
+                    Anio = 2025,
+                    Mes = 3,
+                    FechaPago = DateOnly.FromDateTime(new DateTime(2025, 3, 5)),
+                    Monto = 10500
                 }
             );
         }

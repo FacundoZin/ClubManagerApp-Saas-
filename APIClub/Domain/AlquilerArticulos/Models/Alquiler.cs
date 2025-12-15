@@ -11,9 +11,9 @@ namespace APIClub.Domain.AlquilerArticulos.Models
         public int IdSocio { get; set; }
         public Socio Socio { get; set; }
 
-        public List<AlquilerArticulo> Articulos { get; set; } = new List<AlquilerArticulo>();
-        public List<PagoAlquilerDeArticulo> HistorialDePagos { get; set; } = new List<PagoAlquilerDeArticulo>();
+        public List<ItemAlquiler> Items { get; set; } = new List<ItemAlquiler>();
+        public List<PagoAlquilerDeArticulos> HistorialDePagos { get; set; } = new List<PagoAlquilerDeArticulos>();
 
-        public bool Devuelto { get; set; } = false;
+        public bool Finalizado { get; set; } = false;
     }
 }

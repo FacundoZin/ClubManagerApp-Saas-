@@ -1,12 +1,20 @@
 ﻿using APIClub.Common;
-using APIClub.Dtos.Articulos;
+using APIClub.Dtos.AlquilerArticulos;
+using APIClub.Dtos.AlquilerDeArticulos;
+using APIClub.Dtos.ItemsAlquiler;
 
 namespace APIClub.Domain.AlquilerArticulos
 {
     public interface IAlquilerArticulosService
     {
-        Task<Result<ArticuloDto>> CargarArticulo(CreateArticuloDto dto);
-        Task<Result<List<ArticuloDto>>> GetAllArticulos();
-        Task<Result<ArticuloDto>> UpdatePrecioArticulo(int id, int nuevoPrecio);
+        Task<Result<AlquilerCreated>> RegistrarAlquiler(CreateAlquilerDto dto);
+        Task<Result<object?>> ModificarCantidadItem(int alquilerId, ModifyItemQuantityDto dto);
+        Task<Result<object?>> AgregarItemAlquiler(int alquilerId, AddItemToAlquilerDto dto);
+        Task<Result<object?>> EliminarItemDeAlquiler(int alquilerId, int itemId);
+        Task<Result<PagoAlquilerDto>> RegistrarPago(int idAlquiler);
+        Task<Result<object?>> FinalizarAlquiler(int alquilerId);
+        Task<Result<AlquilerDto>> GetAlquilerById(int id);
+        Task<Result<List<AlquilerPreviewDto>>> GetAlquileresActivos();
+        Task<Result<AlquilerPreviewDto?>> GetAlquilerBySocio(string dniSocio);
     }
 }

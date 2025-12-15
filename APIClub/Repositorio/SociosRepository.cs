@@ -41,7 +41,6 @@ namespace APIClub.Repositorio
         {
             return await _Dbcontext.Socios.Include(s => s.HistorialCuotas)
                 .FirstOrDefaultAsync(s => s.Id == id);
-
         }
 
         public async Task UpdateSocio(Socio socio)

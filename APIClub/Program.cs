@@ -1,3 +1,4 @@
+using APIClub.Common;
 using APIClub.Data;
 using APIClub.Domain.AlquilerArticulos;
 using APIClub.Domain.AlquilerArticulos.Repositories;
@@ -23,13 +24,19 @@ builder.Services.AddScoped<ISociosManagmentService,SociosManagmentService>();
 builder.Services.AddScoped<ICuotasService,CuotasService>();
 builder.Services.AddScoped<IReservasServices,ReservasServices>();
 builder.Services.AddScoped<ICobranzasServices,CobranzasService>();
-builder.Services.AddScoped<IAlquilerArticulosService,AlquilerArticulosService>();
+builder.Services.AddScoped<IManagmentArticulosService,ManagmentArticulosService>();
+builder.Services.AddScoped<IAlquilerArticulosService ,AlquilerArticulosService>();
+
+//OTROS
+builder.Services.AddScoped<UnitOfWork>();
 
 // registrar repositorios
 builder.Services.AddScoped<ISocioRepository,SociosRepository>();
 builder.Services.AddScoped<ICuotaRepository,CuotaRepository>();
 builder.Services.AddScoped<IReservasRepository,ReservasRepository>();
 builder.Services.AddScoped<IArticuloRepository,ArticuloRepository>();
+builder.Services.AddScoped<IAlquilerRepository,AlquilerRepository>();
+builder.Services.AddScoped<IitemAlquilerRepository, ItemsAlquilerRepository>();
 
 
 // Add services to the container.

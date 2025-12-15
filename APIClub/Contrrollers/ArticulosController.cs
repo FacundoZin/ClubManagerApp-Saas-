@@ -9,9 +9,9 @@ namespace APIClub.Contrrollers
     [ApiController]
     public class ArticulosController : ControllerBase
     {
-        private readonly IAlquilerArticulosService _articulosService;
+        private readonly IManagmentArticulosService _articulosService;
 
-        public ArticulosController(IAlquilerArticulosService articulosService)
+        public ArticulosController(IManagmentArticulosService articulosService)
         {
             _articulosService = articulosService;
         }
