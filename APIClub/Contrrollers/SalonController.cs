@@ -1,6 +1,8 @@
 ﻿using APIClub.Domain.ReservasSalones;
 using APIClub.Dtos.Reservas;
 using APIClub.Services;
+using APIClub.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,10 +13,23 @@ namespace APIClub.Contrrollers
     public class SalonController : ControllerBase
     {
         private readonly IReservasServices _SalonesServices;
+        private readonly AppDbcontext _context;
 
-        public SalonController (IReservasServices salonesServices)
+        public SalonController (IReservasServices salonesServices, AppDbcontext context)
         {
             _SalonesServices = salonesServices;
+            _context = context;
+        }
+
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllSalons()
+        {
+            var salones = await _context.Salones
+                .AsNoTracking()
+                .Select(s => new { s.Id, Nombre = s.Name })
+                .ToListAsync();
+
+            return Ok(salones);
         }
 
         [HttpGet("{idSalon}/reservas")]
