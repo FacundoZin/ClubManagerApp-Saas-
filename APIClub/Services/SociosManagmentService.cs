@@ -4,6 +4,7 @@ using APIClub.Domain.GestionSocios.Models;
 using APIClub.Domain.GestionSocios.Repositories;
 using APIClub.Dtos.Cuota;
 using APIClub.Dtos.Socios;
+using APIClub.Helpers;
 
 
 namespace APIClub.Services
@@ -31,7 +32,7 @@ namespace APIClub.Services
                 Nombre = _dto.Nombre,
                 Apellido = _dto.Apellido,
                 Dni = _dto.Dni,
-                Telefono = _dto.Telefono,
+                Telefono = _dto.Telefono?.FormatearForWhatsapp(),
                 Direcccion = _dto.Direcccion,
                 Lote = _dto.Lote,
                 Localidad = _dto.Localidad
@@ -140,7 +141,7 @@ namespace APIClub.Services
             socio.Nombre = dto.Nombre;
             socio.Apellido = dto.Apellido;
             socio.Dni = dto.Dni;
-            socio.Telefono = dto.Telefono;
+            socio.Telefono = dto.Telefono?.FormatearForWhatsapp();
             socio.Direcccion = dto.Direcccion;
             socio.Lote = dto.Lote;
             socio.Localidad = dto.Localidad;

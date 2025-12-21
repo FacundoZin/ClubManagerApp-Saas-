@@ -1,4 +1,6 @@
-﻿namespace APIClub.Domain.GestionSocios.Models
+﻿using APIClub.Domain.GestionSocios.Validations;
+
+namespace APIClub.Domain.GestionSocios.Models
 {
     public class Socio
     {
@@ -6,6 +8,8 @@
         public string Nombre { get; set; }
         public string Apellido { get; set; }
         public string Dni { get; set; }
+
+        [PhoneNumer]
         public string? Telefono { get; set; }
         public string? Direcccion { get; set; }
         public string? Lote { get; set; }

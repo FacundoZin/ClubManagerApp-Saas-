@@ -2,13 +2,17 @@ using APIClub.Common;
 using APIClub.Data;
 using APIClub.Domain.AlquilerArticulos;
 using APIClub.Domain.AlquilerArticulos.Repositories;
+using APIClub.Domain.Background;
 using APIClub.Domain.GestionSocios;
 using APIClub.Domain.GestionSocios.Repositories;
 using APIClub.Domain.ReservasSalones;
 using APIClub.Domain.ReservasSalones.Repositories;
+using APIClub.Domain.Notificaciones;
 using APIClub.Repositorio;
 using APIClub.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Http.Headers;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +23,21 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<AppDbcontext>(options =>
     options.UseSqlite(connectionString));
 
+// Configurar WhatsApp
+builder.Services.Configure<WhatsAppConfig>(builder.Configuration.GetSection("WhatsApp"));
+
+// Registrar HttpClients
+builder.Services.AddHttpClient<NotifyService>((sp,client) =>
+{
+    var config = sp.GetRequiredService<IOptions<WhatsAppConfig>>().Value;
+
+    client.BaseAddress = new Uri("https://graph.facebook.com/");
+    client.DefaultRequestHeaders.Authorization =
+        new AuthenticationHeaderValue("Bearer", config.AccessToken);
+    client.DefaultRequestHeaders.Accept.Add(
+        new MediaTypeWithQualityHeaderValue("application/json"));
+});
+
 //registrar servicios
 builder.Services.AddScoped<ISociosManagmentService,SociosManagmentService>();
 builder.Services.AddScoped<ICuotasService,CuotasService>();
@@ -26,6 +45,7 @@ builder.Services.AddScoped<IReservasServices,ReservasServices>();
 builder.Services.AddScoped<ICobranzasServices,CobranzasService>();
 builder.Services.AddScoped<IManagmentArticulosService,ManagmentArticulosService>();
 builder.Services.AddScoped<IAlquilerArticulosService ,AlquilerArticulosService>();
+builder.Services.AddScoped<INotifyService,NotifyService>(); 
 
 //OTROS
 builder.Services.AddScoped<UnitOfWork>();
