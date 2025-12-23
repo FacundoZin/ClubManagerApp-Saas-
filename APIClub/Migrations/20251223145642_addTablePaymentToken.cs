@@ -8,11 +8,25 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace APIClub.Migrations
 {
     /// <inheritdoc />
-    public partial class addTitleToReservas : Migration
+    public partial class addTablePaymentToken : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Articulos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Nombre = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    PrecioAlquiler = table.Column<int>(type: "decimal(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Articulos", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "MontoCuota",
                 columns: table => new
@@ -25,6 +39,23 @@ namespace APIClub.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MontoCuota", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PaymentTokens",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    IdSocio = table.Column<int>(type: "INTEGER", nullable: false),
+                    anio = table.Column<int>(type: "INTEGER", nullable: false),
+                    semestre = table.Column<int>(type: "INTEGER", nullable: false),
+                    FechaExpiracion = table.Column<DateOnly>(type: "TEXT", nullable: false),
+                    monto = table.Column<decimal>(type: "TEXT", nullable: false),
+                    usado = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaymentTokens", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -49,7 +80,7 @@ namespace APIClub.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Nombre = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     Apellido = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    Dni = table.Column<string>(type: "TEXT", maxLength: 20, nullable: true),
+                    Dni = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
                     Telefono = table.Column<string>(type: "TEXT", nullable: true),
                     Direcccion = table.Column<string>(type: "TEXT", nullable: true),
                     Lote = table.Column<string>(type: "TEXT", nullable: true),
@@ -59,6 +90,28 @@ namespace APIClub.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Socios", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "alquileresArticulos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    FechaAlquiler = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Observaciones = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: true),
+                    IdSocio = table.Column<int>(type: "INTEGER", nullable: false),
+                    Finalizado = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_alquileresArticulos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_alquileresArticulos_Socios_IdSocio",
+                        column: x => x.IdSocio,
+                        principalTable: "Socios",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -115,6 +168,66 @@ namespace APIClub.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ItemALquiler",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ArticuloId = table.Column<int>(type: "INTEGER", nullable: false),
+                    AlquilerId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Cantidad = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ItemALquiler", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ItemALquiler_Articulos_ArticuloId",
+                        column: x => x.ArticuloId,
+                        principalTable: "Articulos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ItemALquiler_alquileresArticulos_AlquilerId",
+                        column: x => x.AlquilerId,
+                        principalTable: "alquileresArticulos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PagosAlquilerDeArticulos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Anio = table.Column<int>(type: "INTEGER", nullable: false),
+                    Mes = table.Column<int>(type: "INTEGER", nullable: false),
+                    Monto = table.Column<int>(type: "INTEGER", nullable: false),
+                    IdAlquiler = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PagosAlquilerDeArticulos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PagosAlquilerDeArticulos_alquileresArticulos_IdAlquiler",
+                        column: x => x.IdAlquiler,
+                        principalTable: "alquileresArticulos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Articulos",
+                columns: new[] { "Id", "Nombre", "PrecioAlquiler" },
+                values: new object[,]
+                {
+                    { 1, "Silla de Ruedas", 10500 },
+                    { 2, "Andador", 8000 },
+                    { 3, "Muletas", 5000 },
+                    { 4, "Bastón", 4500 }
+                });
+
             migrationBuilder.InsertData(
                 table: "MontoCuota",
                 columns: new[] { "Id", "FechaActualizacion", "MontoCuotaFija" },
@@ -156,10 +269,65 @@ namespace APIClub.Migrations
                     { 2, new DateTime(2025, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), 7000.00m, 2, 2, "baile abuelos", 7000.00m }
                 });
 
+            migrationBuilder.InsertData(
+                table: "alquileresArticulos",
+                columns: new[] { "Id", "FechaAlquiler", "Finalizado", "IdSocio", "Observaciones" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2025, 11, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 1, "Alquiler por 3 días" },
+                    { 2, new DateTime(2025, 10, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), true, 2, "Préstamo semanal" },
+                    { 3, new DateTime(2025, 9, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 1, "Rehabilitación post operación" },
+                    { 4, new DateTime(2025, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), true, 2, "Alquiler viejo ya cerrado" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "ItemALquiler",
+                columns: new[] { "Id", "AlquilerId", "ArticuloId", "Cantidad" },
+                values: new object[,]
+                {
+                    { 1, 1, 1, 1 },
+                    { 2, 1, 4, 2 },
+                    { 3, 2, 2, 1 },
+                    { 4, 3, 3, 2 },
+                    { 5, 3, 4, 1 },
+                    { 6, 4, 1, 1 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "PagosAlquilerDeArticulos",
+                columns: new[] { "Id", "Anio", "IdAlquiler", "Mes", "Monto" },
+                values: new object[,]
+                {
+                    { 1, 2025, 1, 1, 10500 },
+                    { 2, 2025, 1, 2, 10500 },
+                    { 3, 2025, 1, 3, 10500 }
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_alquileresArticulos_IdSocio",
+                table: "alquileresArticulos",
+                column: "IdSocio");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Cuotas_SocioId",
                 table: "Cuotas",
                 column: "SocioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemALquiler_AlquilerId",
+                table: "ItemALquiler",
+                column: "AlquilerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemALquiler_ArticuloId",
+                table: "ItemALquiler",
+                column: "ArticuloId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PagosAlquilerDeArticulos_IdAlquiler_Anio_Mes",
+                table: "PagosAlquilerDeArticulos",
+                columns: new[] { "IdAlquiler", "Anio", "Mes" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ReservasSalones_SalonId",
@@ -179,10 +347,25 @@ namespace APIClub.Migrations
                 name: "Cuotas");
 
             migrationBuilder.DropTable(
+                name: "ItemALquiler");
+
+            migrationBuilder.DropTable(
                 name: "MontoCuota");
 
             migrationBuilder.DropTable(
+                name: "PagosAlquilerDeArticulos");
+
+            migrationBuilder.DropTable(
+                name: "PaymentTokens");
+
+            migrationBuilder.DropTable(
                 name: "ReservasSalones");
+
+            migrationBuilder.DropTable(
+                name: "Articulos");
+
+            migrationBuilder.DropTable(
+                name: "alquileresArticulos");
 
             migrationBuilder.DropTable(
                 name: "Salones");

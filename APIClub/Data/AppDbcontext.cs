@@ -1,5 +1,6 @@
 ﻿using APIClub.Domain.AlquilerArticulos.Models;
 using APIClub.Domain.GestionSocios.Models;
+using APIClub.Domain.PaymentsOnline.Modelos;
 using APIClub.Domain.ReservasSalones.Models;
 using APIClub.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,7 @@ namespace APIClub.Data
         public DbSet<Alquiler> alquileresArticulos { get; set; }  
         public DbSet<ItemAlquiler> ItemALquiler {  get; set; }
         public DbSet<PagoAlquilerDeArticulos> PagosAlquilerDeArticulos { get; set; }
+        public DbSet<PaymentToken> PaymentTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

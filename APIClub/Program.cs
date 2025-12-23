@@ -13,6 +13,8 @@ using APIClub.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Options;
+using APIClub.Domain.PaymentsOnline;
+using APIClub.Domain.PaymentsOnline.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +48,9 @@ builder.Services.AddScoped<ICobranzasServices,CobranzasService>();
 builder.Services.AddScoped<IManagmentArticulosService,ManagmentArticulosService>();
 builder.Services.AddScoped<IAlquilerArticulosService ,AlquilerArticulosService>();
 builder.Services.AddScoped<INotifyService,NotifyService>(); 
+builder.Services.AddScoped<IPaymentService,PaymentService>();
+builder.Services.AddScoped<IPaymentTokenService,PaymentTokenService>();
+builder.Services.AddScoped<IMercadoPagoService,MPService>();
 
 //OTROS
 builder.Services.AddScoped<UnitOfWork>();
@@ -57,6 +62,7 @@ builder.Services.AddScoped<IReservasRepository,ReservasRepository>();
 builder.Services.AddScoped<IArticuloRepository,ArticuloRepository>();
 builder.Services.AddScoped<IAlquilerRepository,AlquilerRepository>();
 builder.Services.AddScoped<IitemAlquilerRepository, ItemsAlquilerRepository>();
+builder.Services.AddScoped<IPaymentTokenRepository,PaymentTokenRepository>();
 
 
 // confiugracion cors.

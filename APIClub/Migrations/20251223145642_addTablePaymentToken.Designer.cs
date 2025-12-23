@@ -11,14 +11,74 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APIClub.Migrations
 {
     [DbContext(typeof(AppDbcontext))]
-    [Migration("20251214154449_changeDecimalToInt")]
-    partial class changeDecimalToInt
+    [Migration("20251223145642_addTablePaymentToken")]
+    partial class addTablePaymentToken
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
+
+            modelBuilder.Entity("APIClub.Domain.AlquilerArticulos.Models.Alquiler", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("FechaAlquiler")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Finalizado")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("IdSocio")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Observaciones")
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdSocio");
+
+                    b.ToTable("alquileresArticulos");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            FechaAlquiler = new DateTime(2025, 11, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Finalizado = false,
+                            IdSocio = 1,
+                            Observaciones = "Alquiler por 3 días"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            FechaAlquiler = new DateTime(2025, 10, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Finalizado = true,
+                            IdSocio = 2,
+                            Observaciones = "Préstamo semanal"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            FechaAlquiler = new DateTime(2025, 9, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Finalizado = false,
+                            IdSocio = 1,
+                            Observaciones = "Rehabilitación post operación"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            FechaAlquiler = new DateTime(2025, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Finalizado = true,
+                            IdSocio = 2,
+                            Observaciones = "Alquiler viejo ya cerrado"
+                        });
+                });
 
             modelBuilder.Entity("APIClub.Domain.AlquilerArticulos.Models.Articulo", b =>
                 {
@@ -62,6 +122,126 @@ namespace APIClub.Migrations
                             Id = 4,
                             Nombre = "Bastón",
                             PrecioAlquiler = 4500
+                        });
+                });
+
+            modelBuilder.Entity("APIClub.Domain.AlquilerArticulos.Models.ItemAlquiler", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("AlquilerId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ArticuloId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Cantidad")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AlquilerId");
+
+                    b.HasIndex("ArticuloId");
+
+                    b.ToTable("ItemALquiler");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AlquilerId = 1,
+                            ArticuloId = 1,
+                            Cantidad = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AlquilerId = 1,
+                            ArticuloId = 4,
+                            Cantidad = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AlquilerId = 2,
+                            ArticuloId = 2,
+                            Cantidad = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            AlquilerId = 3,
+                            ArticuloId = 3,
+                            Cantidad = 2
+                        },
+                        new
+                        {
+                            Id = 5,
+                            AlquilerId = 3,
+                            ArticuloId = 4,
+                            Cantidad = 1
+                        },
+                        new
+                        {
+                            Id = 6,
+                            AlquilerId = 4,
+                            ArticuloId = 1,
+                            Cantidad = 1
+                        });
+                });
+
+            modelBuilder.Entity("APIClub.Domain.AlquilerArticulos.Models.PagoAlquilerDeArticulos", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Anio")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("IdAlquiler")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Mes")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Monto")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAlquiler", "Anio", "Mes")
+                        .IsUnique();
+
+                    b.ToTable("PagosAlquilerDeArticulos");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Anio = 2025,
+                            IdAlquiler = 1,
+                            Mes = 1,
+                            Monto = 10500
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Anio = 2025,
+                            IdAlquiler = 1,
+                            Mes = 2,
+                            Monto = 10500
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Anio = 2025,
+                            IdAlquiler = 1,
+                            Mes = 3,
+                            Monto = 10500
                         });
                 });
 
@@ -158,6 +338,7 @@ namespace APIClub.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Dni")
+                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("TEXT");
 
@@ -205,6 +386,35 @@ namespace APIClub.Migrations
                             Nombre = "María",
                             Telefono = "341-7654321"
                         });
+                });
+
+            modelBuilder.Entity("APIClub.Domain.PaymentsOnline.Modelos.PaymentToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateOnly>("FechaExpiracion")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("IdSocio")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("anio")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("monto")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("semestre")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("usado")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PaymentTokens");
                 });
 
             modelBuilder.Entity("APIClub.Domain.ReservasSalones.Models.ReservaSalon", b =>
@@ -298,6 +508,47 @@ namespace APIClub.Migrations
                         });
                 });
 
+            modelBuilder.Entity("APIClub.Domain.AlquilerArticulos.Models.Alquiler", b =>
+                {
+                    b.HasOne("APIClub.Domain.GestionSocios.Models.Socio", "Socio")
+                        .WithMany()
+                        .HasForeignKey("IdSocio")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Socio");
+                });
+
+            modelBuilder.Entity("APIClub.Domain.AlquilerArticulos.Models.ItemAlquiler", b =>
+                {
+                    b.HasOne("APIClub.Domain.AlquilerArticulos.Models.Alquiler", "Alquiler")
+                        .WithMany("Items")
+                        .HasForeignKey("AlquilerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("APIClub.Domain.AlquilerArticulos.Models.Articulo", "Articulo")
+                        .WithMany()
+                        .HasForeignKey("ArticuloId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Alquiler");
+
+                    b.Navigation("Articulo");
+                });
+
+            modelBuilder.Entity("APIClub.Domain.AlquilerArticulos.Models.PagoAlquilerDeArticulos", b =>
+                {
+                    b.HasOne("APIClub.Domain.AlquilerArticulos.Models.Alquiler", "alquiler")
+                        .WithMany("HistorialDePagos")
+                        .HasForeignKey("IdAlquiler")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("alquiler");
+                });
+
             modelBuilder.Entity("APIClub.Domain.GestionSocios.Models.Cuota", b =>
                 {
                     b.HasOne("APIClub.Domain.GestionSocios.Models.Socio", "Socio")
@@ -326,6 +577,13 @@ namespace APIClub.Migrations
                     b.Navigation("Salon");
 
                     b.Navigation("Socio");
+                });
+
+            modelBuilder.Entity("APIClub.Domain.AlquilerArticulos.Models.Alquiler", b =>
+                {
+                    b.Navigation("HistorialDePagos");
+
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("APIClub.Domain.GestionSocios.Models.Socio", b =>
