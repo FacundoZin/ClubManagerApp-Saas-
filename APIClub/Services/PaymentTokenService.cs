@@ -22,6 +22,7 @@ namespace APIClub.Services
             {
                 Id = Guid.NewGuid(),
                 IdSocio = dto.IdSocio,
+                nombreSocio = dto.nombreSocio,
                 anio = dto.anio,
                 semestre = dto.semestre,
                 FechaExpiracion = fechaExpiracion,

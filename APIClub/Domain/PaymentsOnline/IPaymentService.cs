@@ -5,6 +5,6 @@ namespace APIClub.Domain.PaymentsOnline
 {
     public interface IPaymentService
     {
-        Task<Result<PortalPaymentView>> InitProcessPayment();
+        Task<Result<PortalPaymentView>> InitPaymentProcess(Guid tokenId);
     }
 }

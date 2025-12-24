@@ -26,18 +26,32 @@ builder.Services.AddDbContext<AppDbcontext>(options =>
     options.UseSqlite(connectionString));
 
 // Configurar WhatsApp
-builder.Services.Configure<WhatsAppConfig>(builder.Configuration.GetSection("WhatsApp"));
+builder.Services.Configure<WhatsAppConfig>(
+    builder.Configuration.GetSection("WhatsApp"));
+
 
 // Registrar HttpClients
 builder.Services.AddHttpClient<NotifyService>((sp,client) =>
 {
-    var config = sp.GetRequiredService<IOptions<WhatsAppConfig>>().Value;
+    var config = sp.GetRequiredService<IOptions<IConfiguration>>().Value;
 
     client.BaseAddress = new Uri("https://graph.facebook.com/");
     client.DefaultRequestHeaders.Authorization =
-        new AuthenticationHeaderValue("Bearer", config.AccessToken);
+        new AuthenticationHeaderValue("Bearer", config["WhatsApp:AccessToken"]);
     client.DefaultRequestHeaders.Accept.Add(
         new MediaTypeWithQualityHeaderValue("application/json"));
+});
+
+builder.Services.AddHttpClient<IMercadoPagoService, MPService>((sp, client) =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+
+    client.BaseAddress = new Uri("https://api.mercadopago.com");
+    client.DefaultRequestHeaders.Authorization =
+        new AuthenticationHeaderValue(
+            "Bearer",
+            config["MercadoPago:AccessToken"]
+        );
 });
 
 //registrar servicios
