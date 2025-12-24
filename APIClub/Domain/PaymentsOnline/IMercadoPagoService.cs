@@ -7,5 +7,6 @@ namespace APIClub.Domain.PaymentsOnline
     {
         Task<string> CreatePaymentPreference(string title, decimal montoCuota);
         Task<mpPaymentInfo> GetPayment(string paymentId);
+        Task<Result<ProcessPaymentResponseDto>> ProcessPayment(ProcessPaymentRequestDto request);
     }
 }

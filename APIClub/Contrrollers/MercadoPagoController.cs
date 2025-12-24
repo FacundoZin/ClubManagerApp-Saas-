@@ -1,4 +1,5 @@
 ﻿using APIClub.Domain.PaymentsOnline;
+using APIClub.Dtos.Payment;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +19,7 @@ namespace APIClub.Contrrollers
         /// <summary>
         /// Inicia el proceso de pago usando un token
         /// </summary>
-        /// <param name="tokenId">Id del token de pago</param>
+        /// <param name="PaymentToken">Id del token de pago</param>
         /// <returns>Información de la preferencia de pago</returns>
         [HttpPost("initPayment")]
         public async Task<IActionResult> InitPaymentProcess()
@@ -26,7 +27,7 @@ namespace APIClub.Contrrollers
             try
             {
 
-                if (!Request.Headers.TryGetValue("X-Token-Id", out var tokenHeader))
+                if (!Request.Headers.TryGetValue("PaymentToken", out var tokenHeader))
                     return BadRequest(new { message = "Token no proporcionado" });
 
                 if (!Guid.TryParse(tokenHeader, out Guid tokenId))
@@ -42,6 +43,38 @@ namespace APIClub.Contrrollers
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Error interno al procesar el pago", detail = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Procesa el pago recibido desde el Payment Brick
+        /// </summary>
+        /// <param name="request">Datos del pago desde el frontend</param>
+        /// <returns>Resultado del procesamiento del pago</returns>
+        [HttpPost("processPayment")]
+        public async Task<IActionResult> ProcessPayment([FromBody] ProcessPaymentRequestDto request)
+        {
+            try
+            {
+                if (request == null)
+                    return BadRequest(new { exit = false, errormessage = "Datos de pago no proporcionados" });
+
+                if (string.IsNullOrEmpty(request.token))
+                    return BadRequest(new { exit = false, errormessage = "Token de pago requerido" });
+
+                if (request.externalReference == Guid.Empty)
+                    return BadRequest(new { exit = false, errormessage = "Referencia externa requerida" });
+
+                var result = await _paymentService.ProcessPayment(request);
+
+                if (!result.Exit)
+                    return StatusCode(result.Errorcode, result.Errormessage);
+
+                return Ok(result.Data);
+            }
+            catch (Exception ex)
+            {
+                return Ok(new { exit = false, errormessage = $"Error al procesar el pago: {ex.Message}" });
             }
         }
     }
