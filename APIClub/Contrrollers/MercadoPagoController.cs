@@ -32,7 +32,7 @@ namespace APIClub.Contrrollers
                 if (!Guid.TryParse(tokenHeader, out Guid tokenId))
                     return BadRequest(new { message = "Token inválido" });
 
-                var result = await _paymentService.InitProcessPayment(tokenId);
+                var result = await _paymentService.InitPaymentProcess(tokenId);
 
                 if (!result.Exit)
                     return StatusCode(result.Errorcode, result.Errormessage);
