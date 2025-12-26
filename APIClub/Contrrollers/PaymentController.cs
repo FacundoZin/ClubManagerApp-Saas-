@@ -7,11 +7,11 @@ namespace APIClub.Contrrollers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MercadoPagoController : ControllerBase
+    public class PaymentController : ControllerBase
     {
         private readonly IPaymentService _paymentService;
 
-        public MercadoPagoController(IPaymentService paymentService)
+        public PaymentController(IPaymentService paymentService)
         {
             _paymentService = paymentService;
         }
@@ -36,9 +36,9 @@ namespace APIClub.Contrrollers
                 var result = await _paymentService.InitPaymentProcess(tokenId);
 
                 if (!result.Exit)
-                    return StatusCode(result.Errorcode, result.Errormessage);
+                    return StatusCode(result.Errorcode, new { exit = false, errormessage = result.Errormessage });
 
-                return Ok(result.Data);
+                return Ok(new { exit = true, data = result.Data });
             }
             catch (Exception ex)
             {

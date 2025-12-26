@@ -333,6 +333,8 @@
 </template>
 
 <script>
+import { nextTick } from 'vue'
+
 export default {
   data() {
     return {
@@ -370,14 +372,37 @@ export default {
         }
 
         // 🔹 Init payment (backend)
-        const res = await fetch('http://localhost:5194/api/MercadoPago/initPayment', {
+        const res = await fetch('http://localhost:5194/api/Payment/initPayment', {
           method: 'POST',
           headers: {
             PaymentToken: paymentToken,
           },
         })
 
-        const result = await res.json()
+        // Verificar si la respuesta es válida
+        if (!res.ok) {
+          let errorMsg = 'Error al conectar con el servidor'
+          try {
+            const errorData = await res.json()
+            errorMsg = errorData.errormessage || errorData.message || errorMsg
+          } catch {
+            errorMsg = `Error del servidor (${res.status}): ${res.statusText}`
+          }
+          this.errorMessage = errorMsg
+          this.loading = false
+          return
+        }
+
+        // Intentar parsear JSON
+        let result
+        try {
+          result = await res.json()
+        } catch (jsonError) {
+          console.error('Error parsing JSON:', jsonError)
+          this.errorMessage = 'El servidor devolvió una respuesta inválida'
+          this.loading = false
+          return
+        }
 
         if (!result.exit) {
           this.errorMessage = result.errormessage || 'No se pudo iniciar el pago'
@@ -388,8 +413,12 @@ export default {
         // 🔹 Datos válidos
         this.paymentData = result.data
 
+        // 🔹 Asegurar que el contenedor esté en el DOM
+        this.loading = false
+        await nextTick()
+
         // 🔹 SDK MP
-        const mp = new window.MercadoPago('YOUR_PUBLIC_KEY', {
+        const mp = new window.MercadoPago('TEST-423365d5-3d72-4d03-82c8-f85403327ce4', {
           locale: 'es-AR',
         })
 
@@ -412,7 +441,7 @@ export default {
           },
           callbacks: {
             onReady: () => {
-              this.loading = false
+              console.log('Payment Brick listo')
             },
 
             onSubmit: ({ selectedPaymentMethod, formData }) => {

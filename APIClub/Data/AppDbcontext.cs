@@ -390,6 +390,58 @@ namespace APIClub.Data
                     Monto = 10500
                 }
             );
+
+            // 7) PaymentTokens de prueba
+            modelBuilder.Entity<PaymentToken>().HasData(
+                new PaymentToken
+                {
+                    Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
+                    nombreSocio = "Juan Pérez",
+                    IdSocio = 1,
+                    anio = 2025,
+                    semestre = 1,
+                    monto = 2500.00m,
+                    FechaExpiracion = DateOnly.FromDateTime(DateTime.Now.AddDays(30)),
+                    usado = false,
+                    Preference_Id = null
+                },
+                new PaymentToken
+                {
+                    Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
+                    nombreSocio = "Juan Pérez",
+                    IdSocio = 1,
+                    anio = 2025,
+                    semestre = 2,
+                    monto = 2500.00m,
+                    FechaExpiracion = DateOnly.FromDateTime(DateTime.Now.AddDays(30)),
+                    usado = false,
+                    Preference_Id = null
+                },
+                new PaymentToken
+                {
+                    Id = Guid.Parse("33333333-3333-3333-3333-333333333333"),
+                    nombreSocio = "María Gómez",
+                    IdSocio = 2,
+                    anio = 2025,
+                    semestre = 1,
+                    monto = 2500.00m,
+                    FechaExpiracion = DateOnly.FromDateTime(DateTime.Now.AddDays(30)),
+                    usado = false,
+                    Preference_Id = null
+                },
+                new PaymentToken
+                {
+                    Id = Guid.Parse("44444444-4444-4444-4444-444444444444"),
+                    nombreSocio = "María Gómez",
+                    IdSocio = 2,
+                    anio = 2025,
+                    semestre = 2,
+                    monto = 2500.00m,
+                    FechaExpiracion = DateOnly.FromDateTime(DateTime.Now.AddDays(30)),
+                    usado = false,
+                    Preference_Id = null
+                }
+            );
         }
     }
 }

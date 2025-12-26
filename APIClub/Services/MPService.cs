@@ -1,5 +1,6 @@
 ﻿using APIClub.Common;
 using APIClub.Domain.PaymentsOnline;
+using APIClub.Domain.PaymentsOnline.Modelos;
 using APIClub.Dtos.Payment;
 using MercadoPago.Client.Common;
 using MercadoPago.Client.Payment;
@@ -16,19 +17,26 @@ namespace APIClub.Services
         private readonly PreferenceClient _client;
         private readonly PaymentClient _paymentClient;
 
-        public MPService(IConfiguration configuration)
+        public MPService(IConfiguration configuration, UnitOfWork unitOfWork)
         {
             MercadoPagoConfig.AccessToken = configuration["MercadoPago:AccessToken"];
             _client = new PreferenceClient();
             _paymentClient = new PaymentClient();
         }
 
-        public async Task<string> CreatePaymentPreference(string title, decimal montoCuota)
+        public async Task<string> CreatePaymentPreference(string title, decimal montoCuota, string externalReference)
         {
             try
             {
                 var request = new PreferenceRequest
                 {
+                    ExternalReference = externalReference,
+                    PaymentMethods = new PreferencePaymentMethodsRequest
+                    {
+                        ExcludedPaymentTypes = new List<PreferencePaymentTypeRequest>{
+                            new PreferencePaymentTypeRequest { Id = "ticket" }
+                        }
+                    },
                     Items = new List<PreferenceItemRequest>
                     {
                         new PreferenceItemRequest
@@ -55,7 +63,7 @@ namespace APIClub.Services
             throw new NotImplementedException();
         }
 
-        public async Task<Result<ProcessPaymentResponseDto>> ProcessPayment(ProcessPaymentRequestDto request)
+        public async Task<Result<ProcessPaymentResponseDto>> ProcessPayment(ProcessPaymentRequestDto request, decimal amount, string description)
         {
             try
             {
@@ -65,7 +73,7 @@ namespace APIClub.Services
                     Token = request.token,
                     IssuerId = request.issuer_id,
                     PaymentMethodId = request.payment_method_id,
-                    TransactionAmount = request.transaction_amount,
+                    TransactionAmount = amount,
                     Installments = request.installments,
                     Payer = new PaymentPayerRequest
                     {
@@ -77,7 +85,7 @@ namespace APIClub.Services
                         }
                     },
                     ExternalReference = request.externalReference.ToString(),
-                    Description = request.description   
+                    Description = description,
                 };
 
                 // Procesar el pago con MercadoPago
@@ -126,7 +134,6 @@ namespace APIClub.Services
                 );
             }
         }
-
     }
 
 }

@@ -10,6 +10,6 @@
         public DateOnly FechaExpiracion { get; set; }
         public decimal monto { get; set; }
         public bool usado { get; set; } = false;
-        public string? Client_Secret { get; set; }
+        public string? Preference_Id { get; set; }
     }
 }

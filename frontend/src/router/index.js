@@ -28,6 +28,11 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue'),
     },
+    {
+      path: '/pago-online',
+      name: 'pago-online',
+      component: () => import('../views/OnlinePaymentView.vue'),
+    },
   ],
 })
 
