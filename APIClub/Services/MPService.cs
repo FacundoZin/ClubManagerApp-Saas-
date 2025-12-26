@@ -33,9 +33,13 @@ namespace APIClub.Services
                     ExternalReference = externalReference,
                     PaymentMethods = new PreferencePaymentMethodsRequest
                     {
-                        ExcludedPaymentTypes = new List<PreferencePaymentTypeRequest>{
-                            new PreferencePaymentTypeRequest { Id = "ticket" }
-                        }
+                        ExcludedPaymentTypes = new List<PreferencePaymentTypeRequest>
+                        {
+                            new PreferencePaymentTypeRequest { Id = "credit_card" },
+                            new PreferencePaymentTypeRequest { Id = "debit_card" },
+                            new PreferencePaymentTypeRequest { Id = "ticket" },
+                            new PreferencePaymentTypeRequest { Id = "bank_transfer" }
+                        },
                     },
                     Items = new List<PreferenceItemRequest>
                     {
