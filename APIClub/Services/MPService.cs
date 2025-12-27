@@ -62,9 +62,34 @@ namespace APIClub.Services
             }
         }
 
-        public Task<mpPaymentInfo> GetPayment(string paymentId)
+        public async Task<mpPaymentInfo> GetPayment(string paymentId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (!long.TryParse(paymentId, out long id))
+                {
+                    throw new ArgumentException("Id de pago inválido", nameof(paymentId));
+                }
+
+                Payment payment = await _paymentClient.GetAsync(id);
+
+                if (payment == null)
+                    throw new Exception("No se encontró el pago en Mercado Pago");
+
+                return new mpPaymentInfo
+                {
+                    PaymentId = payment.Id.ToString()!,
+                    Status = payment.Status,
+                    ExternalReference = payment.ExternalReference,
+                    Amount = payment.TransactionAmount ?? 0,
+                    PaymentMethod = payment.PaymentMethodId,
+                    ApprovedAt = payment.DateApproved
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al obtener el pago de Mercado Pago: {ex.Message}", ex);
+            }
         }
 
         public async Task<Result<ProcessPaymentResponseDto>> ProcessPayment(ProcessPaymentRequestDto request, decimal amount, string description)

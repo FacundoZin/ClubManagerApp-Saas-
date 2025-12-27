@@ -71,5 +71,10 @@ namespace APIClub.Services
 
             return await _mercadoPagoService.ProcessPayment(request, token.monto, description);
         }
+
+        public async Task<mpPaymentInfo> GetPayment(string paymentId)
+        {
+            return await _mercadoPagoService.GetPayment(paymentId);
+        }
     }
 }
