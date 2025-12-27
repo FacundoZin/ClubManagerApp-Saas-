@@ -1,5 +1,6 @@
 ﻿using APIClub.Common;
 using APIClub.Dtos.Payment;
+using System.Text.Json;
 
 namespace APIClub.Domain.PaymentsOnline
 {
@@ -7,6 +8,6 @@ namespace APIClub.Domain.PaymentsOnline
     {
         Task<Result<PortalPaymentView>> InitPaymentProcess(Guid tokenId);
         Task<Result<ProcessPaymentResponseDto>> ProcessPayment(ProcessPaymentRequestDto request);
-        Task<mpPaymentInfo> GetPayment(string paymentId);
+        Task RegistrarPago(JsonElement notification);
     }
 }

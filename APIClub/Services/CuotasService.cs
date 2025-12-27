@@ -2,6 +2,7 @@
 using APIClub.Domain.GestionSocios;
 using APIClub.Domain.GestionSocios.Models;
 using APIClub.Domain.GestionSocios.Repositories;
+using APIClub.Domain.PaymentsOnline.Modelos;
 using APIClub.Enums;
 
 namespace APIClub.Services
@@ -29,12 +30,10 @@ namespace APIClub.Services
             if (socio == null)
                 return Result<object>.Error("Socio no encontrado.", 404);
 
-            // Obtener fecha actual
             var fechaPago = DateOnly.FromDateTime(DateTime.Now);
             int anio = fechaPago.Year;
             int semestre = fechaPago.Month <= 6 ? 1 : 2;
 
-            // Validar que no exista una cuota igual en el mismo semestre y año
             bool cuotaExistente = socio.HistorialCuotas.Any(c =>
                 c.Anio == anio && c.Semestre == semestre);
 
@@ -43,7 +42,6 @@ namespace APIClub.Services
 
             var valorCuotaActual = await _CuotaRepository.ObtenerValorCuota();
 
-            // Crear nueva cuota
             var nuevaCuota = new Cuota
             {
                 FechaPago = fechaPago,
@@ -55,7 +53,45 @@ namespace APIClub.Services
                 Socio = socio
             };
 
-            // Agregar cuota al historial y actualizar socio
+            socio.HistorialCuotas.Add(nuevaCuota);
+            await _SocioRepository.UpdateSocio(socio);
+
+            return Result<object>.Exito(new
+            {
+                Mensaje = "Pago de cuota registrado exitosamente.",
+                Cuota = nuevaCuota
+            });
+
+        }
+
+        public async Task<Result<object>> RegistrarPagoCuoataOnline(PaymentToken token)
+        {
+            var socio = await _SocioRepository.GetSocioById(token.IdSocio);
+            if (socio == null)
+                return Result<object>.Error("Socio no encontrado.", 404);
+
+            var fechaPago = DateOnly.FromDateTime(DateTime.Now);
+            
+
+            bool cuotaExistente = socio.HistorialCuotas.Any(c =>
+                c.Anio == token.anio && c.Semestre == token.semestre);
+
+            if (cuotaExistente)
+                return Result<object>.Error("Ya existe una cuota registrada para este semestre y año.", 409);
+
+            var valorCuotaActual = await _CuotaRepository.ObtenerValorCuota();
+
+            var nuevaCuota = new Cuota
+            {
+                FechaPago = fechaPago,
+                Monto = valorCuotaActual,
+                FormaDePago = FormasDePago.LinkDePago,
+                Anio = token.anio,
+                Semestre = token.semestre,
+                SocioId = socio.Id,
+                Socio = socio
+            };
+
             socio.HistorialCuotas.Add(nuevaCuota);
             await _SocioRepository.UpdateSocio(socio);
 

@@ -1,7 +1,9 @@
 ﻿using APIClub.Common;
+using APIClub.Domain.GestionSocios;
 using APIClub.Domain.PaymentsOnline;
 using APIClub.Dtos.Payment;
 using Microsoft.AspNetCore.Http.HttpResults;
+using System.Text.Json;
 
 namespace APIClub.Services
 {
@@ -9,11 +11,14 @@ namespace APIClub.Services
     {
         private readonly IPaymentTokenService _paymentTokenService;
         private readonly IMercadoPagoService _mercadoPagoService;
+        private readonly ICuotasService _cuotasService;
         private readonly UnitOfWork _unitOfWork;
-        public PaymentService (IPaymentTokenService paymentTokenService, IMercadoPagoService mercadoPagoService, UnitOfWork unitOfWork)
+        public PaymentService (IPaymentTokenService paymentTokenService, IMercadoPagoService mercadoPagoService,
+            ICuotasService cuotasService ,UnitOfWork unitOfWork)
         {
             _paymentTokenService = paymentTokenService;
             _mercadoPagoService = mercadoPagoService;
+            _cuotasService = cuotasService;
             _unitOfWork = unitOfWork;
         }
 
@@ -30,7 +35,7 @@ namespace APIClub.Services
                 var Preference_id = token.Preference_Id;
                 string semestre = token.semestre == 1 ? "primer semestre" : "segundo semestre";
 
-                if(string.IsNullOrEmpty(token.Preference_Id))
+                if (string.IsNullOrEmpty(token.Preference_Id))
                 {
                     string description = $"cuota socio club de abuelos, correspondiente al {semestre} del año {token.anio}";
 
@@ -55,9 +60,9 @@ namespace APIClub.Services
             }
             catch (Exception)
             {
-                return Result<PortalPaymentView>.Error("Error al iniciar el pago", 500);    
+                return Result<PortalPaymentView>.Error("Error al iniciar el pago", 500);
             }
-            
+
         }
 
         public async Task<Result<ProcessPaymentResponseDto>> ProcessPayment(ProcessPaymentRequestDto request)
@@ -72,9 +77,53 @@ namespace APIClub.Services
             return await _mercadoPagoService.ProcessPayment(request, token.monto, description);
         }
 
-        public async Task<mpPaymentInfo> GetPayment(string paymentId)
+        public async Task RegistrarPago(JsonElement notification)
         {
-            return await _mercadoPagoService.GetPayment(paymentId);
+            try
+            {
+                string? type = null;
+                string? paymentId = null;
+
+                if (notification.TryGetProperty("type", out var typeProp))
+                {
+                    type = typeProp.GetString();
+                }
+
+                if (type == "payment")
+                {
+                    if (notification.TryGetProperty("data", out var data) && data.TryGetProperty("id", out var idProp))
+                    {
+                        paymentId = idProp.ValueKind == JsonValueKind.Number ? idProp.GetInt64().ToString() : idProp.GetString();
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(paymentId))
+                {
+                    var paymentInfo = await _mercadoPagoService.GetPayment(paymentId);
+
+                    Console.WriteLine($"Pago recibido: ID {paymentId}, Status {paymentInfo.Status}");
+
+                    if (paymentInfo.Status == "approved")
+                    {
+
+
+                        string externalReference = paymentInfo.ExternalReference;
+
+                        var token = await _unitOfWork._PaymentTokenRepository.GetToken(Guid.Parse(externalReference));
+
+                        var result = await _cuotasService.RegistrarPagoCuoataOnline(token);
+
+                        if (result.Exit)
+                            Console.WriteLine("Pago de cuota registrado exitosamente");
+                        else
+                            Console.WriteLine($"Error registrando pago de cuota: {result.Errormessage}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error procesando webhook: {ex.Message}");
+            }
         }
     }
 }

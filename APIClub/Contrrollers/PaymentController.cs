@@ -1,4 +1,5 @@
-﻿using APIClub.Domain.PaymentsOnline;
+﻿using APIClub.Domain.GestionSocios;
+using APIClub.Domain.PaymentsOnline;
 using APIClub.Dtos.Payment;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -87,63 +88,8 @@ namespace APIClub.Contrrollers
         [HttpPost("webhook")]
         public async Task<IActionResult> Webhook([FromBody] JsonElement notification)
         {
-            try
-            {
-                // Registramos la notificación para debug (opcional)
-                // Console.WriteLine($"Webhook recibido: {notification.ToString()}");
-
-                string? type = null;
-                string? paymentId = null;
-
-                // Intentamos obtener el tipo de notificación
-                if (notification.TryGetProperty("type", out var typeProp))
-                {
-                    type = typeProp.GetString();
-                }
-
-                // Si es un pago, el ID suele venir en data.id
-                if (type == "payment")
-                {
-                    if (notification.TryGetProperty("data", out var data) && data.TryGetProperty("id", out var idProp))
-                    {
-                        paymentId = idProp.ValueKind == JsonValueKind.Number ? idProp.GetInt64().ToString() : idProp.GetString();
-                    }
-                }
-                // Soporte para formato antiguo (topic=payment e id en la raíz)
-                else if (notification.TryGetProperty("topic", out var topicProp) && topicProp.GetString() == "payment")
-                {
-                    if (notification.TryGetProperty("id", out var idProp))
-                    {
-                        // El id puede venir como string o como número
-                        paymentId = idProp.ValueKind == JsonValueKind.Number ? idProp.GetInt64().ToString() : idProp.GetString();
-                    }
-                }
-
-                if (!string.IsNullOrEmpty(paymentId))
-                {
-                    // Obtenemos info detallada del pago desde Mercado Pago
-                    var paymentInfo = await _paymentService.GetPayment(paymentId);
-
-                    // Extraemos la external_reference que guardamos al crear la preferencia
-                    string externalReference = paymentInfo.ExternalReference;
-
-                    // IMPORTANTE: Aquí debes implementar tu lógica de registro en el sistema
-                    // Por ejemplo: await _cuotaService.ConfirmarPago(externalReference, paymentInfo);
-                    
-                    Console.WriteLine($"Pago recibido: ID {paymentId}, Status {paymentInfo.Status}, Ref {externalReference}");
-                }
-
-                // Mercado Pago requiere una respuesta 200 (Ok) o 201 para confirmar recepción
-                // Si no respondes con éxito, Mercado Pago reintentará enviar la notificación
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                // En caso de error, logueamos pero devolvemos Ok para evitar reintentos infinitos si es un bug de código
-                // En un entorno real, podrías querer devolver Error para reintentos si el problema es temporal (ej. DB caída)
-                Console.WriteLine($"Error procesando webhook: {ex.Message}");
-                return Ok();
-            }
+            await _paymentService.RegistrarPago(notification);
+            return Ok();
         }
     }
 }
