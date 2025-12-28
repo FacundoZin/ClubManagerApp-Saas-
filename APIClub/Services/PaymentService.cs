@@ -140,13 +140,6 @@ namespace APIClub.Services
                         return;
                     }
 
-                    // VALIDACIÓN DE IDEMPOTENCIA - Previene procesamiento duplicado de webhooks
-                    if (token.usado)
-                    {
-                        Console.WriteLine($"Webhook duplicado detectado. Token {tokenId} ya fue procesado.");
-                        return;
-                    }
-
                     if(paymentInfo.Status == "rejected" || paymentInfo.Status == "cancelled")
                     {
                         token.PaymentStatus = PaymentStatus.Rejected;
@@ -157,17 +150,26 @@ namespace APIClub.Services
                     // Procesar pago aprobado
                     if (PaymentStatusMapper.IsSuccessStatus(paymentInfo.Status))
                     {
+                        // Intento atómico de confirmar el token
+                        var confirmado = await _unitOfWork
+                            ._PaymentTokenRepository
+                            .confirmPaymentIfNotWereUsed(token.Id);
+
+                        if (!confirmado)
+                        {
+                            Console.WriteLine($"Webhook duplicado ignorado. Token {token.Id} ya confirmado.");
+                            return;
+                        }
+
                         var result = await _cuotasService.RegistrarPagoCuoataOnline(token);
 
-                        if (result.Exit)
+                        if (!result.Exit)
                         {
-                            Console.WriteLine("Pago de cuota registrado exitosamente");
-                            token.usado = true;
-                            await _unitOfWork.SaveChangesAsync();
+                            Console.WriteLine($"Error registrando cuota para token {token.Id}");
+                            return;
                         }
-                        
-                        else
-                            Console.WriteLine($"Error registrando pago de cuota: {result.Errormessage}");
+
+                        Console.WriteLine("Pago de cuota registrado exitosamente");
                     }
                 }
             }

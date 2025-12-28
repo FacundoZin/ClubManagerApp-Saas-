@@ -9,5 +9,6 @@ namespace APIClub.Domain.PaymentsOnline.Repository
     {
         Task<bool> CreateToken(PaymentToken token);
         Task<PaymentToken?> GetToken(Guid tokenId);
+        Task<bool> confirmPaymentIfNotWereUsed(Guid tokenId);
     }
 }
