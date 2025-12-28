@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APIClub.Migrations
 {
     [DbContext(typeof(AppDbcontext))]
-    [Migration("20251223145642_addTablePaymentToken")]
-    partial class addTablePaymentToken
+    [Migration("20251228034913_newMigration")]
+    partial class newMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -400,10 +400,17 @@ namespace APIClub.Migrations
                     b.Property<int>("IdSocio")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Preference_Id")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("anio")
                         .HasColumnType("INTEGER");
 
                     b.Property<decimal>("monto")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("nombreSocio")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("semestre")
@@ -415,6 +422,52 @@ namespace APIClub.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PaymentTokens");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
+                            FechaExpiracion = new DateOnly(2026, 1, 27),
+                            IdSocio = 1,
+                            anio = 2025,
+                            monto = 2500.00m,
+                            nombreSocio = "Juan Pérez",
+                            semestre = 1,
+                            usado = false
+                        },
+                        new
+                        {
+                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
+                            FechaExpiracion = new DateOnly(2026, 1, 27),
+                            IdSocio = 1,
+                            anio = 2025,
+                            monto = 2500.00m,
+                            nombreSocio = "Juan Pérez",
+                            semestre = 2,
+                            usado = false
+                        },
+                        new
+                        {
+                            Id = new Guid("33333333-3333-3333-3333-333333333333"),
+                            FechaExpiracion = new DateOnly(2026, 1, 27),
+                            IdSocio = 2,
+                            anio = 2025,
+                            monto = 2500.00m,
+                            nombreSocio = "María Gómez",
+                            semestre = 1,
+                            usado = false
+                        },
+                        new
+                        {
+                            Id = new Guid("44444444-4444-4444-4444-444444444444"),
+                            FechaExpiracion = new DateOnly(2026, 1, 27),
+                            IdSocio = 2,
+                            anio = 2025,
+                            monto = 2500.00m,
+                            nombreSocio = "María Gómez",
+                            semestre = 2,
+                            usado = false
+                        });
                 });
 
             modelBuilder.Entity("APIClub.Domain.ReservasSalones.Models.ReservaSalon", b =>

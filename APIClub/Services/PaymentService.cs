@@ -111,10 +111,16 @@ namespace APIClub.Services
 
                         var token = await _unitOfWork._PaymentTokenRepository.GetToken(Guid.Parse(externalReference));
 
+
                         var result = await _cuotasService.RegistrarPagoCuoataOnline(token);
 
                         if (result.Exit)
+                        {
                             Console.WriteLine("Pago de cuota registrado exitosamente");
+                            token.usado = true;
+                            await _unitOfWork.SaveChangesAsync();
+                        }
+                            
                         else
                             Console.WriteLine($"Error registrando pago de cuota: {result.Errormessage}");
                     }

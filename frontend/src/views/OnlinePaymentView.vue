@@ -434,7 +434,6 @@ export default {
           },
           customization: {
             paymentMethods: {
-              creditCard: 'all',
               debitCard: 'all',
               mercadoPago: 'all',
             },
@@ -451,7 +450,7 @@ export default {
               }
 
               // 👉 Tarjetas → backend
-              return fetch('http://localhost:5194/api/MercadoPago/processPayment', {
+              return fetch('http://localhost:5194/api/Payment/processPayment', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',

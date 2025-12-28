@@ -144,6 +144,7 @@ namespace APIClub.Services
                 }
                 else if (payment.Status == "rejected")
                 {
+                    Console.WriteLine($"Pago rechazado: {payment.StatusDetail}");
                     return Result<ProcessPaymentResponseDto>.Error(
                         $"Pago rechazado: {payment.StatusDetail}",
                         400
