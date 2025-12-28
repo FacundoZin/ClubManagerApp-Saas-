@@ -11,5 +11,6 @@
         public decimal monto { get; set; }
         public bool usado { get; set; } = false;
         public string? Preference_Id { get; set; }
+        public PaymentStatus? PaymentStatus { get; set; }
     }
 }

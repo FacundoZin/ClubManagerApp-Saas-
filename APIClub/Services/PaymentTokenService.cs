@@ -56,12 +56,16 @@ namespace APIClub.Services
             var date = DateTime.Now;
             var hoy = DateOnly.FromDateTime(date);
 
-
             var token = await _UnitOfWork._PaymentTokenRepository.GetToken(idToken);
 
             if (token == null) return Result<PaymentToken>.Error("el token no existe", 404);
             if (token.usado) return  Result<PaymentToken>.Error("el token ya fue utilizado", 422);
-            if (hoy > token.FechaExpiracion) return Result<PaymentToken>.Error("el token ya no es valido", 422);
+            if (hoy > token.FechaExpiracion) return Result<PaymentToken>.Error("el plazo para pagar la cuota ya finalizo", 492);
+
+            var cuotasSocio = await _UnitOfWork._SocioRepository.GetCuotasSocioById(token.IdSocio);
+
+            if (cuotasSocio.Any(c => c.Anio == token.anio && c.Semestre == token.semestre)) 
+                return Result<PaymentToken>.Error("la cuota que se esta intenando pagar ya fue abonada", 422);
 
             return Result<PaymentToken>.Exito(token);
         }

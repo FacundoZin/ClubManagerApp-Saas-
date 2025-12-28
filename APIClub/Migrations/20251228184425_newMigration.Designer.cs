@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APIClub.Migrations
 {
     [DbContext(typeof(AppDbcontext))]
-    [Migration("20251228034913_newMigration")]
+    [Migration("20251228184425_newMigration")]
     partial class newMigration
     {
         /// <inheritdoc />
@@ -398,6 +398,9 @@ namespace APIClub.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("IdSocio")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("PaymentStatus")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Preference_Id")

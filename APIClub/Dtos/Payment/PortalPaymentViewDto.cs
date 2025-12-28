@@ -1,6 +1,6 @@
 ﻿namespace APIClub.Dtos.Payment
 {
-    public class PortalPaymentView
+    public class PortalPaymentViewDto
     {
         public string nombreSocio { get; set; }
         public string anioPago { get; set; }

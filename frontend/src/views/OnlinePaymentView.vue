@@ -64,6 +64,65 @@
         </div>
       </div>
 
+      <!-- Token Used State (Estilo "Content Not Available" / Mercado Libre) -->
+      <div v-else-if="isTokenUsed" class="max-w-xl mx-auto mt-12">
+        <div
+          class="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden text-center pb-12"
+        >
+          <!-- Icon Header -->
+          <div
+            class="bg-slate-50 p-10 flex flex-col items-center justify-center border-b border-slate-100 bg-slate-50/50"
+          >
+            <div
+              class="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-sm mb-4"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-12 w-12 text-blue-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-slate-800">¡Este pago ya fue realizado!</h3>
+          </div>
+
+          <!-- Content -->
+          <div class="px-8 mt-8">
+            <p class="text-slate-600 text-lg leading-relaxed">
+              El enlace que utilizaste ya no está disponible porque la cuota fue abonada
+              anteriormente.
+            </p>
+            <div class="mt-6 p-5 bg-blue-50 rounded-xl inline-block border border-blue-100">
+              <p class="text-sm text-blue-800 font-medium flex items-center gap-2 justify-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                No es necesario que realices ninguna acción adicional.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Error State -->
       <div v-else-if="errorMessage" class="max-w-2xl mx-auto">
         <div class="bg-white rounded-2xl shadow-xl border border-red-200 overflow-hidden">
@@ -342,6 +401,7 @@ export default {
       paymentData: null,
       errorMessage: null,
       brickController: null,
+      isTokenUsed: false,
     }
   },
 
@@ -360,6 +420,7 @@ export default {
       try {
         this.loading = true
         this.errorMessage = null
+        this.isTokenUsed = false
 
         // 🔹 Token desde URL
         const params = new URLSearchParams(window.location.search)
@@ -385,6 +446,13 @@ export default {
           try {
             const errorData = await res.json()
             errorMsg = errorData.errormessage || errorData.message || errorMsg
+
+            // 🔹 Detectar si el token ya fue usado (backend retorna 422 con este mensaje)
+            if (errorMsg && errorMsg.toLowerCase().includes('ya fue utilizado')) {
+              this.isTokenUsed = true
+              this.loading = false
+              return
+            }
           } catch {
             errorMsg = `Error del servidor (${res.status}): ${res.statusText}`
           }
@@ -405,6 +473,16 @@ export default {
         }
 
         if (!result.exit) {
+          // Check also here just in case backend structure changes slightly
+          if (
+            result.errormessage &&
+            result.errormessage.toLowerCase().includes('ya fue utilizado')
+          ) {
+            this.isTokenUsed = true
+            this.loading = false
+            return
+          }
+
           this.errorMessage = result.errormessage || 'No se pudo iniciar el pago'
           this.loading = false
           return
@@ -500,7 +578,12 @@ export default {
     },
 
     goBack() {
-      window.history.back()
+      // Si hay historial vuelve atrás, sino cierra
+      if (window.history.length > 1) {
+        window.history.back()
+      } else {
+        window.close()
+      }
     },
   },
 }

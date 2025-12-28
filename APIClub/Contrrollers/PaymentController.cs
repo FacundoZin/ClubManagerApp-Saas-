@@ -3,7 +3,7 @@ using APIClub.Domain.PaymentsOnline;
 using APIClub.Dtos.Payment;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
+
 
 namespace APIClub.Contrrollers
 {
@@ -86,7 +86,7 @@ namespace APIClub.Contrrollers
         /// <param name="notification">Cuerpo de la notificación en formato JSON</param>
         /// <returns>Estado de recepción</returns>
         [HttpPost("webhook")]
-        public async Task<IActionResult> Webhook([FromBody] JsonElement notification)
+        public async Task<IActionResult> Webhook([FromBody] MercadoPagoWebhookDto notification)
         {
             await _paymentService.RegistrarPago(notification);
             return Ok();

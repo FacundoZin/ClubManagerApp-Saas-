@@ -1,6 +1,5 @@
 ﻿using APIClub.Common;
 using APIClub.Domain.PaymentsOnline;
-using APIClub.Domain.PaymentsOnline.Modelos;
 using APIClub.Dtos.Payment;
 using MercadoPago.Client.Common;
 using MercadoPago.Client.Payment;
@@ -62,7 +61,7 @@ namespace APIClub.Services
             }
         }
 
-        public async Task<mpPaymentInfo> GetPayment(string paymentId)
+        public async Task<mpPaymentInfoDto> GetPayment(string paymentId)
         {
             try
             {
@@ -76,7 +75,7 @@ namespace APIClub.Services
                 if (payment == null)
                     throw new Exception("No se encontró el pago en Mercado Pago");
 
-                return new mpPaymentInfo
+                return new mpPaymentInfoDto
                 {
                     PaymentId = payment.Id.ToString()!,
                     Status = payment.Status,

@@ -1,6 +1,6 @@
 ﻿namespace APIClub.Dtos.Payment
 {
-    public class mpPaymentInfo
+    public class mpPaymentInfoDto
     {
         public string PaymentId { get; set; } = null!;
         public string Status { get; set; } = null!;          // approved, rejected, pending

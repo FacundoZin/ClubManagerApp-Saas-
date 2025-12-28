@@ -397,6 +397,9 @@ namespace APIClub.Migrations
                     b.Property<int>("IdSocio")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("PaymentStatus")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Preference_Id")
                         .HasColumnType("TEXT");
 

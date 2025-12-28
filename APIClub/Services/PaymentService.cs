@@ -1,9 +1,9 @@
 ﻿using APIClub.Common;
 using APIClub.Domain.GestionSocios;
 using APIClub.Domain.PaymentsOnline;
+using APIClub.Domain.PaymentsOnline.Modelos;
 using APIClub.Dtos.Payment;
-using Microsoft.AspNetCore.Http.HttpResults;
-using System.Text.Json;
+using APIClub.Helpers;
 
 namespace APIClub.Services
 {
@@ -13,6 +13,7 @@ namespace APIClub.Services
         private readonly IMercadoPagoService _mercadoPagoService;
         private readonly ICuotasService _cuotasService;
         private readonly UnitOfWork _unitOfWork;
+
         public PaymentService (IPaymentTokenService paymentTokenService, IMercadoPagoService mercadoPagoService,
             ICuotasService cuotasService ,UnitOfWork unitOfWork)
         {
@@ -22,22 +23,48 @@ namespace APIClub.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Result<PortalPaymentView>> InitPaymentProcess(Guid tokenId)
+        public async Task<Result<InfoComprobanteDto?>> getComprobante(Guid tokenId)
+        {
+            var token = await _unitOfWork._PaymentTokenRepository.GetToken(tokenId);
+
+            if (token.PaymentStatus == PaymentStatus.Rejected) return Result<InfoComprobanteDto?>.Error("el pago fallo al procesarse, porfavor intentelo mas tarde", 500);
+            if (token.PaymentStatus == PaymentStatus.Pending) return Result<InfoComprobanteDto?>.Exito(null);
+
+            if(token.PaymentStatus == PaymentStatus.ApprovedByGateway)
+            {
+                var infoSocio = await _unitOfWork._SocioRepository.GetSocioById(token.IdSocio);
+
+                var comporbante = new InfoComprobanteDto
+                {
+                    nombreSocio = infoSocio.Nombre,
+                    dniSocio = infoSocio.Dni,
+                    anioPago = token.anio.ToString(),
+                    semestrePagoText = PaymentDescriptionHelper.GetSemestreText(token.semestre),
+                    monto = token.monto.ToString(),
+                };
+
+                return Result<InfoComprobanteDto?>.Exito(comporbante);
+            }
+
+            return Result<InfoComprobanteDto?>.Error("el pago fallo al procesarse, porfavor intentelo mas tarde", 500);
+        }
+
+        public async Task<Result<PortalPaymentViewDto>> InitPaymentProcess(Guid tokenId)
         {
             try
             {
                 var result = await _paymentTokenService.ValidateToken(tokenId);
 
                 if (!result.Exit)
-                    return Result<PortalPaymentView>.Error(result.Errormessage, result.Errorcode);
+                    return Result<PortalPaymentViewDto>.Error(result.Errormessage, result.Errorcode);
 
                 var token = result.Data;
                 var Preference_id = token.Preference_Id;
-                string semestre = token.semestre == 1 ? "primer semestre" : "segundo semestre";
+                string semestre = PaymentDescriptionHelper.GetSemestreText(token.semestre);
 
                 if (string.IsNullOrEmpty(token.Preference_Id))
                 {
-                    string description = $"cuota socio club de abuelos, correspondiente al {semestre} del año {token.anio}";
+                    string description = PaymentDescriptionHelper.BuildCuotaDescription(token.semestre, token.anio);
 
                     var preference_id = await _mercadoPagoService.CreatePaymentPreference(description, token.monto, token.Id.ToString());
 
@@ -47,11 +74,11 @@ namespace APIClub.Services
                     await _unitOfWork.SaveChangesAsync();
                 }
 
-                return Result<PortalPaymentView>.Exito(new PortalPaymentView
+                return Result<PortalPaymentViewDto>.Exito(new PortalPaymentViewDto
                 {
                     nombreSocio = token.nombreSocio,
                     anioPago = token.anio.ToString(),
-                    semestrePago = token.semestre == 1 ? "primer semestre" : "segundo semestre",
+                    semestrePago = PaymentDescriptionHelper.GetSemestreText(token.semestre),
                     monto = token.monto,
                     externalReference = token.Id,
                     Preference_Id = Preference_id!,
@@ -60,7 +87,7 @@ namespace APIClub.Services
             }
             catch (Exception)
             {
-                return Result<PortalPaymentView>.Error("Error al iniciar el pago", 500);
+                return Result<PortalPaymentViewDto>.Error("Error al iniciar el pago", 500);
             }
 
         }
@@ -70,48 +97,66 @@ namespace APIClub.Services
             var token = await _unitOfWork._PaymentTokenRepository.GetToken(request.externalReference);
             
             if (token == null) return Result<ProcessPaymentResponseDto>.Error("no existe una referencia al pago que se quiere realizar dentro de nuestro sistema", 400);
-            string semestre = token.semestre == 1 ? "primer semestre" : "segundo semestre";
 
-            string description = $"cuota club abuelos correspondiente al {semestre} del año {token.anio}";
+            string description = PaymentDescriptionHelper.BuildCuotaDescriptionShort(token.semestre, token.anio);
 
-            return await _mercadoPagoService.ProcessPayment(request, token.monto, description);
+            var result = await _mercadoPagoService.ProcessPayment(request, token.monto, description);
+
+            if (!result.Exit)
+            {
+                token.PaymentStatus = PaymentStatus.Rejected;
+                await _unitOfWork.SaveChangesAsync();
+            }
+
+            // Usar mapper centralizado para estados de Mercado Pago
+            token.PaymentStatus = PaymentStatusMapper.MapFromMercadoPago(result.Data.status);
+
+            await _unitOfWork.SaveChangesAsync();
+            return result;
         }
 
-        public async Task RegistrarPago(JsonElement notification)
+        public async Task RegistrarPago(MercadoPagoWebhookDto notification)
         {
             try
             {
-                string? type = null;
-                string? paymentId = null;
-
-                if (notification.TryGetProperty("type", out var typeProp))
+                if (notification.Type == "payment" && notification.Data?.Id != null)
                 {
-                    type = typeProp.GetString();
-                }
-
-                if (type == "payment")
-                {
-                    if (notification.TryGetProperty("data", out var data) && data.TryGetProperty("id", out var idProp))
-                    {
-                        paymentId = idProp.ValueKind == JsonValueKind.Number ? idProp.GetInt64().ToString() : idProp.GetString();
-                    }
-                }
-
-                if (!string.IsNullOrEmpty(paymentId))
-                {
+                    string paymentId = notification.Data.Id;
                     var paymentInfo = await _mercadoPagoService.GetPayment(paymentId);
 
                     Console.WriteLine($"Pago recibido: ID {paymentId}, Status {paymentInfo.Status}");
 
-                    if (paymentInfo.Status == "approved")
+                    if (!Guid.TryParse(paymentInfo.ExternalReference, out Guid tokenId))
                     {
+                        Console.WriteLine($"ExternalReference inválido: {paymentInfo.ExternalReference}");
+                        return;
+                    }
 
+                    var token = await _unitOfWork._PaymentTokenRepository.GetToken(tokenId);
+                    
+                    if (token == null)
+                    {
+                        Console.WriteLine($"Token no encontrado: {tokenId}");
+                        return;
+                    }
 
-                        string externalReference = paymentInfo.ExternalReference;
+                    // VALIDACIÓN DE IDEMPOTENCIA - Previene procesamiento duplicado de webhooks
+                    if (token.usado)
+                    {
+                        Console.WriteLine($"Webhook duplicado detectado. Token {tokenId} ya fue procesado.");
+                        return;
+                    }
 
-                        var token = await _unitOfWork._PaymentTokenRepository.GetToken(Guid.Parse(externalReference));
+                    if(paymentInfo.Status == "rejected" || paymentInfo.Status == "cancelled")
+                    {
+                        token.PaymentStatus = PaymentStatus.Rejected;
+                        await _unitOfWork.SaveChangesAsync();
+                        Console.WriteLine($"Pago rechazado/cancelado. Token {tokenId} actualizado.");
+                    }
 
-
+                    // Procesar pago aprobado
+                    if (PaymentStatusMapper.IsSuccessStatus(paymentInfo.Status))
+                    {
                         var result = await _cuotasService.RegistrarPagoCuoataOnline(token);
 
                         if (result.Exit)
@@ -120,7 +165,7 @@ namespace APIClub.Services
                             token.usado = true;
                             await _unitOfWork.SaveChangesAsync();
                         }
-                            
+                        
                         else
                             Console.WriteLine($"Error registrando pago de cuota: {result.Errormessage}");
                     }
