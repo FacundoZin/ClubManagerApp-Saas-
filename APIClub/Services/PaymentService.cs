@@ -27,10 +27,11 @@ namespace APIClub.Services
         {
             var token = await _unitOfWork._PaymentTokenRepository.GetToken(tokenId);
 
-            if (token.PaymentStatus == PaymentStatus.Rejected) return Result<InfoComprobanteDto?>.Error("el pago fallo al procesarse, porfavor intentelo mas tarde", 500);
-            if (token.PaymentStatus == PaymentStatus.Pending) return Result<InfoComprobanteDto?>.Exito(null);
+            if (token.PaymentStatus == "rejected") 
+                return Result<InfoComprobanteDto?>.Error(PaymentRejectedMessageHelper.GetMessage(token.StatusDetail), 500);
+            
 
-            if(token.PaymentStatus == PaymentStatus.ApprovedByGateway)
+            if(token.PaymentStatus == "approved")
             {
                 var infoSocio = await _unitOfWork._SocioRepository.GetSocioById(token.IdSocio);
 
@@ -46,7 +47,7 @@ namespace APIClub.Services
                 return Result<InfoComprobanteDto?>.Exito(comporbante);
             }
 
-            return Result<InfoComprobanteDto?>.Error("el pago fallo al procesarse, porfavor intentelo mas tarde", 500);
+            return Result<InfoComprobanteDto?>.Exito(null);
         }
 
         public async Task<Result<PortalPaymentViewDto>> InitPaymentProcess(Guid tokenId)
@@ -89,30 +90,22 @@ namespace APIClub.Services
             {
                 return Result<PortalPaymentViewDto>.Error("Error al iniciar el pago", 500);
             }
-
         }
 
-        public async Task<Result<ProcessPaymentResponseDto>> ProcessPayment(ProcessPaymentRequestDto request)
+        //no hace falta devovle rnada as que un result (MODIFICAR).
+        public async Task<Result<object?>> ProcessPayment(ProcessPaymentRequestDto request)
         {
             var token = await _unitOfWork._PaymentTokenRepository.GetToken(request.externalReference);
             
-            if (token == null) return Result<ProcessPaymentResponseDto>.Error("no existe una referencia al pago que se quiere realizar dentro de nuestro sistema", 400);
+            if (token == null) return Result<object?>.Error("no existe una referencia al pago que se quiere realizar dentro de nuestro sistema", 400);
 
             string description = PaymentDescriptionHelper.BuildCuotaDescriptionShort(token.semestre, token.anio);
 
             var result = await _mercadoPagoService.ProcessPayment(request, token.monto, description);
 
-            if (!result.Exit)
-            {
-                token.PaymentStatus = PaymentStatus.Rejected;
-                await _unitOfWork.SaveChangesAsync();
-            }
+            if (!result.Exit) return Result<object?>.Error(result.Errormessage, result.Errorcode);
 
-            // Usar mapper centralizado para estados de Mercado Pago
-            token.PaymentStatus = PaymentStatusMapper.MapFromMercadoPago(result.Data.status);
-
-            await _unitOfWork.SaveChangesAsync();
-            return result;
+            return Result<object?>.Exito(null);
         }
 
         public async Task RegistrarPago(MercadoPagoWebhookDto notification)
@@ -140,15 +133,8 @@ namespace APIClub.Services
                         return;
                     }
 
-                    if(paymentInfo.Status == "rejected" || paymentInfo.Status == "cancelled")
-                    {
-                        token.PaymentStatus = PaymentStatus.Rejected;
-                        await _unitOfWork.SaveChangesAsync();
-                        Console.WriteLine($"Pago rechazado/cancelado. Token {tokenId} actualizado.");
-                    }
-
                     // Procesar pago aprobado
-                    if (PaymentStatusMapper.IsSuccessStatus(paymentInfo.Status))
+                    if (paymentInfo.Status == "approved")
                     {
                         // Intento atómico de confirmar el token
                         var confirmado = await _unitOfWork
@@ -170,6 +156,14 @@ namespace APIClub.Services
                         }
 
                         Console.WriteLine("Pago de cuota registrado exitosamente");
+                        return;
+                    }
+                    else if(paymentInfo.Status == "rejected")
+                    {
+                        Console.WriteLine($"Pago de cuota rechazado: ({paymentInfo.statusDetail})");
+                        token.PaymentStatus = paymentInfo.Status;
+                        token.StatusDetail = paymentInfo.statusDetail;
+                        await _unitOfWork.SaveChangesAsync();
                     }
                 }
             }

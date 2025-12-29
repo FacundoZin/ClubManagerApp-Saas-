@@ -91,5 +91,33 @@ namespace APIClub.Contrrollers
             await _paymentService.RegistrarPago(notification);
             return Ok();
         }
+
+        /// <summary>
+        /// Obtiene la información del comprobante si el pago fue aprobado
+        /// </summary>
+        /// <returns>Información del comprobante o null si aún está pendiente</returns>
+        [HttpGet("comprobante")]
+        public async Task<IActionResult> GetComprobante()
+        {
+            try
+            {
+                if (!Request.Headers.TryGetValue("PaymentToken", out var tokenHeader))
+                    return BadRequest(new { message = "Token no proporcionado" });
+
+                if (!Guid.TryParse(tokenHeader, out Guid tokenId))
+                    return BadRequest(new { message = "Token inválido" });
+
+                var result = await _paymentService.getComprobante(tokenId);
+
+                if (!result.Exit)
+                    return StatusCode(result.Errorcode, new { exit = false, errormessage = result.Errormessage });
+
+                return Ok(new { exit = true, data = result.Data });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al obtener el comprobante", detail = ex.Message });
+            }
+        }
     }
 }

@@ -59,6 +59,14 @@ namespace APIClub.Services
             var token = await _UnitOfWork._PaymentTokenRepository.GetToken(idToken);
 
             if (token == null) return Result<PaymentToken>.Error("el token no existe", 404);
+
+            if(!token.usado && !string.IsNullOrEmpty(token.PaymentStatus))
+            {
+                token.StatusDetail = null;
+                token.PaymentStatus = null;
+                await _UnitOfWork.SaveChangesAsync();
+            }
+
             if (token.usado) return  Result<PaymentToken>.Error("el token ya fue utilizado", 422);
             if (hoy > token.FechaExpiracion) return Result<PaymentToken>.Error("el plazo para pagar la cuota ya finalizo", 492);
 

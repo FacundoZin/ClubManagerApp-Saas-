@@ -32,9 +32,21 @@ namespace APIClub.Repositorio
         {
             var rowsAffected = await _DBcontext.Database.ExecuteSqlInterpolatedAsync(
                 $@"UPDATE PaymentTokens
-                SET Usado = 1, PaymentStatus = {(int)PaymentStatus.Confirmed}
+                SET Usado = 1, PaymentStatus = 'approved'
                 WHERE Id = {tokenId}
                 AND Usado = 0");
+
+            return rowsAffected == 1;
+        }
+
+        public async Task<bool> UpdatePaymentStatusIfNotFinal(Guid tokenId, string paymentStatus, string? statusDetail)
+        {
+            var rowsAffected = await _DBcontext.Database.ExecuteSqlInterpolatedAsync(
+                $@"UPDATE PaymentTokens
+                SET PaymentStatus = {paymentStatus}, StatusDetail = {statusDetail}
+                WHERE Id = {tokenId}
+                AND usado = 0
+                AND (PaymentStatus IS NULL OR (PaymentStatus <> 'approved' AND PaymentStatus <> 'rejected'))");
 
             return rowsAffected == 1;
         }

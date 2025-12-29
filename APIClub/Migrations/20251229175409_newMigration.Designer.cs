@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APIClub.Migrations
 {
     [DbContext(typeof(AppDbcontext))]
-    [Migration("20251228184425_newMigration")]
+    [Migration("20251229175409_newMigration")]
     partial class newMigration
     {
         /// <inheritdoc />
@@ -400,10 +400,13 @@ namespace APIClub.Migrations
                     b.Property<int>("IdSocio")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("PaymentStatus")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("PaymentStatus")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Preference_Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("StatusDetail")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("anio")
@@ -430,7 +433,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111111"),
-                            FechaExpiracion = new DateOnly(2026, 1, 27),
+                            FechaExpiracion = new DateOnly(2026, 1, 28),
                             IdSocio = 1,
                             anio = 2025,
                             monto = 2500.00m,
@@ -441,7 +444,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("22222222-2222-2222-2222-222222222222"),
-                            FechaExpiracion = new DateOnly(2026, 1, 27),
+                            FechaExpiracion = new DateOnly(2026, 1, 28),
                             IdSocio = 1,
                             anio = 2025,
                             monto = 2500.00m,
@@ -452,7 +455,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("33333333-3333-3333-3333-333333333333"),
-                            FechaExpiracion = new DateOnly(2026, 1, 27),
+                            FechaExpiracion = new DateOnly(2026, 1, 28),
                             IdSocio = 2,
                             anio = 2025,
                             monto = 2500.00m,
@@ -463,7 +466,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("44444444-4444-4444-4444-444444444444"),
-                            FechaExpiracion = new DateOnly(2026, 1, 27),
+                            FechaExpiracion = new DateOnly(2026, 1, 28),
                             IdSocio = 2,
                             anio = 2025,
                             monto = 2500.00m,

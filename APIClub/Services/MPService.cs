@@ -79,6 +79,7 @@ namespace APIClub.Services
                 {
                     PaymentId = payment.Id.ToString()!,
                     Status = payment.Status,
+                    statusDetail = payment.StatusDetail,
                     ExternalReference = payment.ExternalReference,
                     Amount = payment.TransactionAmount ?? 0,
                     PaymentMethod = payment.PaymentMethodId,
@@ -136,24 +137,7 @@ namespace APIClub.Services
                     status_detail = payment.StatusDetail
                 };
 
-                // Verificar si el pago fue aprobado
-                if (payment.Status == "approved")
-                {
-                    return Result<ProcessPaymentResponseDto>.Exito(responseDto);
-                }
-                else if (payment.Status == "rejected")
-                {
-                    Console.WriteLine($"Pago rechazado: {payment.StatusDetail}");
-                    return Result<ProcessPaymentResponseDto>.Error(
-                        $"Pago rechazado: {payment.StatusDetail}",
-                        400
-                    );
-                }
-                else
-                {
-                    // Estados como "pending", "in_process", etc.
-                    return Result<ProcessPaymentResponseDto>.Exito(responseDto);
-                }
+                return Result<ProcessPaymentResponseDto>.Exito(responseDto);
             }
             catch (Exception ex)
             {
