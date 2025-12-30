@@ -24,6 +24,7 @@
         :status="paymentStatus"
         :error-message="statusMessage"
         @retry="retryPayment"
+        @download="downloadReceipt"
       />
 
       <!-- Payment Content -->
@@ -115,6 +116,19 @@
 
         <PaymentSecurityInfo />
       </div>
+
+      <!-- Componente oculto para exportar a PDF -->
+      <div
+        v-if="comprobanteData"
+        style="position: absolute; left: -9999px; top: 0; background: white; color: black"
+      >
+        <div
+          id="comprobante-pdf"
+          style="background: white; color: black; font-family: Arial, sans-serif"
+        >
+          <ComprobanteCuota :data="comprobanteData" />
+        </div>
+      </div>
     </main>
 
     <PaymentFooter />
@@ -131,6 +145,9 @@ import PaymentErrorState from '@/components/OnlinePayment/PaymentErrorState.vue'
 import PaymentInfoCard from '@/components/OnlinePayment/PaymentInfoCard.vue'
 import PaymentSecurityInfo from '@/components/OnlinePayment/PaymentSecurityInfo.vue'
 import PaymentStatusScreen from '@/components/OnlinePayment/PaymentStatusScreen.vue'
+import ComprobanteCuota from '@/components/payments/comprobanteCuota.vue'
+import { toPng } from 'html-to-image'
+import { jsPDF } from 'jspdf'
 
 export default {
   components: {
@@ -142,6 +159,7 @@ export default {
     PaymentInfoCard,
     PaymentSecurityInfo,
     PaymentStatusScreen,
+    ComprobanteCuota,
   },
   data() {
     return {
@@ -155,6 +173,7 @@ export default {
       statusMessage: null,
       pollingInterval: null,
       paymentToken: null,
+      comprobanteData: null,
     }
   },
 
@@ -377,6 +396,7 @@ export default {
             const result = await res.json()
             // Si el backend devuelve data (comprobante), significa que el pago ya se registró
             if (result.exit && result.data) {
+              this.comprobanteData = result.data
               this.paymentStatus = 'approved'
               this.stopPolling()
             }
@@ -425,6 +445,43 @@ export default {
         window.history.back()
       } else {
         window.close()
+      }
+    },
+
+    async downloadReceipt() {
+      if (!this.comprobanteData) return
+
+      const element = document.getElementById('comprobante-pdf')
+
+      try {
+        // Convertimos el elemento a imagen usando html-to-image (soporta oklch mejor)
+        const dataUrl = await toPng(element, {
+          quality: 1.0,
+          pixelRatio: 2,
+          backgroundColor: '#ffffff',
+          style: {
+            fontFamily: 'Arial, sans-serif',
+          },
+          // 🔹 ESTO SOLUCIONA LOS ERRORES DE CORS Y FUENTES
+          skipFonts: true,
+          fontEmbedCSS: '',
+        })
+
+        const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'mm',
+          format: 'a4',
+        })
+
+        const imgProps = pdf.getImageProperties(dataUrl)
+        const pdfWidth = pdf.internal.pageSize.getWidth()
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width
+
+        pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight)
+        pdf.save(`Comprobante_${this.comprobanteData.nombreSocio.replace(/\s+/g, '_')}.pdf`)
+      } catch (err) {
+        console.error('Error al generar el PDF:', err)
+        alert('Hubo un error al generar el comprobante. Por favor, intente nuevamente.')
       }
     },
   },

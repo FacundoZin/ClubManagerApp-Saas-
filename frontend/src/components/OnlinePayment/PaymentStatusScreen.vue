@@ -83,6 +83,7 @@
           </div>
 
           <button
+            @click="$emit('download')"
             class="flex items-center gap-2 px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all duration-300 shadow-md transform hover:-translate-y-0.5"
           >
             <svg

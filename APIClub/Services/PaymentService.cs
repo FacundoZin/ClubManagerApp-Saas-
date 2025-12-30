@@ -37,7 +37,7 @@ namespace APIClub.Services
 
                 var comporbante = new InfoComprobanteDto
                 {
-                    nombreSocio = infoSocio.Nombre,
+                    nombreSocio = infoSocio.Nombre + infoSocio.Apellido,
                     dniSocio = infoSocio.Dni,
                     anioPago = token.anio.ToString(),
                     semestrePagoText = PaymentDescriptionHelper.GetSemestreText(token.semestre),
