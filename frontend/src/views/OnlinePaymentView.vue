@@ -191,6 +191,16 @@ export default {
   methods: {
     async initializePayment() {
       try {
+        // 1. Desmontar brick previo si existe (importante para reintentos)
+        if (this.brickController) {
+          try {
+            this.brickController.unmount()
+          } catch (e) {
+            console.error('Error al desmontar el brick:', e)
+          }
+          this.brickController = null
+        }
+
         this.loading = true
         this.errorMessage = null
         this.validationError = null
@@ -218,19 +228,6 @@ export default {
           try {
             const errorData = await res.json()
             const backendMsg = (errorData.errormessage || errorData.message || '').toLowerCase()
-
-            // 1. Caso: Token ya fue utilizado o cuota ya pagada (422)
-            if (res.status === 422) {
-              this.validationError = {
-                type: 'used',
-                title: '¡Este pago ya fue realizado!',
-                message:
-                  'El enlace que utilizaste ya no está disponible porque la cuota fue abonada anteriormente.',
-                subtext: 'No es necesario que realices ninguna acción adicional.',
-              }
-              this.loading = false
-              return
-            }
 
             // 2. Caso: Plazo expirado (492)
             if (res.status === 492) {
@@ -287,6 +284,14 @@ export default {
         // 🔹 Datos válidos
         this.paymentData = result.data
 
+        // 🔹 Si ya está pagado (backend devuelve alreadyPaid: true y el comprobante)
+        if (this.paymentData.alreadyPaid && this.paymentData.comprobante) {
+          this.comprobanteData = this.paymentData.comprobante
+          this.paymentStatus = 'approved'
+          this.loading = false
+          return
+        }
+
         // 🔹 Asegurar que el contenedor esté en el DOM
         this.loading = false
         await nextTick()
@@ -320,56 +325,71 @@ export default {
             onSubmit: ({ selectedPaymentMethod, formData }) => {
               this.brickError = null
 
-              // 👉 Wallet usa preference
-              if (selectedPaymentMethod === 'mercadoPago') {
-                this.paymentStatus = 'in_process'
-                this.startPolling()
-                return Promise.resolve()
+              // 👉 SOLO Tarjeta de Débito va al backend
+              if (selectedPaymentMethod === 'debit_card') {
+                return fetch('http://localhost:5194/api/Payment/processPayment', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    ...formData,
+                    externalReference: this.paymentData.externalReference,
+                  }),
+                })
+                  .then(async (res) => {
+                    if (!res.ok) {
+                      const errorText = await res.text()
+                      // Intentar parsear si es JSON para mostrar mensaje limpio
+                      try {
+                        const errorJson = JSON.parse(errorText)
+                        // Busca mensaje en campos comunes: errormessage, message, title, o el primer valor de errors
+                        this.brickError =
+                          errorJson.errormessage ||
+                          errorJson.message ||
+                          errorJson.title ||
+                          'Error procesando el pago'
+                      } catch (e) {
+                        // Si no es JSON, muestra texto plano o default
+                        this.brickError = errorText || 'No se recibió respuesta de Mercado Pago'
+                      }
+                      return Promise.reject()
+                    }
+
+                    const result = await res.json()
+
+                    if (!result.exit) {
+                      this.brickError =
+                        result.errormessage || 'Ocurrió un error al procesar el pago'
+                      return Promise.reject()
+                    }
+
+                    // ÉXITO
+                    this.paymentStatus = 'in_process'
+                    this.startPolling()
+                    return Promise.resolve()
+                  })
+                  .catch((err) => {
+                    if (!this.brickError) {
+                      this.brickError =
+                        'Error de conexión con el servidor. Por favor intente nuevamente.'
+                    }
+                    console.error('Error en onSubmit:', err)
+                    return Promise.reject()
+                  })
               }
 
-              // 👉 Tarjetas → backend
-              return fetch('http://localhost:5194/api/Payment/processPayment', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  ...formData,
-                  externalReference: this.paymentData.externalReference,
-                }),
-              })
-                .then(async (res) => {
-                  if (!res.ok) {
-                    const errorText = await res.text()
-                    this.brickError = errorText || 'No se recibió respuesta de Mercado Pago'
-                    return Promise.reject()
-                  }
-
-                  const result = await res.json()
-
-                  if (!result.exit) {
-                    this.brickError = result.errormessage || 'Ocurrió un error al procesar el pago'
-                    return Promise.reject()
-                  }
-
-                  // ÉXITO: Mostramos pantalla de cargando y esperamos el polling
-                  this.paymentStatus = 'in_process'
-                  this.startPolling()
-                  return Promise.resolve()
-                })
-                .catch((err) => {
-                  if (!this.brickError) {
-                    this.brickError =
-                      'Error de conexión con el servidor. Por favor intente nuevamente.'
-                  }
-                  console.error('Error en onSubmit:', err)
-                  return Promise.reject()
-                })
+              // 👉 Billetera / Otros (Redirección o manejo automático de MP)
+              this.paymentStatus = 'in_process'
+              this.startPolling()
+              return Promise.resolve()
             },
 
             onError: (error) => {
               console.error(error)
-              this.errorMessage = 'Ocurrió un error inesperado al mostrar el formulario de pago'
+              // Usamos brickError para no romper toda la vista
+              this.brickError =
+                'Ocurrió un error al intentar procesar el pago. Por favor, revise los datos e intente nuevamente.'
             },
           },
         })

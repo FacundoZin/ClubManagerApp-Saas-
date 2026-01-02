@@ -4,7 +4,6 @@ using APIClub.Domain.PaymentsOnline.Modelos;
 using APIClub.Domain.ReservasSalones.Models;
 using APIClub.Enums;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace APIClub.Data
 {

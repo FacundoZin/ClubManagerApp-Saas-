@@ -8,5 +8,7 @@
         public decimal monto { get; set; }
         public Guid externalReference { get; set; }
         public string Preference_Id { get; set; }
+        public bool AlreadyPaid { get; set; } = false;
+        public InfoComprobanteDto? Comprobante { get; set; }
     }
 }

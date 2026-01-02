@@ -57,7 +57,34 @@ namespace APIClub.Services
                 var result = await _paymentTokenService.ValidateToken(tokenId);
 
                 if (!result.Exit)
+                {
+                    // Si el token ya fue usado (422), verificamos si podemos devolver el comprobante
+                    if (result.Errorcode == 422)
+                    {
+                        var paidToken = await _unitOfWork._PaymentTokenRepository.GetToken(tokenId);
+                        if (paidToken != null && (paidToken.usado || paidToken.PaymentStatus == "approved"))
+                        {
+                            var infoSocio = await _unitOfWork._SocioRepository.GetSocioById(paidToken.IdSocio);
+                            
+                            var comprobante = new InfoComprobanteDto
+                            {
+                                nombreSocio = infoSocio.Nombre + " " + infoSocio.Apellido, // Aseguramos nombre completo
+                                dniSocio = infoSocio.Dni,
+                                anioPago = paidToken.anio.ToString(),
+                                semestrePagoText = PaymentDescriptionHelper.GetSemestreText(paidToken.semestre),
+                                monto = paidToken.monto.ToString(),
+                            };
+
+                            return Result<PortalPaymentViewDto>.Exito(new PortalPaymentViewDto
+                            {
+                                AlreadyPaid = true,
+                                Comprobante = comprobante
+                            });
+                        }
+                    }
+
                     return Result<PortalPaymentViewDto>.Error(result.Errormessage, result.Errorcode);
+                }
 
                 var token = result.Data;
                 var Preference_id = token.Preference_Id;
