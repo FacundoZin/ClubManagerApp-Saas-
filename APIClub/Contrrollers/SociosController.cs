@@ -51,6 +51,33 @@ namespace APIClub.Contrrollers
         }
 
 
+        [HttpGet("byId/{id}")]
+        public async Task<IActionResult> GetSocioById(int id)
+        {
+            var result = await _SocioService.GetSocioById(id);
+
+            if (result.Exit != true)
+            {
+                return StatusCode(result.Errorcode, result.Errormessage);
+            }
+
+            return Ok(result.Data);
+        }
+
+        [HttpGet("full/{id}")]
+        public async Task<IActionResult> GetFullSocioById(int id)
+        {
+            var result = await _SocioService.GetFullSocioById(id);
+
+            if (result.Exit != true)
+            {
+                return StatusCode(result.Errorcode, result.Errormessage);
+            }
+
+            return Ok(result.Data);
+        }
+
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateSocio(int id, [FromBody] CreateSocioDto dto)
         {

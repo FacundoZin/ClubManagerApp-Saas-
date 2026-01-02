@@ -156,6 +156,80 @@ namespace APIClub.Services
         
 
         }
+        public async Task<Result<PreviewSocioDto>> GetSocioById(int id)
+        {
+            if (id <= 0)
+            {
+                return Result<PreviewSocioDto>.Error("El ID proporcionado no es válido.", 400);
+            }
+
+            var socio = await _SocioRepository.GetSocioById(id);
+
+            if (socio is null)
+            {
+                return Result<PreviewSocioDto>.Error("No se encontró un socio con ese ID.", 404);
+            }
+
+            var dto = new PreviewSocioDto
+            {
+                Id = socio.Id,
+                Nombre = socio.Nombre,
+                Apellido = socio.Apellido,
+                Dni = socio.Dni,
+                Telefono = socio.Telefono,
+                Direcccion = socio.Direcccion,
+                Lote = socio.Lote,
+                Localidad = socio.Localidad,
+                AdeudaCuotas = false // Tendriamos que calcularlo si fuera necesario, pero para el form no hace falta
+            };
+
+            return Result<PreviewSocioDto>.Exito(dto);
+        }
+
+        public async Task<Result<FullSocioDto>> GetFullSocioById(int id)
+        {
+            if (id <= 0)
+            {
+                return Result<FullSocioDto>.Error("El ID proporcionado no es válido.", 400);
+            }
+
+            var socio = await _SocioRepository.GetSocioByIdWithCuotas(id);
+
+            if (socio is null)
+            {
+                return Result<FullSocioDto>.Error("No se encontró un socio con ese ID.", 404);
+            }
+
+            var fechaPagoActual = DateOnly.FromDateTime(DateTime.Now);
+            int anioActual = fechaPagoActual.Year;
+            int semestreActual = fechaPagoActual.Month <= 6 ? 1 : 2;
+
+            bool debeCuota = !socio.HistorialCuotas.Any(c => c.Anio == anioActual && c.Semestre == semestreActual);
+
+            var dto = new FullSocioDto
+            {
+                Id = socio.Id,
+                Nombre = socio.Nombre,
+                Apellido = socio.Apellido,
+                Dni = socio.Dni,
+                Telefono = socio.Telefono,
+                Direcccion = socio.Direcccion,
+                Lote = socio.Lote,
+                Localidad = socio.Localidad,
+                FechaAsociacion = socio.FechaAsociacion,
+                AdeudaCuotas = debeCuota,
+                HistorialCuotas = socio.HistorialCuotas.Select(c => new PreviewCuotaDto
+                {
+                    Id = c.Id,
+                    FechaPago = c.FechaPago,
+                    Importe = c.Monto,
+                    MetodoPago = c.FormaDePago.ToString()
+                }).OrderByDescending(c => c.FechaPago).ToList()
+            };
+
+            return Result<FullSocioDto>.Exito(dto);
+        }
+
         public async Task<Result<object>> RemoveSocio(int id)
         {
             if (id <= 0)

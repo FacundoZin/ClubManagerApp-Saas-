@@ -15,6 +15,11 @@ const router = createRouter({
       component: () => import('../views/SociosView.vue'),
     },
     {
+      path: '/socios/:id',
+      name: 'socio-detail',
+      component: () => import('../views/SocioDetailView.vue'),
+    },
+    {
       path: '/reservas',
       name: 'reservas',
       // component: () => import('../views/ReservasView.vue'), // TODO: Create ReservasView

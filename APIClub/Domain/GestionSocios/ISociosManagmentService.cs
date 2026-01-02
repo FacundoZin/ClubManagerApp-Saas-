@@ -11,6 +11,8 @@ namespace APIClub.Domain.GestionSocios
         Task<Result<PreviewSocioDto>> GetSocioByDni(string dni);
         Task<Result<object>> UpdateSocio(int id, CreateSocioDto dto);
         Task<Result<object>> RemoveSocio(int id);
+        Task<Result<PreviewSocioDto>> GetSocioById(int id);
+        Task<Result<FullSocioDto>> GetFullSocioById(int id);
         Task<Result<List<PreviewCuotaDto>>> GetHistorialCuotas(int socioId);
 
     }
