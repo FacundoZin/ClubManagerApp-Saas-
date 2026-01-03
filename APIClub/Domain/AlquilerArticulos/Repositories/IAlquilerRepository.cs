@@ -14,5 +14,6 @@ namespace APIClub.Domain.AlquilerArticulos.Repositories
         Task<PagoAlquilerDeArticulos> RegistrarPago(PagoAlquilerDeArticulos pago);
         Task<ItemAlquiler> AgregarItem(ItemAlquiler item);
         Task<int> CalcularMontoAlquiler(int alquilerId);
+        Task<bool> HasActiveAlquilerBySocio(int socioId);
     }
 }

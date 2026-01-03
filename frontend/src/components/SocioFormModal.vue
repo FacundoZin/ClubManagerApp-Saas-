@@ -1,5 +1,6 @@
 <script setup>
 import { reactive, ref } from 'vue'
+import ConfirmModal from './ConfirmModal.vue'
 
 const props = defineProps({
   isOpen: Boolean,
@@ -35,6 +36,35 @@ const resetForm = () => {
   errorMessage.value = ''
 }
 
+const showConfirmModal = ref(false)
+const confirmModalConfig = reactive({
+  title: '',
+  message: '',
+  confirmText: 'Reactivar',
+  socioId: null
+})
+
+const handleReactivationConfirm = async () => {
+  try {
+    const socioId = confirmModalConfig.socioId;
+    const reactivateResponse = await fetch(`http://localhost:5194/api/Socios/reactivar/${socioId}`, {
+      method: 'POST'
+    });
+
+    if (reactivateResponse.ok) {
+      const data = await reactivateResponse.json();
+      emit('save', data);
+      resetForm();
+      showConfirmModal.value = false;
+    } else {
+      throw new Error("Error al reactivar el socio.");
+    }
+  } catch (error) {
+    errorMessage.value = error.message;
+    showConfirmModal.value = false;
+  }
+}
+
 const handleSubmit = async () => {
   isSubmitting.value = true
   errorMessage.value = ''
@@ -47,6 +77,26 @@ const handleSubmit = async () => {
       },
       body: JSON.stringify(form)
     })
+
+    if (response.status === 409) {
+      try {
+        const responseData = await response.json();
+        const { message, data } = responseData;
+
+        if (data && data.id) {
+          confirmModalConfig.title = 'Socio Inactivo Detectado';
+          confirmModalConfig.message = `El socio ${data.nombre} ya existe en el sistema pero está dado de baja. ¿Desea reactivarlo?`;
+          confirmModalConfig.socioId = data.id;
+          showConfirmModal.value = true;
+          isSubmitting.value = false;
+          return;
+        }
+      } catch (e) {
+        console.error("Error parsing conflict response", e);
+      }
+
+      throw new Error("El socio existe pero está inactivo.");
+    }
 
     if (!response.ok) {
       let message = 'Error al guardar el socio'
@@ -175,4 +225,8 @@ const handleSubmit = async () => {
       </div>
     </div>
   </div>
+
+  <ConfirmModal :is-open="showConfirmModal" :title="confirmModalConfig.title" :message="confirmModalConfig.message"
+    :confirm-text="confirmModalConfig.confirmText" type="info" @close="showConfirmModal = false"
+    @confirm="handleReactivationConfirm" />
 </template>

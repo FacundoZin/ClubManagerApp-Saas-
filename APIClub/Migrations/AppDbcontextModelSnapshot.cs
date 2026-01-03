@@ -74,6 +74,14 @@ namespace APIClub.Migrations
                             Finalizado = true,
                             IdSocio = 2,
                             Observaciones = "Alquiler viejo ya cerrado"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            FechaAlquiler = new DateTime(2025, 12, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Finalizado = false,
+                            IdSocio = 3,
+                            Observaciones = "Alquiler Activo para Test"
                         });
                 });
 
@@ -185,6 +193,13 @@ namespace APIClub.Migrations
                         {
                             Id = 6,
                             AlquilerId = 4,
+                            ArticuloId = 1,
+                            Cantidad = 1
+                        },
+                        new
+                        {
+                            Id = 7,
+                            AlquilerId = 5,
                             ArticuloId = 1,
                             Cantidad = 1
                         });
@@ -339,8 +354,14 @@ namespace APIClub.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateOnly?>("FechaAsociacion")
+                    b.Property<DateOnly>("FechaAsociacion")
                         .HasColumnType("TEXT");
+
+                    b.Property<DateOnly?>("FechaDeBaja")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActivo")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Localidad")
                         .HasColumnType("TEXT");
@@ -368,6 +389,7 @@ namespace APIClub.Migrations
                             Direcccion = "Mitre 100",
                             Dni = "12345678",
                             FechaAsociacion = new DateOnly(2020, 5, 10),
+                            IsActivo = true,
                             Localidad = "Rosario",
                             Nombre = "Juan",
                             Telefono = "341-1234567"
@@ -379,9 +401,22 @@ namespace APIClub.Migrations
                             Direcccion = "San Martín 200",
                             Dni = "87654321",
                             FechaAsociacion = new DateOnly(2021, 3, 15),
+                            IsActivo = true,
                             Localidad = "Córdoba",
                             Nombre = "María",
                             Telefono = "341-7654321"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Apellido = "Ruiz",
+                            Direcccion = "Belgrano 500",
+                            Dni = "11223344",
+                            FechaAsociacion = new DateOnly(2022, 1, 10),
+                            IsActivo = true,
+                            Localidad = "Rosario",
+                            Nombre = "Carlos",
+                            Telefono = "341-9988776"
                         });
                 });
 
@@ -430,7 +465,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111111"),
-                            FechaExpiracion = new DateOnly(2026, 1, 28),
+                            FechaExpiracion = new DateOnly(2026, 2, 2),
                             IdSocio = 1,
                             anio = 2025,
                             monto = 2500.00m,
@@ -441,7 +476,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("22222222-2222-2222-2222-222222222222"),
-                            FechaExpiracion = new DateOnly(2026, 1, 28),
+                            FechaExpiracion = new DateOnly(2026, 2, 2),
                             IdSocio = 1,
                             anio = 2025,
                             monto = 2500.00m,
@@ -452,7 +487,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("33333333-3333-3333-3333-333333333333"),
-                            FechaExpiracion = new DateOnly(2026, 1, 28),
+                            FechaExpiracion = new DateOnly(2026, 2, 2),
                             IdSocio = 2,
                             anio = 2025,
                             monto = 2500.00m,
@@ -463,7 +498,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("44444444-4444-4444-4444-444444444444"),
-                            FechaExpiracion = new DateOnly(2026, 1, 28),
+                            FechaExpiracion = new DateOnly(2026, 2, 2),
                             IdSocio = 2,
                             anio = 2025,
                             monto = 2500.00m,

@@ -106,5 +106,11 @@ namespace APIClub.Repositorio
                 .Where(i => i.AlquilerId == alquilerId)
                 .SumAsync(i => i.Cantidad * i.Articulo.PrecioAlquiler);
         }
+
+        public async Task<bool> HasActiveAlquilerBySocio(int socioId)
+        {
+            return await _dbContext.alquileresArticulos
+                .AnyAsync(a => a.IdSocio == socioId && !a.Finalizado);
+        }
     }
 }

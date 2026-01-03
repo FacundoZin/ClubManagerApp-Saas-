@@ -28,12 +28,29 @@ namespace APIClub.Contrrollers
 
             if (result.Exit != true)
             {
+                if (result.Errorcode == 409)
+                {
+                    return Conflict(new { message = result.Errormessage, data = result.Data });
+                }
                 return StatusCode(result.Errorcode, result.Errormessage);
             }
 
             return Ok(result.Data);
         }
 
+
+        [HttpPost("reactivar/{id}")]
+        public async Task<IActionResult> ReactivarSocio(int id)
+        {
+            var result = await _SocioService.ReactivarSocio(id);
+
+            if (result.Exit != true)
+            {
+                return StatusCode(result.Errorcode, result.Errormessage);
+            }
+
+            return Ok(result.Data);
+        }
 
         [HttpGet("{dni}")]
         public async Task<IActionResult> GetSocioByDni(string dni)
@@ -93,9 +110,9 @@ namespace APIClub.Contrrollers
 
 
         [HttpGet("deudores")]
-        public async Task<IActionResult> GetSociosDeudores()
+        public async Task<IActionResult> GetSociosDeudores([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var result = await _SocioService.GetSociosDeudores();
+            var result = await _SocioService.GetSociosDeudores(pageNumber, pageSize);
 
             if (result.Exit != true)
             {

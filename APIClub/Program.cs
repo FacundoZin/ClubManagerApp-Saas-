@@ -68,6 +68,7 @@ builder.Services.AddScoped<IMercadoPagoService,MPService>();
 
 //OTROS
 builder.Services.AddScoped<UnitOfWork>();
+builder.Services.AddScoped<ISocioIntegrityValidator, SocioIntegrityValidator>();
 
 // registrar repositorios
 builder.Services.AddScoped<ISocioRepository,SociosRepository>();

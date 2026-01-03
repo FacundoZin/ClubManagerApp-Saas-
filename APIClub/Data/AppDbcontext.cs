@@ -41,6 +41,8 @@ namespace APIClub.Data
                       .WithOne(c => c.Socio)
                       .HasForeignKey(c => c.SocioId)
                       .OnDelete(DeleteBehavior.Cascade);
+                
+                entity.HasQueryFilter(s => s.IsActivo);
             });
 
             modelBuilder.Entity<Salon>(entity =>
@@ -191,6 +193,17 @@ namespace APIClub.Data
                     Direcccion = "San Martín 200",
                     Localidad = "Córdoba",
                     FechaAsociacion = DateOnly.FromDateTime(new DateTime(2021, 3, 15))
+                },
+                new Socio
+                {
+                    Id = 3,
+                    Nombre = "Carlos",
+                    Apellido = "Ruiz",
+                    Dni = "11223344",
+                    Telefono = "341-9988776",
+                    Direcccion = "Belgrano 500",
+                    Localidad = "Rosario",
+                    FechaAsociacion = DateOnly.FromDateTime(new DateTime(2022, 1, 10))
                 }
             );
 
@@ -312,6 +325,14 @@ namespace APIClub.Data
                     Observaciones = "Alquiler viejo ya cerrado",
                     IdSocio = 2,
                     Finalizado = true
+                },
+                new
+                {
+                    Id = 5,
+                    FechaAlquiler = DateOnly.FromDateTime(DateTime.Now.AddDays(-5)),
+                    Observaciones = "Alquiler Activo para Test",
+                    IdSocio = 3,
+                    Finalizado = false
                 }
             );
 
@@ -356,6 +377,13 @@ namespace APIClub.Data
                     Id = 6,
                     AlquilerId = 4,
                     ArticuloId = 1,
+                    Cantidad = 1
+                },
+                new ItemAlquiler
+                {
+                    Id = 7,
+                    AlquilerId = 5,
+                    ArticuloId = 1, // Silla de Ruedas
                     Cantidad = 1
                 }
             );

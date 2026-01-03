@@ -73,5 +73,12 @@ namespace APIClub.Repositorio
             
             return !existeReserva;
         }
+
+        public async Task<bool> HasFutureReservationsBySocio(int socioId)
+        {
+            var fechaHoy = DateOnly.FromDateTime(DateTime.Now);
+            return await _Context.ReservasSalones
+                .AnyAsync(r => r.SocioId == socioId && r.FechaAlquiler >= fechaHoy);
+        }
     }
 }

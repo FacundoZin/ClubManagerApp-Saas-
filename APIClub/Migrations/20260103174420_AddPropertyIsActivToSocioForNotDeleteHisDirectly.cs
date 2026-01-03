@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace APIClub.Migrations
 {
     /// <inheritdoc />
-    public partial class newMigration : Migration
+    public partial class AddPropertyIsActivToSocioForNotDeleteHisDirectly : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -89,7 +89,9 @@ namespace APIClub.Migrations
                     Direcccion = table.Column<string>(type: "TEXT", nullable: true),
                     Lote = table.Column<string>(type: "TEXT", nullable: true),
                     Localidad = table.Column<string>(type: "TEXT", nullable: true),
-                    FechaAsociacion = table.Column<DateOnly>(type: "TEXT", nullable: true)
+                    FechaAsociacion = table.Column<DateOnly>(type: "TEXT", nullable: false),
+                    IsActivo = table.Column<bool>(type: "INTEGER", nullable: false),
+                    FechaDeBaja = table.Column<DateOnly>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -242,10 +244,10 @@ namespace APIClub.Migrations
                 columns: new[] { "Id", "FechaExpiracion", "IdSocio", "PaymentStatus", "Preference_Id", "StatusDetail", "anio", "monto", "nombreSocio", "semestre", "usado" },
                 values: new object[,]
                 {
-                    { new Guid("11111111-1111-1111-1111-111111111111"), new DateOnly(2026, 1, 28), 1, null, null, null, 2025, 2500.00m, "Juan Pérez", 1, false },
-                    { new Guid("22222222-2222-2222-2222-222222222222"), new DateOnly(2026, 1, 28), 1, null, null, null, 2025, 2500.00m, "Juan Pérez", 2, false },
-                    { new Guid("33333333-3333-3333-3333-333333333333"), new DateOnly(2026, 1, 28), 2, null, null, null, 2025, 2500.00m, "María Gómez", 1, false },
-                    { new Guid("44444444-4444-4444-4444-444444444444"), new DateOnly(2026, 1, 28), 2, null, null, null, 2025, 2500.00m, "María Gómez", 2, false }
+                    { new Guid("11111111-1111-1111-1111-111111111111"), new DateOnly(2026, 2, 2), 1, null, null, null, 2025, 2500.00m, "Juan Pérez", 1, false },
+                    { new Guid("22222222-2222-2222-2222-222222222222"), new DateOnly(2026, 2, 2), 1, null, null, null, 2025, 2500.00m, "Juan Pérez", 2, false },
+                    { new Guid("33333333-3333-3333-3333-333333333333"), new DateOnly(2026, 2, 2), 2, null, null, null, 2025, 2500.00m, "María Gómez", 1, false },
+                    { new Guid("44444444-4444-4444-4444-444444444444"), new DateOnly(2026, 2, 2), 2, null, null, null, 2025, 2500.00m, "María Gómez", 2, false }
                 });
 
             migrationBuilder.InsertData(
@@ -259,11 +261,12 @@ namespace APIClub.Migrations
 
             migrationBuilder.InsertData(
                 table: "Socios",
-                columns: new[] { "Id", "Apellido", "Direcccion", "Dni", "FechaAsociacion", "Localidad", "Lote", "Nombre", "Telefono" },
+                columns: new[] { "Id", "Apellido", "Direcccion", "Dni", "FechaAsociacion", "FechaDeBaja", "IsActivo", "Localidad", "Lote", "Nombre", "Telefono" },
                 values: new object[,]
                 {
-                    { 1, "Pérez", "Mitre 100", "12345678", new DateOnly(2020, 5, 10), "Rosario", null, "Juan", "341-1234567" },
-                    { 2, "Gómez", "San Martín 200", "87654321", new DateOnly(2021, 3, 15), "Córdoba", null, "María", "341-7654321" }
+                    { 1, "Pérez", "Mitre 100", "12345678", new DateOnly(2020, 5, 10), null, true, "Rosario", null, "Juan", "341-1234567" },
+                    { 2, "Gómez", "San Martín 200", "87654321", new DateOnly(2021, 3, 15), null, true, "Córdoba", null, "María", "341-7654321" },
+                    { 3, "Ruiz", "Belgrano 500", "11223344", new DateOnly(2022, 1, 10), null, true, "Rosario", null, "Carlos", "341-9988776" }
                 });
 
             migrationBuilder.InsertData(
@@ -292,7 +295,8 @@ namespace APIClub.Migrations
                     { 1, new DateTime(2025, 11, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 1, "Alquiler por 3 días" },
                     { 2, new DateTime(2025, 10, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), true, 2, "Préstamo semanal" },
                     { 3, new DateTime(2025, 9, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 1, "Rehabilitación post operación" },
-                    { 4, new DateTime(2025, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), true, 2, "Alquiler viejo ya cerrado" }
+                    { 4, new DateTime(2025, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), true, 2, "Alquiler viejo ya cerrado" },
+                    { 5, new DateTime(2025, 12, 29, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 3, "Alquiler Activo para Test" }
                 });
 
             migrationBuilder.InsertData(
@@ -305,7 +309,8 @@ namespace APIClub.Migrations
                     { 3, 2, 2, 1 },
                     { 4, 3, 3, 2 },
                     { 5, 3, 4, 1 },
-                    { 6, 4, 1, 1 }
+                    { 6, 4, 1, 1 },
+                    { 7, 5, 1, 1 }
                 });
 
             migrationBuilder.InsertData(

@@ -14,7 +14,9 @@ namespace APIClub.Domain.GestionSocios.Models
         public string? Direcccion { get; set; }
         public string? Lote { get; set; }
         public string? Localidad { get; set; }
-        public DateOnly? FechaAsociacion { get; set; }
+        public DateOnly FechaAsociacion { get; set; }
+        public bool IsActivo { get; set; } = true;
+        public DateOnly? FechaDeBaja { get; set; }
 
         // Relaciones
         public List<Cuota> HistorialCuotas { get; set; } = new List<Cuota>();

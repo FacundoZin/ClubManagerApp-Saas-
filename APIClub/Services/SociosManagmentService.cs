@@ -12,19 +12,35 @@ namespace APIClub.Services
     public class SociosManagmentService : ISociosManagmentService
     {
         private readonly ISocioRepository _SocioRepository;
-        public SociosManagmentService(ISocioRepository socioRepository)
+        private readonly ISocioIntegrityValidator _validator;
+
+        public SociosManagmentService(ISocioRepository socioRepository, ISocioIntegrityValidator validator)
         {
             _SocioRepository = socioRepository;
+            _validator = validator;
         }
 
 
         public async Task<Result<CreatedSocio>> cargarSocio(CreateSocioDto _dto)
         {
-            var exists = await _SocioRepository.SocioExists(_dto.Dni);
+            var existingSocio = await _SocioRepository.GetSocioByDniIgnoreFilter(_dto.Dni);
 
-            if (exists)
+            if (existingSocio != null)
             {
-                return Result<CreatedSocio>.Error("el socio que quiere cargar ya fue cargado", 400);
+                if (existingSocio.IsActivo)
+                {
+                    return Result<CreatedSocio>.Error("El socio que quiere cargar ya está activo.", 400);
+                }
+                else
+                {
+                    // Retornamos 409 Conflict con datos para el frontend
+                    var data = new CreatedSocio 
+                    { 
+                        Id = existingSocio.Id, 
+                        Nombre = existingSocio.Nombre + " " + existingSocio.Apellido 
+                    };
+                    return Result<CreatedSocio>.Conflict("El socio ya existe pero está dado de baja.", 409, data);
+                }
             }
 
             var socio = new Socio
@@ -35,7 +51,9 @@ namespace APIClub.Services
                 Telefono = _dto.Telefono?.FormatearForWhatsapp(),
                 Direcccion = _dto.Direcccion,
                 Lote = _dto.Lote,
-                Localidad = _dto.Localidad
+                Localidad = _dto.Localidad,
+                FechaAsociacion = DateOnly.FromDateTime(DateTime.Now),
+                IsActivo = true
             };
 
             await _SocioRepository.cargarSocio(socio);
@@ -45,6 +63,28 @@ namespace APIClub.Services
                 Id = socio.Id,
                 Nombre = socio.Nombre,
             });
+        }
+
+        public async Task<Result<object>> ReactivarSocio(int id)
+        {
+            var socio = await _SocioRepository.GetSocioByIdIgnoreFilter(id);
+
+            if (socio is null)
+            {
+                return Result<object>.Error("No se encontró el socio.", 404);
+            }
+
+            if (socio.IsActivo)
+            {
+                return Result<object>.Error("El socio ya se encuentra activo.", 400);
+            }
+
+            socio.IsActivo = true;
+            socio.FechaDeBaja = null;
+
+            await _SocioRepository.UpdateSocio(socio);
+
+            return Result<object>.Exito(new { Message = "Socio reactivado correctamente.", SocioId = socio.Id });
         }
 
         public async Task<Result<PreviewSocioDto>> GetSocioByDni(string dni)
@@ -86,18 +126,15 @@ namespace APIClub.Services
             return Result<PreviewSocioDto>.Exito(dto);
         }
 
-        public async Task<Result<List<PreviewSocioDto>>> GetSociosDeudores()
+        public async Task<Result<PagedResult<PreviewSocioDto>>> GetSociosDeudores(int pageNumber, int pageSize)
         {
-            // Obtener fecha actual
             var fechaPagoActual = DateOnly.FromDateTime(DateTime.Now);
             int anioActual = fechaPagoActual.Year;
             int semestreActual = fechaPagoActual.Month <= 6 ? 1 : 2;
 
-            //obtengo los socios que no pagaron la cuota
-            var socios = await _SocioRepository.GetSociosDeudores(anioActual, semestreActual);
-
-            //mapeo los socios a el dto que voy a devolver
-            var dto = socios.Select(s => new PreviewSocioDto
+            var (socios, totalCount) = await _SocioRepository.GetSociosDeudoresPaginado(anioActual, semestreActual, pageNumber, pageSize);
+            
+            var items = socios.Select(s => new PreviewSocioDto
             {
                 Id = s.Id,
                 Nombre = s.Nombre,
@@ -110,7 +147,9 @@ namespace APIClub.Services
                 AdeudaCuotas = true,
             }).ToList();
 
-            return Result<List<PreviewSocioDto>>.Exito(dto);
+            var result = new PagedResult<PreviewSocioDto>(items, totalCount, pageNumber, pageSize);
+
+            return Result<PagedResult<PreviewSocioDto>>.Exito(result);
         }
 
         public async Task<Result<object>> UpdateSocio(int id, CreateSocioDto dto)
@@ -237,6 +276,13 @@ namespace APIClub.Services
                 return Result<object>.Error("El ID proporcionado no es válido.", 400);
             }
 
+            // 1. Validar Integridad antes de proceder
+            var validationResult = await _validator.ValidateSocioDeletion(id);
+            if (!validationResult.Exit)
+            {
+                return Result<object>.Error(validationResult.Errormessage, validationResult.Errorcode);
+            }
+
             var socio = await _SocioRepository.GetSocioById(id);
 
             if (socio is null)
@@ -252,6 +298,7 @@ namespace APIClub.Services
                 SocioId = id
             });
         }
+        
         public async Task<Result<List<PreviewCuotaDto>>> GetHistorialCuotas(int socioId)
         {
             // Validar ID

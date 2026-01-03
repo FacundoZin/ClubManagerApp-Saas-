@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import ConfirmModal from '../Components/ConfirmModal.vue'
+import Pagination from '../Components/Pagination.vue'
 import SocioCard from '../Components/SocioCard.vue'
 import SocioFormModal from '../Components/SocioFormModal.vue'
 import SocioList from '../Components/SocioList.vue'
@@ -20,9 +21,10 @@ const toast = ref({
 
 const showToast = (message, type = 'success') => {
   toast.value = { show: true, message, type }
+  const duration = type === 'error' ? 6000 : 3000
   setTimeout(() => {
     toast.value.show = false
-  }, 3000)
+  }, duration)
 }
 
 // Modal State
@@ -43,6 +45,10 @@ const isSearching = ref(false)
 const debtorsList = ref([])
 const isLoadingDebtors = ref(false)
 const debtorsError = ref('')
+const currentPage = ref(1)
+const pageSize = ref(9)
+const totalPages = ref(0)
+const totalCount = ref(0)
 
 // Actions Configuration
 const actions = [
@@ -158,17 +164,20 @@ const handleSearch = async () => {
 }
 
 // Debtors Logic
-const fetchDebtors = async () => {
+const fetchDebtors = async (page = 1) => {
+  currentPage.value = page
   isLoadingDebtors.value = true
   debtorsError.value = ''
 
   try {
-    const response = await fetch('http://localhost:5194/api/Socios/deudores')
+    const response = await fetch(`http://localhost:5194/api/Socios/deudores?pageNumber=${page}&pageSize=${pageSize.value}`)
     if (!response.ok) {
       throw new Error('Error al obtener lista de deudores')
     }
     const data = await response.json()
-    debtorsList.value = data
+    debtorsList.value = data.items
+    totalCount.value = data.totalCount
+    totalPages.value = data.totalPages
   } catch (error) {
     debtorsError.value = error.message
   } finally {
@@ -198,7 +207,24 @@ const confirmDelete = async () => {
     })
 
     if (!response.ok) {
-      throw new Error('Error al eliminar socio')
+      // Intentar parsear el mensaje de error del backend
+      const text = await response.text();
+      if (text) {
+        // Si el texto parece JSON, intentamos parsearlo
+        try {
+          // El backend suele devolver texto plano para 400 o JSON para 409/otros
+          // Si el primer caracter es '{' asumimos JSON
+          if (text.trim().startsWith('{')) {
+            const json = JSON.parse(text);
+            throw new Error(json.mensaje || json.message || text);
+          } else {
+            throw new Error(text);
+          }
+        } catch (e) {
+          throw new Error(text);
+        }
+      }
+      throw new Error('Error al eliminar socio');
     }
 
     // Refresh
@@ -213,6 +239,7 @@ const confirmDelete = async () => {
     closeModal()
 
   } catch (error) {
+    closeModal()
     showToast(error.message, 'error')
   }
 }
@@ -402,7 +429,8 @@ const handleView = (socio) => {
         <div v-else-if="currentAction === 'debtors'">
           <div class="flex justify-between items-center mb-6">
             <h3 class="text-lg font-medium text-slate-900">Socios con deuda pendiente</h3>
-            <button @click="fetchDebtors" class="text-sm text-blue-600 hover:text-blue-800 font-medium">Actualizar
+            <button @click="fetchDebtors(currentPage)"
+              class="text-sm text-blue-600 hover:text-blue-800 font-medium">Actualizar
               lista</button>
           </div>
 
@@ -420,9 +448,19 @@ const handleView = (socio) => {
             {{ debtorsError }}
           </div>
 
-          <SocioList v-else :socios="debtorsList" @edit="handleEdit" @delete="handleDelete" @view="handleView" />
+          <div v-else-if="totalCount > 0">
+            <SocioList :socios="debtorsList" @edit="handleEdit" @delete="handleDelete" @view="handleView" />
+
+            <!-- Pagination -->
+            <Pagination :current-page="currentPage" :total-pages="totalPages" :total-count="totalCount"
+              :page-size="pageSize" @change-page="fetchDebtors" />
+          </div>
+
+          <div v-else class="text-center py-12 text-slate-500">
+            No hay socios con deudas pendientes.
+          </div>
         </div>
-      </div>
+      </div> <!-- Dynamic Content Area end -->
 
     </main>
 
