@@ -1,5 +1,5 @@
-﻿using APIClub.Domain.Background;
-using APIClub.Dtos.Whatsapp;
+﻿using APIClub.Application.Dtos.Whatsapp;
+using APIClub.Domain.Background;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

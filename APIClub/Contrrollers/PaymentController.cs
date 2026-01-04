@@ -1,6 +1,6 @@
-﻿using APIClub.Domain.GestionSocios;
+﻿using APIClub.Application.Dtos.Payment;
+using APIClub.Domain.GestionSocios;
 using APIClub.Domain.PaymentsOnline;
-using APIClub.Dtos.Payment;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,5 +1,5 @@
+using APIClub.Application.Dtos.AlquilerDeArticulos;
 using APIClub.Domain.AlquilerArticulos.Models;
-using APIClub.Dtos.AlquilerDeArticulos;
 
 namespace APIClub.Domain.AlquilerArticulos.Repositories
 {

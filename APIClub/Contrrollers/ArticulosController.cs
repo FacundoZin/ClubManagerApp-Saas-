@@ -1,5 +1,5 @@
-﻿using APIClub.Domain.AlquilerArticulos;
-using APIClub.Dtos.Articulos;
+﻿using APIClub.Application.Dtos.Articulos;
+using APIClub.Domain.AlquilerArticulos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

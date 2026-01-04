@@ -1,5 +1,4 @@
 ﻿using APIClub.Domain.GestionSocios;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace APIClub.Contrrollers

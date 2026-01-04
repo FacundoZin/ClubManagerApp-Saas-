@@ -1,6 +1,6 @@
-﻿using APIClub.Common;
+﻿using APIClub.Application.Common;
+using APIClub.Domain.Enums;
 using APIClub.Domain.PaymentsOnline.Modelos;
-using APIClub.Enums;
 
 namespace APIClub.Domain.GestionSocios
 {

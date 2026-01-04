@@ -1,10 +1,8 @@
 ﻿using APIClub.Domain.ReservasSalones;
-using APIClub.Dtos.Reservas;
-using APIClub.Services;
-using APIClub.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using APIClub.Infrastructure.Persistence.Data;
+using APIClub.Application.Dtos.Reservas;
 
 namespace APIClub.Contrrollers
 {

@@ -1,7 +1,6 @@
-﻿using APIClub.Common;
-using APIClub.Dtos.AlquilerArticulos;
-using APIClub.Dtos.AlquilerDeArticulos;
-using APIClub.Dtos.ItemsAlquiler;
+﻿using APIClub.Application.Common;
+using APIClub.Application.Dtos.AlquilerDeArticulos;
+using APIClub.Application.Dtos.ItemsAlquiler;
 
 namespace APIClub.Domain.AlquilerArticulos
 {

@@ -1,5 +1,5 @@
-﻿using APIClub.Common;
-using APIClub.Dtos.Socios;
+﻿using APIClub.Application.Common;
+using APIClub.Application.Dtos.Socios;
 
 namespace APIClub.Domain.GestionSocios
 {

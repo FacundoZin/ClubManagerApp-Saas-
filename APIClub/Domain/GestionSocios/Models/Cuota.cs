@@ -1,4 +1,4 @@
-﻿using APIClub.Enums;
+﻿using APIClub.Domain.Enums;
 
 namespace APIClub.Domain.GestionSocios.Models
 {

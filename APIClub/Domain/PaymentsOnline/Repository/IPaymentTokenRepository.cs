@@ -1,7 +1,4 @@
-﻿using APIClub.Common;
-using APIClub.Domain.PaymentsOnline.Modelos;
-using APIClub.Dtos.Payment;
-using Microsoft.AspNetCore.Components.Web;
+﻿using APIClub.Domain.PaymentsOnline.Modelos;
 
 namespace APIClub.Domain.PaymentsOnline.Repository
 {

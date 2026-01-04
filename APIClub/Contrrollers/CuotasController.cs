@@ -1,7 +1,5 @@
-﻿using APIClub.Domain.GestionSocios;
-using APIClub.Dtos.Cuota;
-using APIClub.Services;
-using Microsoft.AspNetCore.Http;
+﻿using APIClub.Application.Dtos.Cuota;
+using APIClub.Domain.GestionSocios;
 using Microsoft.AspNetCore.Mvc;
 
 namespace APIClub.Contrrollers

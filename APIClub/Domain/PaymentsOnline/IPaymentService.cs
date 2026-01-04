@@ -1,5 +1,5 @@
-﻿using APIClub.Common;
-using APIClub.Dtos.Payment;
+﻿using APIClub.Application.Common;
+using APIClub.Application.Dtos.Payment;
 
 namespace APIClub.Domain.PaymentsOnline
 {

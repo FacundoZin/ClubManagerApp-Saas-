@@ -1,13 +1,13 @@
-﻿using APIClub.Common;
-using APIClub.Dtos.Cuota;
-using APIClub.Dtos.Socios;
+﻿using APIClub.Application.Common;
+using APIClub.Application.Dtos.Cuota;
+using APIClub.Application.Dtos.Socios;
 
 namespace APIClub.Domain.GestionSocios
 {
     public interface ISociosManagmentService
     {
         Task<Result<PagedResult<PreviewSocioDto>>> GetSociosDeudores(int pageNumber, int pageSize);
-        Task<Result<CreatedSocio>> cargarSocio(CreateSocioDto _dto);
+        Task<Result<ExistingSocio>> cargarSocio(CreateSocioDto _dto);
         Task<Result<PreviewSocioDto>> GetSocioByDni(string dni);
         Task<Result<object>> UpdateSocio(int id, CreateSocioDto dto);
         Task<Result<object>> RemoveSocio(int id);

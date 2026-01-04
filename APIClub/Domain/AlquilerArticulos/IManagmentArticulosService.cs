@@ -1,5 +1,5 @@
-﻿using APIClub.Common;
-using APIClub.Dtos.Articulos;
+﻿using APIClub.Application.Common;
+using APIClub.Application.Dtos.Articulos;
 
 namespace APIClub.Domain.AlquilerArticulos
 {

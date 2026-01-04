@@ -1,4 +1,4 @@
-﻿using APIClub.Common;
+﻿using APIClub.Application.Common;
 
 namespace APIClub.Domain.Background
 {

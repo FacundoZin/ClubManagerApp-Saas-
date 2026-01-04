@@ -1,6 +1,5 @@
-﻿using APIClub.Common;
-using APIClub.Dtos.Alquiler;
-using APIClub.Dtos.Reservas;
+﻿using APIClub.Application.Common;
+using APIClub.Application.Dtos.Reservas;
 
 namespace APIClub.Domain.ReservasSalones
 {
