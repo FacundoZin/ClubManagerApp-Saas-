@@ -20,10 +20,13 @@ const router = createRouter({
       component: () => import('../views/SocioDetailView.vue'),
     },
     {
+      path: '/reservas-salones',
+      name: 'reservas-salones',
+      component: () => import('../views/ReservasSalonesView.vue'),
+    },
+    {
       path: '/reservas',
-      name: 'reservas',
-      // component: () => import('../views/ReservasView.vue'), // TODO: Create ReservasView
-      component: () => import('../views/AboutView.vue'), // Placeholder for now
+      redirect: '/reservas-salones'
     },
     {
       path: '/about',
@@ -42,6 +45,16 @@ const router = createRouter({
       path: '/pagos',
       name: 'pagos',
       component: () => import('../views/CuotasView.vue'),
+    },
+    {
+      path: '/alquiler-articulos',
+      name: 'alquiler-articulos',
+      component: () => import('../views/OrtopediaDashboardView.vue')
+    },
+    {
+      path: '/ortopedia/alquileres/:id',
+      name: 'alquiler-detail',
+      component: () => import('../views/AlquilerDetailView.vue')
     },
   ],
 })

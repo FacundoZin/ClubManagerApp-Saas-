@@ -21,7 +21,7 @@ const modules = [
     title: 'Gestión Reservas',
     description: 'Control de calendario y disponibilidad de espacios.',
     icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
-    route: '/reservas',
+    route: '/reservas-salones',
     color: 'text-indigo-600',
     bg: 'bg-indigo-50',
     hoverBorder: 'group-hover:border-indigo-200'
@@ -30,7 +30,7 @@ const modules = [
     title: 'Alquiler de artículos',
     description: 'Préstamo y devolución de inventario.',
     icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4',
-    route: '/alquileres',
+    route: '/alquiler-articulos',
     color: 'text-sky-600',
     bg: 'bg-sky-50',
     hoverBorder: 'group-hover:border-sky-200'
