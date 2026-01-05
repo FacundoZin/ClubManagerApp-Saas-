@@ -34,9 +34,9 @@ builder.Services.Configure<WhatsAppConfig>(
 
 
 // Registrar HttpClients
-builder.Services.AddHttpClient<WhatsapService>((sp,client) =>
+builder.Services.AddHttpClient<INotifyService,WhatsapService>((sp,client) =>
 {
-    var config = sp.GetRequiredService<IOptions<IConfiguration>>().Value;
+    var config = sp.GetRequiredService<IConfiguration>();
 
     client.BaseAddress = new Uri("https://graph.facebook.com/");
     client.DefaultRequestHeaders.Authorization =
@@ -64,7 +64,6 @@ builder.Services.AddScoped<IReservasServices,ReservasServices>();
 builder.Services.AddScoped<ICobranzasServices,CobranzasService>();
 builder.Services.AddScoped<IManagmentArticulosService,ManagmentArticulosService>();
 builder.Services.AddScoped<IAlquilerArticulosService ,AlquilerArticulosService>();
-builder.Services.AddScoped<INotifyService,WhatsapService>(); 
 builder.Services.AddScoped<IPaymentService,PaymentService>();
 builder.Services.AddScoped<IPaymentTokenService,PaymentTokenService>();
 builder.Services.AddScoped<IMercadoPagoService,MPService>();

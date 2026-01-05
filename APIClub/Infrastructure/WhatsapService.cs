@@ -4,7 +4,6 @@ using APIClub.Domain.GestionSocios.Repositories;
 using APIClub.Domain.Notificaciones;
 using APIClub.Domain.Notificaciones.Models;
 using Microsoft.Extensions.Options;
-using System.ComponentModel.DataAnnotations;
 using System.Net;
 
 namespace APIClub.Infrastructure
@@ -161,60 +160,48 @@ namespace APIClub.Infrastructure
 
         private async Task<HttpResponseMessage> EnviarMensajeWhatsApp(string telefono, string nombreSocio, string semestreTexto, string anio)
         {
-            var telefonoFormateado = FormatearNumeroTelefono(telefono);
 
             var requestUrl =
-                $"{_whatsAppConfig.ApiVersion}/{_whatsAppConfig.PhoneNumberId}/messages";
+                $"/{_whatsAppConfig.ApiVersion}/{_whatsAppConfig.PhoneNumberId}/messages";
 
             var messageRequest = new WhatsAppMessageRequest
             {
-                To = telefonoFormateado,
+                To = telefono,
+                Type = "template",
                 Template = new WhatsAppTemplate
                 {
-                    Name = "recordatorio_cuota",
+                    Name = "notificacion_pago_cuota",
                     Language = new WhatsAppLanguage { Code = "es_AR" },
                     Components = new List<WhatsAppComponent>
-                {
-                    new WhatsAppComponent
                     {
-                        Type = "body",
-                        Parameters = new List<WhatsAppParameter>
+                        new WhatsAppComponent
                         {
-                            new() { Text = nombreSocio },
-                            new() { Text = semestreTexto },
-                            new() { Text = anio }
+                            Type = "body",
+                            Parameters = new List<WhatsAppParameter>
+                            {
+                                new() { Text = nombreSocio },
+                                new() { Text = semestreTexto },
+                                new() { Text = anio }
+                            }
                         }
                     }
-                }
                 }
             };
 
             // Console.WriteLine(JsonSerializer.Serialize(messageRequest));
 
-            return await _httpClient.PostAsJsonAsync(requestUrl, messageRequest);
+            var response = await _httpClient.PostAsJsonAsync(requestUrl, messageRequest);
+
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            Console.WriteLine("========== WHATSAPP RESPONSE ==========");
+            Console.WriteLine($"Status: {(int)response.StatusCode} {response.StatusCode}");
+            Console.WriteLine(responseBody);
+            Console.WriteLine("======================================");
+
+            return response;
         }
 
-        private string FormatearNumeroTelefono(string telefono)
-        {
-            var numeroLimpio = new string(telefono.Where(char.IsDigit).ToArray());
-
-            if (!numeroLimpio.StartsWith("54"))
-            {
-                if (numeroLimpio.StartsWith("0"))
-                {
-                    numeroLimpio = numeroLimpio.Substring(1);
-                }
-
-                if (numeroLimpio.Length == 10 && !numeroLimpio.StartsWith("9"))
-                {
-                    numeroLimpio = "9" + numeroLimpio;
-                }
-
-                numeroLimpio = "54" + numeroLimpio;
-            }
-
-            return numeroLimpio;
-        }
 
         private static bool EsErrorRecuperable(HttpResponseMessage response)
         {
