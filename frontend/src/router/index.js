@@ -38,6 +38,11 @@ const router = createRouter({
       name: 'pago-online',
       component: () => import('../views/OnlinePaymentView.vue'),
     },
+    {
+      path: '/pagos',
+      name: 'pagos',
+      component: () => import('../views/CuotasView.vue'),
+    },
   ],
 })
 

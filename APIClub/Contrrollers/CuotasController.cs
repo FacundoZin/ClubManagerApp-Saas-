@@ -32,7 +32,7 @@ namespace APIClub.Contrrollers
             var result = await _CuotasService.RegistrarPagoCuoata(request.IdSocio, request.FormaPago);
 
             if (!result.Exit)
-                return StatusCode(result.Errorcode, result.Errormessage);
+                return StatusCode(result.Errorcode, new { mensaje = result.Errormessage });
 
             return Ok(new { data = result.Data });
         }

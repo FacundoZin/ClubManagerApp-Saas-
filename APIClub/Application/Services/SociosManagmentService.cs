@@ -43,12 +43,24 @@ namespace APIClub.Application.Services
                 }
             }
 
+            string telefonoFormateado = null;
+
+            if (_dto.Telefono != null)
+            {
+                var FormatResult = _dto.Telefono.FormatearForWhatsapp();
+
+                if (!FormatResult.Exit)
+                    return Result<ExistingSocio>.Error(FormatResult.Errormessage, FormatResult.Errorcode);
+
+                telefonoFormateado = FormatResult.Data;
+            };
+
             var socio = new Socio
             {
                 Nombre = _dto.Nombre,
                 Apellido = _dto.Apellido,
                 Dni = _dto.Dni,
-                Telefono = _dto.Telefono?.FormatearForWhatsapp(),
+                Telefono = telefonoFormateado,
                 Direcccion = _dto.Direcccion,
                 Lote = _dto.Lote,
                 Localidad = _dto.Localidad,
@@ -116,7 +128,7 @@ namespace APIClub.Application.Services
                 Nombre = socio.Nombre,
                 Apellido = socio.Apellido,
                 Dni = socio.Dni,
-                Telefono = socio.Telefono,
+                Telefono = socio.Telefono?.FormatearForUserVisibility(),
                 Direcccion = socio.Direcccion,
                 Lote = socio.Lote,
                 Localidad = socio.Localidad,
@@ -140,7 +152,7 @@ namespace APIClub.Application.Services
                 Nombre = s.Nombre,
                 Apellido = s.Apellido,
                 Dni = s.Dni,
-                Telefono = s.Telefono,
+                Telefono = s.Telefono?.FormatearForUserVisibility(),
                 Direcccion = s.Direcccion,
                 Lote = s.Lote,
                 Localidad = s.Localidad,
@@ -176,11 +188,23 @@ namespace APIClub.Application.Services
                 }
             }
 
+            string telefonoFormateado = null;
+
+            if (dto.Telefono != null)
+            {
+                var FormatResult = dto.Telefono.FormatearForWhatsapp();
+
+                if (!FormatResult.Exit)
+                    return Result<object>.Error(FormatResult.Errormessage, FormatResult.Errorcode);
+
+                telefonoFormateado = FormatResult.Data;
+            };
+
             // Actualizar propiedades
             socio.Nombre = dto.Nombre;
             socio.Apellido = dto.Apellido;
             socio.Dni = dto.Dni;
-            socio.Telefono = dto.Telefono?.FormatearForWhatsapp();
+            socio.Telefono = telefonoFormateado;
             socio.Direcccion = dto.Direcccion;
             socio.Lote = dto.Lote;
             socio.Localidad = dto.Localidad;
@@ -215,7 +239,7 @@ namespace APIClub.Application.Services
                 Nombre = socio.Nombre,
                 Apellido = socio.Apellido,
                 Dni = socio.Dni,
-                Telefono = socio.Telefono,
+                Telefono = socio.Telefono?.FormatearForUserVisibility(),
                 Direcccion = socio.Direcccion,
                 Lote = socio.Lote,
                 Localidad = socio.Localidad,
@@ -251,7 +275,7 @@ namespace APIClub.Application.Services
                 Nombre = socio.Nombre,
                 Apellido = socio.Apellido,
                 Dni = socio.Dni,
-                Telefono = socio.Telefono,
+                Telefono = socio.Telefono?.FormatearForUserVisibility(),
                 Direcccion = socio.Direcccion,
                 Lote = socio.Lote,
                 Localidad = socio.Localidad,

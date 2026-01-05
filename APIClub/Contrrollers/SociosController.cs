@@ -58,7 +58,7 @@ namespace APIClub.Contrrollers
             if (result.Exit != true)
             {
                 // Usa el mismo manejo de errores que en CargarSocio
-                return StatusCode(result.Errorcode, result.Errormessage);
+                return StatusCode(result.Errorcode, new { mensaje = result.Errormessage });
             }
 
             // Si todo salió bien, devolvés el DTO con código 200

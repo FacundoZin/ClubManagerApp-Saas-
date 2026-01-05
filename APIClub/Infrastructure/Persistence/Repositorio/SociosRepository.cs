@@ -23,6 +23,7 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
         public async Task<Socio?> GetSocioByDni(string dni)
         {
             return await _Dbcontext.Socios
+                .Include(s => s.HistorialCuotas)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(s => s.Dni == dni);
         }
