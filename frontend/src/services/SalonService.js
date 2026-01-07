@@ -1,45 +1,67 @@
 const API_URL = 'http://localhost:5194/api/Salon';
 
+const handleError = async (response, defaultMessage) => {
+    if (response.status >= 500) {
+        throw new Error('Algo salió mal en el servidor. Por favor intente más tarde.');
+    }
+    const errorText = await response.text();
+    try {
+        const errorObj = JSON.parse(errorText);
+        // Si es un error de ModelState (.NET)
+        if (errorObj.errors) {
+            const firstErrorKey = Object.keys(errorObj.errors)[0];
+            return errorObj.errors[firstErrorKey][0];
+        }
+        return errorObj.errormessage || errorText || defaultMessage;
+    } catch (e) {
+        return errorText || defaultMessage;
+    }
+};
+
 export default {
     async getAllSalons() {
         const response = await fetch(`${API_URL}/all`);
-        if (!response.ok) throw new Error('Error al obtener salones');
+        if (!response.ok) {
+            const msg = await handleError(response, 'Error al obtener salones');
+            throw new Error(msg);
+        }
         return await response.json();
     },
 
     async getReservasBySalon(idSalon) {
         const response = await fetch(`${API_URL}/${idSalon}/reservas`);
         if (!response.ok) {
-            const error = await response.text();
-            throw new Error(error || 'Error al obtener reservas');
+            const msg = await handleError(response, 'Error al obtener reservas');
+            throw new Error(msg);
         }
         return await response.json();
     },
 
     async checkAvailability(fecha, salonId) {
-        // GET {salonId}/disponibilidad?fecha=YYYY-MM-DD
         const response = await fetch(`${API_URL}/${salonId}/disponibilidad?fecha=${fecha}`);
         if (!response.ok) {
-            const error = await response.text();
-            throw new Error(error || 'Error verificando disponibilidad'); // Backend might establish specific error codes
+            const msg = await handleError(response, 'Error verificando disponibilidad');
+            throw new Error(msg);
         }
         return await response.json();
     },
 
     async getReservaByFecha(fecha, salonId) {
-        // GET {salonId}/reserva?fecha=YYYY-MM-DD
         const response = await fetch(`${API_URL}/${salonId}/reserva?fecha=${fecha}`);
-        if (response.status === 404) return null; // Handle not found gracefully
+        if (response.status === 404) return null;
         if (!response.ok) {
-            const error = await response.text();
-            throw new Error(error || 'Error buscando reserva');
+            const msg = await handleError(response, 'Error buscando reserva');
+            throw new Error(msg);
         }
         return await response.json();
     },
 
     async getReservaById(reservaId) {
         const response = await fetch(`${API_URL}/reservas/${reservaId}`);
-        if (!response.ok) throw new Error('Error al obtener la reserva');
+        if (!response.ok) {
+            const msg = await handleError(response, 'Error al obtener la reserva');
+            throw new Error(msg);
+        }
         return await response.json();
     },
 
@@ -52,8 +74,8 @@ export default {
             body: JSON.stringify(dto)
         });
         if (!response.ok) {
-            const error = await response.text();
-            throw new Error(error || 'Error al crear la reserva');
+            const msg = await handleError(response, 'Error al crear la reserva');
+            throw new Error(msg);
         }
         return await response.json();
     },
@@ -63,10 +85,9 @@ export default {
             method: 'DELETE'
         });
         if (!response.ok) {
-            const error = await response.text();
-            throw new Error(error || 'Error al cancelar la reserva');
+            const msg = await handleError(response, 'Error al cancelar la reserva');
+            throw new Error(msg);
         }
-        // Returns NoContentusually
         return true;
     }
 };

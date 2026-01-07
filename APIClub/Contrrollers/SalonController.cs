@@ -85,7 +85,7 @@ namespace APIClub.Contrrollers
             var result = await _SalonesServices.RegistrarReservaSalon(dto);
 
             if (!result.Exit)
-                return StatusCode(result.Errorcode, result);
+                return StatusCode(result.Errorcode, result.Errormessage);
 
             return Ok(result);
         }
@@ -96,7 +96,7 @@ namespace APIClub.Contrrollers
         {
            var result = await _SalonesServices.CancelarReservas(reservaId);
 
-            if (!result.Exit) return StatusCode(result.Errorcode, result);
+            if (!result.Exit) return StatusCode(result.Errorcode, result.Errormessage);
 
            return NoContent();
         }

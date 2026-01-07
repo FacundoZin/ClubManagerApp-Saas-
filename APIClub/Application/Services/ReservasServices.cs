@@ -1,5 +1,6 @@
 ﻿using APIClub.Application.Common;
 using APIClub.Application.Dtos.Reservas;
+using APIClub.Application.Helpers;
 using APIClub.Domain.GestionSocios.Repositories;
 using APIClub.Domain.ReservasSalones;
 using APIClub.Domain.ReservasSalones.Models;
@@ -42,14 +43,13 @@ namespace APIClub.Application.Services
 
             if(reserva != null)
             {
-   
-                dto.Mensaje = $"el salon no se encuntra disponible en esta fecha: {fecha}";
+                dto.Mensaje = $"El salón no se encuentra disponible en esta fecha: {fecha}";
                 dto.Disponible = false;
 
                 return Result<FechaDisponible>.Exito(dto);
             }
 
-            dto.Mensaje = $"el salon {reserva.Salon.Name} esta disponible para esta fecha: {fecha}";
+            dto.Mensaje = $"El salón se encuentra disponible para la fecha: {fecha}";
             dto.Disponible= true;
 
             return Result<FechaDisponible>.Exito(dto);  
@@ -109,7 +109,7 @@ namespace APIClub.Application.Services
 
             infoReserva.nombreSocio = reserva.Socio.Nombre;
             infoReserva.apellidoSocio = reserva.Socio.Apellido;
-            infoReserva.telefonoSocio = reserva.Socio.Telefono;
+            infoReserva.telefonoSocio = reserva.Socio.Telefono?.FormatearForUserVisibility();
             infoReserva.direccionSocio = reserva.Socio.Direcccion;
             infoReserva.localidad = reserva.Socio.Localidad;
 
@@ -126,6 +126,12 @@ namespace APIClub.Application.Services
                 return Result<object?>.Error(
                     "El salón no está disponible en la fecha seleccionada.",
                     409
+                );
+
+            if (dto.Importe > dto.TotalPagado)
+                return Result<object?>.Error(
+                    "El importe total de la reserva no puede ser mayor al monto abonado.",
+                    400
                 );
 
 
