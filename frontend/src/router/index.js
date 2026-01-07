@@ -56,6 +56,11 @@ const router = createRouter({
       name: 'alquiler-detail',
       component: () => import('../views/AlquilerDetailView.vue')
     },
+    {
+      path: '/cobradores',
+      name: 'cobradores',
+      component: () => import('../views/CobradorDashboardView.vue')
+    },
   ],
 })
 

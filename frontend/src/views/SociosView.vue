@@ -1,12 +1,12 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import ConfirmModal from '../Components/ConfirmModal.vue'
-import Pagination from '../Components/Pagination.vue'
-import SocioCard from '../Components/SocioCard.vue'
-import SocioFormModal from '../Components/SocioFormModal.vue'
-import SocioList from '../Components/SocioList.vue'
-import SocioUpdateModal from '../Components/SocioUpdateModal.vue'
+import ConfirmModal from '../components/ConfirmModal.vue'
+import Pagination from '../components/Pagination.vue'
+import SocioCard from '../components/SocioCard.vue'
+import SocioFormModal from '../components/SocioFormModal.vue'
+import SocioList from '../components/SocioList.vue'
+import SocioUpdateModal from '../components/SocioUpdateModal.vue'
 
 // State
 const currentAction = ref('none') // 'none', 'add', 'search', 'debtors'
