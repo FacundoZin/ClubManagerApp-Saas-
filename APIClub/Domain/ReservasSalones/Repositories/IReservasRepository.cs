@@ -11,5 +11,7 @@ namespace APIClub.Domain.ReservasSalones.Repositories
         Task<bool> CrearReserva(ReservaSalon reserva);
         Task<bool> BorrarReserva(int idReserva);
         Task<bool> HasFutureReservationsBySocio(int socioId);
+
+        Task<ReservaSalon?> SearchReservaByIdWithTracking(int idReserva);
     }
 }

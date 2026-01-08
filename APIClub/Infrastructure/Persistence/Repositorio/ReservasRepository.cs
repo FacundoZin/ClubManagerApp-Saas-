@@ -62,6 +62,7 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
             return await _Context.ReservasSalones
                 .Include(r => r.Salon)
                 .Include(s => s.Socio)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(r => r.Id == idReserva);
         }
 
@@ -79,6 +80,11 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
             var fechaHoy = DateOnly.FromDateTime(DateTime.Now);
             return await _Context.ReservasSalones
                 .AnyAsync(r => r.SocioId == socioId && r.FechaAlquiler >= fechaHoy);
+        }
+
+        public async Task<ReservaSalon?> SearchReservaByIdWithTracking(int idReserva)
+        {
+            return await _Context.ReservasSalones.FirstOrDefaultAsync(r => r.Id == idReserva);
         }
     }
 }

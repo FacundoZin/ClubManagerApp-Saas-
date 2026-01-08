@@ -34,6 +34,15 @@ const resetForm = () => {
   errorMessage.value = ''
 }
 
+// Limpiar el mensaje de error cuando el usuario modifique cualquier campo del formulario
+watch(
+  () => ({ ...form }),
+  () => {
+    if (errorMessage.value) errorMessage.value = ''
+  },
+  { deep: true },
+)
+
 // Limpiar el formulario cuando se cierra el modal
 watch(
   () => props.isOpen,
@@ -196,7 +205,7 @@ const handleSubmit = async () => {
                   <input
                     type="number"
                     id="importe"
-                    v-model="form.importe"
+                    v-model.number="form.importe"
                     step="0.01"
                     min="0"
                     class="block w-full rounded-md border-slate-300 pl-7 pr-3 focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
@@ -214,7 +223,7 @@ const handleSubmit = async () => {
                   <input
                     type="number"
                     id="totalPagado"
-                    v-model="form.totalPagado"
+                    v-model.number="form.totalPagado"
                     step="0.01"
                     min="0"
                     class="block w-full rounded-md border-slate-300 pl-7 pr-3 focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"

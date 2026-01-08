@@ -13,7 +13,7 @@ namespace APIClub.Contrrollers
         private readonly IReservasServices _SalonesServices;
         private readonly AppDbcontext _context;
 
-        public SalonController (IReservasServices salonesServices, AppDbcontext context)
+        public SalonController(IReservasServices salonesServices, AppDbcontext context)
         {
             _SalonesServices = salonesServices;
             _context = context;
@@ -94,12 +94,23 @@ namespace APIClub.Contrrollers
         [HttpDelete("reserva/{reservaId}")]
         public async Task<IActionResult> CancelarReserva(int reservaId)
         {
-           var result = await _SalonesServices.CancelarReservas(reservaId);
+            var result = await _SalonesServices.CancelarReservas(reservaId);
 
             if (!result.Exit) return StatusCode(result.Errorcode, result.Errormessage);
 
-           return NoContent();
+            return NoContent();
         }
+
+        [HttpPatch("reservas/{reservaId}/pago")]
+        public async Task<IActionResult> ActualizarPagoDeSalon(int reservaId, decimal montoAbonado)
+        {
+            var result = await _SalonesServices.RegistrarPagoDeSalon(reservaId, montoAbonado);
+
+            if (!result.Exit) return StatusCode(result.Errorcode, result.Errormessage);
+
+            return Ok();
+        }
+        
 
     }
 }

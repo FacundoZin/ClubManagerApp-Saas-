@@ -202,6 +202,11 @@ const handleViewDetails = (id) => {
   selectedReservaId.value = id
   isDetailsModalOpen.value = true
 }
+
+const refreshData = async () => {
+  if (currentAction.value === 'list') await handleListReservas()
+  if (currentAction.value === 'search') await handleSearchReserva()
+}
 </script>
 
 <template>
@@ -555,12 +560,24 @@ const handleViewDetails = (id) => {
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"
-                  d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                 />
               </svg>
             </div>
-            <p class="text-slate-500">
-              No se encontraron reservas para el salón y fecha seleccionados.
+            <p class="text-slate-500 max-w-xs mx-auto">
+              No hay reservas registradas para
+              <span class="font-semibold text-slate-700">{{
+                salones.find((s) => s.id === selectedSalonId)?.nombre || 'este salón'
+              }}</span>
+              el día
+              <span class="font-semibold text-slate-700">{{
+                new Date(selectedDate + 'T00:00:00').toLocaleDateString('es-AR', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                })
+              }}</span
+              >.
             </p>
           </div>
         </div>
@@ -595,6 +612,7 @@ const handleViewDetails = (id) => {
       :is-open="isDetailsModalOpen"
       :reserva-id="selectedReservaId"
       @close="isDetailsModalOpen = false"
+      @payment-registered="refreshData"
     />
 
     <!-- Toast Notification -->

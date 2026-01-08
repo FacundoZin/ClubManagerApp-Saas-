@@ -11,5 +11,6 @@ namespace APIClub.Domain.ReservasSalones
         Task<Result<InfoReservaCompletaDto?>> GetReservaById(int reservaId);
         Task<Result<object?>> RegistrarReservaSalon(CreteReservaSalonDto dto);
         Task<Result<object?>> CancelarReservas(int idReserva);
+        Task<Result<object?>> RegistrarPagoDeSalon(int IdReserva,decimal montoAbonado);
     }
 }

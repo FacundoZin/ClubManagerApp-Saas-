@@ -12,11 +12,13 @@ namespace APIClub.Application.Services
     {
         private readonly IReservasRepository _ReservasRepository;
         private readonly ISocioRepository _SocioRepository;
+        private readonly UnitOfWork _UnitOfWork;
 
-        public ReservasServices(IReservasRepository alquilerRepository, ISocioRepository socioRepository)
+        public ReservasServices(IReservasRepository alquilerRepository, ISocioRepository socioRepository, UnitOfWork unitOfWork)
         {
             _ReservasRepository = alquilerRepository;
             _SocioRepository = socioRepository;
+            _UnitOfWork = unitOfWork;   
         }
 
         public async Task<Result<List<PreviewReservaBySalonDto>>> GetReservasBySalon(int salonId)
@@ -61,7 +63,7 @@ namespace APIClub.Application.Services
 
             if(reserva == null)
             {
-                return Result<InfoReservaCompletaDto?>.Exito(null);
+                return Result<InfoReservaCompletaDto?>.NotFound("No se encontró ninguna reserva para la fecha y el salón especificados.");
             }
 
             InfoReservaCompletaDto infoReserva = new InfoReservaCompletaDto();
@@ -69,7 +71,6 @@ namespace APIClub.Application.Services
             infoReserva.IdReserva = reserva.Id;
             infoReserva.Titulo = reserva.Titulo;
             infoReserva.FechaAlquiler = reserva.FechaAlquiler;
-            infoReserva.Importe = reserva.Importe;
             infoReserva.Importe = reserva.Importe;
             infoReserva.TotalPagado = reserva.TotalPagado;
 
@@ -92,7 +93,7 @@ namespace APIClub.Application.Services
 
             if (reserva == null)
             {
-                return Result<InfoReservaCompletaDto?>.Exito(null);
+                return Result<InfoReservaCompletaDto?>.NotFound("No se encontró ninguna reserva con el ID especificado.");
             }
 
             InfoReservaCompletaDto infoReserva = new InfoReservaCompletaDto();
@@ -128,12 +129,6 @@ namespace APIClub.Application.Services
                     409
                 );
 
-            if (dto.Importe > dto.TotalPagado)
-                return Result<object?>.Error(
-                    "El importe total de la reserva no puede ser mayor al monto abonado.",
-                    400
-                );
-
 
             var socio = await _SocioRepository.GetSocioByDni(dto.DniSocio);
 
@@ -167,6 +162,24 @@ namespace APIClub.Application.Services
             var exit = await _ReservasRepository.BorrarReserva(idReserva);
 
             if (!exit) return Result<object?>.Error("algo fallo al borrar la reserva en la db", 500);
+
+            return Result<object?>.Exito(null);
+        }
+
+        public async Task<Result<object?>> RegistrarPagoDeSalon(int IdReserva ,decimal montoAbonado)
+        {
+            var reserva = await _ReservasRepository.SearchReservaByIdWithTracking(IdReserva);
+
+            if (reserva == null) return Result<object?>.Error("la reserva no existe", 404);
+
+            decimal RestaPagar = reserva.Importe - reserva.TotalPagado;
+
+            if (montoAbonado > RestaPagar)
+                return Result<object?>.Error("el monto de dinero que quiere abonar es mayor al monto de dinero que resta pagar", 400);            
+
+            reserva.TotalPagado += montoAbonado;
+
+            await _UnitOfWork.SaveChangesAsync();
 
             return Result<object?>.Exito(null);
         }

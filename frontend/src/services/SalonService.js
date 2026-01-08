@@ -5,6 +5,8 @@ const handleError = async (response, defaultMessage) => {
         throw new Error('Algo salió mal en el servidor. Por favor intente más tarde.');
     }
     const errorText = await response.text();
+    if (!errorText) return defaultMessage;
+    
     try {
         const errorObj = JSON.parse(errorText);
         // Si es un error de ModelState (.NET)
@@ -48,21 +50,24 @@ export default {
 
     async getReservaByFecha(fecha, salonId) {
         const response = await fetch(`${API_URL}/${salonId}/reserva?fecha=${fecha}`);
-        if (response.status === 404) return null;
+        if (response.status === 404 || response.status === 204) return null;
         if (!response.ok) {
             const msg = await handleError(response, 'Error buscando reserva');
             throw new Error(msg);
         }
-        return await response.json();
+        const text = await response.text();
+        return text ? JSON.parse(text) : null;
     },
 
     async getReservaById(reservaId) {
         const response = await fetch(`${API_URL}/reservas/${reservaId}`);
+        if (response.status === 404 || response.status === 204) return null;
         if (!response.ok) {
             const msg = await handleError(response, 'Error al obtener la reserva');
             throw new Error(msg);
         }
-        return await response.json();
+        const text = await response.text();
+        return text ? JSON.parse(text) : null;
     },
 
     async createReserva(dto) {
@@ -86,6 +91,17 @@ export default {
         });
         if (!response.ok) {
             const msg = await handleError(response, 'Error al cancelar la reserva');
+            throw new Error(msg);
+        }
+        return true;
+    },
+
+    async actualizarPago(reservaId, montoAbonado) {
+        const response = await fetch(`${API_URL}/reservas/${reservaId}/pago?montoAbonado=${montoAbonado}`, {
+            method: 'PATCH'
+        });
+        if (!response.ok) {
+            const msg = await handleError(response, 'Error al registrar el pago');
             throw new Error(msg);
         }
         return true;
