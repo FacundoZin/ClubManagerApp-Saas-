@@ -5,10 +5,10 @@ import ArticuloService from '../services/ArticuloService'
 import AlquilerService from '../services/AlquilerService'
 
 // Componentes
-import ArticuloCard from '../components/Articulos/ArticuloCard.vue'
-import ArticuloFormModal from '../components/Articulos/ArticuloFormModal.vue'
-import UpdatePrecioModal from '../components/Articulos/UpdatePrecioModal.vue'
-import AlquilerCard from '../components/Alquileres/AlquilerCard.vue'
+import ArticuloCard from '../components/ModuloAlquilerArticulos/Articulos/ArticuloCard.vue'
+import ArticuloFormModal from '../components/ModuloAlquilerArticulos/Articulos/ArticuloFormModal.vue'
+import UpdatePrecioModal from '../components/ModuloAlquilerArticulos/Articulos/UpdatePrecioModal.vue'
+import AlquilerCard from '../components/ModuloAlquilerArticulos/Alquileres/AlquilerCard.vue'
 
 const router = useRouter()
 
