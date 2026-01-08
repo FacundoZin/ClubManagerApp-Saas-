@@ -2,6 +2,7 @@
 using APIClub.Domain.ReservasSalones.Repositories;
 using APIClub.Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 
 namespace APIClub.Infrastructure.Persistence.Repositorio
 {
@@ -40,8 +41,9 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
 
         public async Task<List<ReservaSalon>> GetAlquileresBySalon(int IdSalon)
         {
+            var now = DateOnly.FromDateTime(DateTime.Now);
             return await _Context.ReservasSalones
-                .Where(a => a.SalonId == IdSalon)
+                .Where(a => a.SalonId == IdSalon && a.FechaAlquiler > now)
                 .Include(s => s.Socio)
                 .OrderBy(a => a.FechaAlquiler)
                 .AsNoTracking()

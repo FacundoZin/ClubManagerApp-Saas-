@@ -66,7 +66,7 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
                     NombreSocio = a.Socio.Nombre,
                     ApellidoSocio = a.Socio.Apellido,
                     DniSocio = a.Socio.Dni,
-                    TelefonoSocio = a.Socio.Direcccion,
+                    TelefonoSocio = a.Socio.Telefono,
                     DireccionSocio = a.Socio.Direcccion,
                     LocalidadSocio = a.Socio.Localidad,
 

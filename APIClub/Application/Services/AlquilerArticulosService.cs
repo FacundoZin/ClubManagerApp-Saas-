@@ -204,11 +204,11 @@ namespace APIClub.Application.Services
             var socio = await _UnitOfWork._SocioRepository.GetSocioByDni(dniSocio);
 
             if (socio == null)
-                return Result<AlquilerPreviewDto?>.Error("No se encontró un socio con ese ID", 404);
+                return Result<AlquilerPreviewDto?>.Error("No existe un socio en el sistema con ese DNI", 404);
 
             var alquiler = await _UnitOfWork._AlquilerRepository.GetAlquilerBySocio(socio.Id);
 
-            if (alquiler == null) return Result<AlquilerPreviewDto?>.Exito(null);
+            if (alquiler == null) return Result<AlquilerPreviewDto?>.NotFound("el socio que esta buscando no tiene alquileres registados actualmente.");
 
             var hoy = DateOnly.FromDateTime(DateTime.Today);
 
@@ -217,12 +217,12 @@ namespace APIClub.Application.Services
                 Id = alquiler.Id,
                 FechaAlquiler = alquiler.FechaAlquiler,
 
-                NombreSocio = alquiler.Socio.Nombre,
-                ApellidoSocio = alquiler.Socio.Apellido,
-                DniSocio = alquiler.Socio.Dni,
-                TelefonoSocio = alquiler.Socio.Direcccion,
-                DireccionSocio = alquiler.Socio.Direcccion,
-                LocalidadSocio = alquiler.Socio.Localidad,
+                NombreSocio = socio.Nombre,
+                ApellidoSocio = socio.Apellido,
+                DniSocio = socio.Dni,
+                TelefonoSocio = socio.Telefono,
+                DireccionSocio = socio.Direcccion,
+                LocalidadSocio = socio.Localidad,
 
                 estaAlDia = alquiler.HistorialDePagos.Any(p =>
                     p.Anio == hoy.Year &&
