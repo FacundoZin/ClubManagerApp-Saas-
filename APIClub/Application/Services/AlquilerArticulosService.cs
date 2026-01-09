@@ -132,10 +132,13 @@ namespace APIClub.Application.Services
 
         public async Task<Result<PagoAlquilerDto>> RegistrarPago(int idAlquiler)
         {
+            var now = DateOnly.FromDateTime(DateTime.Now);
             var alquiler = await _UnitOfWork._AlquilerRepository.GetAlquilerByIdWithDetails(idAlquiler);
 
             if (alquiler == null)
                 return Result<PagoAlquilerDto>.Error("No se encontró un alquiler con ese ID", 404);
+            if(alquiler.HistorialDePagos.Any(p => p.Anio == now.Year && p.Mes == now.Month))
+                return Result<PagoAlquilerDto>.Error("El alquiler ya tiene registrado el pago de este mes", 400);
 
             int monto = await _UnitOfWork._AlquilerRepository.CalcularMontoAlquiler(idAlquiler);
             var dateHoy = DateOnly.FromDateTime(DateTime.Now);
