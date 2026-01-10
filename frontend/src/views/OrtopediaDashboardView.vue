@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import AlquilerService from '../services/AlquilerService'
 import ArticuloService from '../services/ArticuloService'
 import SociosService from '../services/SociosService'
@@ -13,6 +13,7 @@ import ArticuloFormModal from '../components/ModuloAlquilerArticulos/Articulos/A
 import UpdatePrecioModal from '../components/ModuloAlquilerArticulos/Articulos/UpdatePrecioModal.vue'
 
 const router = useRouter()
+const route = useRoute()
 
 // Tabs
 const activeTab = ref('articulos')
@@ -58,6 +59,11 @@ watch(searchSocioDni, () => {
 
 // Initial Load
 onMounted(() => {
+  if (route.query.success === 'finalizado') {
+    showToast('Alquiler finalizado correctamente')
+    activeTab.value = 'gestionar-alquileres'
+    router.replace({ query: { ...route.query, success: undefined } })
+  }
   loadArticulos()
   loadAlquileresActivos()
 })

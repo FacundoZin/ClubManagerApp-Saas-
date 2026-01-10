@@ -72,10 +72,8 @@ const handleRegisterPayment = async () => {
 const handleFinalize = async () => {
   try {
     await AlquilerService.finalize(alquilerId)
-    showToast('Alquiler finalizado correctamente')
     isConfirmFinalizeOpen.value = false
-    // Maybe redirect or reload
-    loadAlquiler()
+    router.push({ name: 'alquiler-articulos', query: { success: 'finalizado' } })
   } catch (e) {
     showToast(e.message, 'error')
     isConfirmFinalizeOpen.value = false
