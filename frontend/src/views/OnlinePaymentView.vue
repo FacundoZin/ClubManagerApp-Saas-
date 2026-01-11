@@ -6,51 +6,27 @@
     <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
       <PaymentLoading v-if="loading" />
 
-      <PaymentValidationError
-        v-else-if="validationError"
-        :validation-error="validationError"
-        @go-back="goBack"
-      />
+      <PaymentValidationError v-else-if="validationError" :validation-error="validationError" @go-back="goBack" />
 
-      <PaymentErrorState
-        v-else-if="errorMessage"
-        :error-message="errorMessage"
-        @retry="retryPayment"
-        @go-back="goBack"
-      />
+      <PaymentErrorState v-else-if="errorMessage" :error-message="errorMessage" @retry="retryPayment"
+        @go-back="goBack" />
 
-      <PaymentStatusScreen
-        v-else-if="paymentStatus"
-        :status="paymentStatus"
-        :error-message="statusMessage"
-        @retry="retryPayment"
-        @download="downloadReceipt"
-      />
+      <PaymentStatusScreen v-else-if="paymentStatus" :status="paymentStatus" :error-message="statusMessage"
+        @retry="retryPayment" @download="downloadReceipt" />
 
       <!-- Payment Content -->
       <div v-else class="space-y-6">
         <PaymentInfoCard :payment-data="paymentData" />
 
         <!-- Payment Brick Container -->
-        <div
-          class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-200 overflow-hidden"
-        >
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
           <div class="p-6 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6 text-blue-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-                  />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                 </svg>
               </div>
               <div>
@@ -63,49 +39,23 @@
           <!-- Payment Brick se renderiza aquí -->
           <div class="p-6">
             <!-- Error local del Brick (sin ocultarlo) -->
-            <div
-              v-if="brickError"
-              class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3 animate-fadeIn"
-            >
-              <div
-                class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5 text-red-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
+            <div v-if="brickError"
+              class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3 animate-fadeIn">
+              <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
               <div class="flex-1">
                 <p class="text-sm font-semibold text-red-800">Error al procesar el pago</p>
                 <p class="text-xs text-red-600 mt-1">{{ brickError }}</p>
               </div>
-              <button
-                @click="brickError = null"
-                class="text-red-400 hover:text-red-600 transition-colors"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
+              <button @click="brickError = null" class="text-red-400 hover:text-red-600 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
@@ -118,14 +68,8 @@
       </div>
 
       <!-- Componente oculto para exportar a PDF -->
-      <div
-        v-if="comprobanteData"
-        style="position: absolute; left: -9999px; top: 0; background: white; color: black"
-      >
-        <div
-          id="comprobante-pdf"
-          style="background: white; color: black; font-family: Arial, sans-serif"
-        >
+      <div v-if="comprobanteData" style="position: absolute; left: -9999px; top: 0; background: white; color: black">
+        <div id="comprobante-pdf" style="background: white; color: black; font-family: Arial, sans-serif">
           <ComprobanteCuota :data="comprobanteData" />
         </div>
       </div>
@@ -136,18 +80,18 @@
 </template>
 
 <script>
-import { nextTick } from 'vue'
-import PaymentHeader from '@/components/OnlinePayment/PaymentHeader.vue'
-import PaymentFooter from '@/components/OnlinePayment/PaymentFooter.vue'
-import PaymentLoading from '@/components/OnlinePayment/PaymentLoading.vue'
-import PaymentValidationError from '@/components/OnlinePayment/PaymentValidationError.vue'
 import PaymentErrorState from '@/components/OnlinePayment/PaymentErrorState.vue'
+import PaymentFooter from '@/components/OnlinePayment/PaymentFooter.vue'
+import PaymentHeader from '@/components/OnlinePayment/PaymentHeader.vue'
 import PaymentInfoCard from '@/components/OnlinePayment/PaymentInfoCard.vue'
+import PaymentLoading from '@/components/OnlinePayment/PaymentLoading.vue'
 import PaymentSecurityInfo from '@/components/OnlinePayment/PaymentSecurityInfo.vue'
 import PaymentStatusScreen from '@/components/OnlinePayment/PaymentStatusScreen.vue'
+import PaymentValidationError from '@/components/OnlinePayment/PaymentValidationError.vue'
 import ComprobanteCuota from '@/components/payments/comprobanteCuota.vue'
 import { toPng } from 'html-to-image'
 import { jsPDF } from 'jspdf'
+import { nextTick } from 'vue'
 
 export default {
   components: {
@@ -515,6 +459,7 @@ export default {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

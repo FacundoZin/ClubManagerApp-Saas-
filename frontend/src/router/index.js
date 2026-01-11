@@ -1,5 +1,13 @@
+import CobradorDashboard from '@/views/ModuloCobradores/CobradorDashboard.vue'
+import OnlinePaymentView from '@/views/OnlinePaymentView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import AlquilerArticuloDetailView from '../views/ModuloAlquilerDeArticulos/AlquilerArticuloDetailView.vue'
+import AlquilerArticulosDashboard from '../views/ModuloAlquilerDeArticulos/AlquilerArticulosDashboard.vue'
+import AlquilerEspaciosDashboard from '../views/ModuloAlquilerDeEspacios/AlquilerEspaciosDashboard.vue'
+import GestionCuotasDashboard from '../views/ModuloGestionCuotas/GestionCuotasDashboard.vue'
+import SocioDetailView from '../views/ModuloGestionSocios/SocioDetailView.vue'
+import SociosDashboard from '../views/ModuloGestionSocios/SociosDashboard.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,17 +20,17 @@ const router = createRouter({
     {
       path: '/socios',
       name: 'socios',
-      component: () => import('../views/SociosView.vue'),
+      component: SociosDashboard,
     },
     {
       path: '/socios/:id',
       name: 'socio-detail',
-      component: () => import('../views/SocioDetailView.vue'),
+      component: SocioDetailView,
     },
     {
       path: '/reservas-salones',
       name: 'reservas-salones',
-      component: () => import('../views/ReservasSalonesView.vue'),
+      component: AlquilerEspaciosDashboard,
     },
     {
       path: '/reservas',
@@ -32,27 +40,27 @@ const router = createRouter({
     {
       path: '/pago-online',
       name: 'pago-online',
-      component: () => import('../views/OnlinePaymentView.vue'),
+      component: OnlinePaymentView,
     },
     {
       path: '/pagos',
       name: 'pagos',
-      component: () => import('../views/CuotasView.vue'),
+      component: GestionCuotasDashboard,
     },
     {
       path: '/alquiler-articulos',
       name: 'alquiler-articulos',
-      component: () => import('../views/OrtopediaDashboardView.vue')
+      component: AlquilerArticulosDashboard,
     },
     {
       path: '/ortopedia/alquileres/:id',
       name: 'alquiler-detail',
-      component: () => import('../views/AlquilerDetailView.vue')
+      component: AlquilerArticuloDetailView,
     },
     {
       path: '/cobradores',
       name: 'cobradores',
-      component: () => import('../views/CobradorDashboardView.vue')
+      component: CobradorDashboard,
     },
   ],
 })

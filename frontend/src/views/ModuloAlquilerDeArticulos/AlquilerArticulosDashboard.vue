@@ -1,16 +1,16 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import AlquilerService from '../services/AlquilerService'
-import ArticuloService from '../services/ArticuloService'
-import SociosService from '../services/SociosService'
+import AlquilerService from '../../services/AlquilerService'
+import ArticuloService from '../../services/ArticuloService'
+import SociosService from '../../services/SociosService'
 
 // Componentes
-import LoadingOverlay from '../components/LoadingOverlay.vue'
-import AlquilerCard from '../components/ModuloAlquilerArticulos/Alquileres/AlquilerCard.vue'
-import ArticuloCard from '../components/ModuloAlquilerArticulos/Articulos/ArticuloCard.vue'
-import ArticuloFormModal from '../components/ModuloAlquilerArticulos/Articulos/ArticuloFormModal.vue'
-import UpdatePrecioModal from '../components/ModuloAlquilerArticulos/Articulos/UpdatePrecioModal.vue'
+import LoadingOverlay from '../../components/LoadingOverlay.vue'
+import AlquilerCard from '../../components/ModuloAlquilerArticulos/Alquileres/AlquilerCard.vue'
+import ArticuloCard from '../../components/ModuloAlquilerArticulos/Articulos/ArticuloCard.vue'
+import ArticuloFormModal from '../../components/ModuloAlquilerArticulos/Articulos/ArticuloFormModal.vue'
+import UpdatePrecioModal from '../../components/ModuloAlquilerArticulos/Articulos/UpdatePrecioModal.vue'
 
 const router = useRouter()
 const route = useRoute()

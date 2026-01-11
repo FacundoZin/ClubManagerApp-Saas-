@@ -1,11 +1,11 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import ConfirmModal from '../components/ConfirmModal.vue'
-import LoadingOverlay from '../components/LoadingOverlay.vue'
-import AddItemModal from '../components/ModuloAlquilerArticulos/Alquileres/AddItemModal.vue'
-import ArticulosAlquiladosCard from '../components/ModuloAlquilerArticulos/Articulos/ArticulosAlquiladosCard.vue'
-import AlquilerService from '../services/AlquilerService'
+import ConfirmModal from '../../components/ConfirmModal.vue'
+import LoadingOverlay from '../../components/LoadingOverlay.vue'
+import AddItemModal from '../../components/ModuloAlquilerArticulos/Alquileres/AddItemModal.vue'
+import ArticulosAlquiladosCard from '../../components/ModuloAlquilerArticulos/Articulos/ArticulosAlquiladosCard.vue'
+import AlquilerService from '../../services/AlquilerService'
 
 const route = useRoute()
 const router = useRouter()
