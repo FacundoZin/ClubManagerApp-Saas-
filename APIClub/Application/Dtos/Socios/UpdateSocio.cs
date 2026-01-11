@@ -2,7 +2,7 @@
 
 namespace APIClub.Application.Dtos.Socios
 {
-    public class CreateSocioDto
+    public class UpdateSocio
     {
         [Required]
         public string Nombre { get; set; }

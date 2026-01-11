@@ -24,6 +24,8 @@ namespace APIClub.Infrastructure.Persistence.Data
         public DbSet<ItemAlquiler> ItemALquiler {  get; set; }
         public DbSet<PagoAlquilerDeArticulos> PagosAlquilerDeArticulos { get; set; }
         public DbSet<PaymentToken> PaymentTokens { get; set; }
+        public DbSet<Lote> Lotes { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -43,6 +45,19 @@ namespace APIClub.Infrastructure.Persistence.Data
                       .OnDelete(DeleteBehavior.Cascade);
                 
                 entity.HasQueryFilter(s => s.IsActivo);
+
+                entity.HasOne(s => s.Lote)
+                      .WithMany()
+                      .HasForeignKey(s => s.LoteId)
+                      .OnDelete(DeleteBehavior.SetNull);
+            });
+
+            modelBuilder.Entity<Lote>(entity =>
+            {
+                entity.Property(l => l.Calle1).IsRequired().HasMaxLength(100);
+                entity.Property(l => l.Calle2).IsRequired().HasMaxLength(100);
+                entity.Property(l => l.Calle3).IsRequired().HasMaxLength(100);
+                entity.Property(l => l.Calle4).IsRequired().HasMaxLength(100);
             });
 
             modelBuilder.Entity<Salon>(entity =>
@@ -170,6 +185,37 @@ namespace APIClub.Infrastructure.Persistence.Data
                 }
             );
 
+            // 1.5) Lotes
+            modelBuilder.Entity<Lote>().HasData(
+                new Lote
+                {
+                    Id = 1,
+                    NombreLote = "Lote A",
+                    Calle1 = "Mitre",
+                    Calle2 = "San Martín",
+                    Calle3 = "Belgrano",
+                    Calle4 = "Urquiza"
+                },
+                new Lote
+                {
+                    Id = 2,
+                    NombreLote = "Lote B",
+                    Calle1 = "Av. Pellegrini",
+                    Calle2 = "Bv. Oroño",
+                    Calle3 = "Salta",
+                    Calle4 = "Jujuy"
+                },
+                new Lote
+                {
+                    Id = 3,
+                    NombreLote = "Lote C",
+                    Calle1 = "Av. Corrientes",
+                    Calle2 = "Florida",
+                    Calle3 = "Lavalle",
+                    Calle4 = "Sarmiento"
+                }
+            );
+
             // 2) Socios
             modelBuilder.Entity<Socio>().HasData(
                 new Socio
@@ -181,6 +227,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                     Telefono = "341-1234567",
                     Direcccion = "Mitre 100",
                     Localidad = "Rosario",
+                    LoteId = 1,
                     FechaAsociacion = DateOnly.FromDateTime(new DateTime(2020, 5, 10))
                 },
                 new Socio
@@ -192,6 +239,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                     Telefono = "341-7654321",
                     Direcccion = "San Martín 200",
                     Localidad = "Córdoba",
+                    LoteId = 2,
                     FechaAsociacion = DateOnly.FromDateTime(new DateTime(2021, 3, 15))
                 },
                 new Socio
@@ -203,6 +251,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                     Telefono = "341-9988776",
                     Direcccion = "Belgrano 500",
                     Localidad = "Rosario",
+                    LoteId = 3,
                     FechaAsociacion = DateOnly.FromDateTime(new DateTime(2022, 1, 10))
                 }
             );

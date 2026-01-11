@@ -24,6 +24,7 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
         {
             return await _Dbcontext.Socios
                 .Include(s => s.HistorialCuotas)
+                .Include(s => s.Lote)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(s => s.Dni == dni);
         }
@@ -81,6 +82,7 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
         public async Task<(List<Socio> Items, int TotalCount)> GetSociosDeudoresPaginado(int anioActual, int semestreActual, int pageNumber, int pageSize)
         {
             var query = _Dbcontext.Socios
+                .Include(s => s.Lote)
                 .AsNoTracking()
                 .Where(s => !s.HistorialCuotas.Any(c => c.Anio == anioActual && c.Semestre == semestreActual));
 
@@ -113,10 +115,10 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
             .ToListAsync();
         }
 
-        public async Task<List<Socio>> GetSociosDeudoresByLote(string lote, int anioActual, int semestreActual)
+        public async Task<List<Socio>> GetSociosDeudoresByLote(int IdLote, int anioActual, int semestreActual)
         {
             return await _Dbcontext.Socios.
-                Where(s => s.Lote == lote && !s.HistorialCuotas
+                Where(s => s.Lote.Id == IdLote && !s.HistorialCuotas
                 .Any(c => c.Anio == anioActual && c.Semestre == semestreActual))
                 .AsNoTracking()
                 .ToListAsync();

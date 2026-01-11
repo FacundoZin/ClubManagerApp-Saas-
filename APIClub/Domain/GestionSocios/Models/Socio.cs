@@ -12,8 +12,9 @@ namespace APIClub.Domain.GestionSocios.Models
         [PhoneNumer]
         public string? Telefono { get; set; }
         public string? Direcccion { get; set; }
-        public string? Lote { get; set; }
         public string? Localidad { get; set; }
+        public int? LoteId { get; set; }
+        public Lote? Lote { get; set; }
         public DateOnly FechaAsociacion { get; set; }
         public bool IsActivo { get; set; } = true;
         public DateOnly? FechaDeBaja { get; set; }

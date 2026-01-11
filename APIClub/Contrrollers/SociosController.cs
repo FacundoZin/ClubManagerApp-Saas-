@@ -94,7 +94,7 @@ namespace APIClub.Contrrollers
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateSocio(int id, [FromBody] CreateSocioDto dto)
+        public async Task<IActionResult> UpdateSocio(int id, [FromBody] UpdateSocio dto)
         {
             var result = await _SocioService.UpdateSocio(id, dto);
 

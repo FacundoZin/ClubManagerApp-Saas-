@@ -62,7 +62,7 @@ namespace APIClub.Application.Services
                 Dni = _dto.Dni,
                 Telefono = telefonoFormateado,
                 Direcccion = _dto.Direcccion,
-                Lote = _dto.Lote,
+                LoteId = _dto.IdLote,
                 Localidad = _dto.Localidad,
                 FechaAsociacion = DateOnly.FromDateTime(DateTime.Now),
                 IsActivo = true
@@ -130,7 +130,7 @@ namespace APIClub.Application.Services
                 Dni = socio.Dni,
                 Telefono = socio.Telefono?.FormatearForUserVisibility(),
                 Direcccion = socio.Direcccion,
-                Lote = socio.Lote,
+                nombreLote = socio.Lote?.NombreLote,
                 Localidad = socio.Localidad,
                 AdeudaCuotas = debeCuota,
             };
@@ -154,7 +154,7 @@ namespace APIClub.Application.Services
                 Dni = s.Dni,
                 Telefono = s.Telefono?.FormatearForUserVisibility(),
                 Direcccion = s.Direcccion,
-                Lote = s.Lote,
+                nombreLote = s.Lote?.NombreLote,
                 Localidad = s.Localidad,
                 AdeudaCuotas = true,
             }).ToList();
@@ -164,7 +164,7 @@ namespace APIClub.Application.Services
             return Result<PagedResult<PreviewSocioDto>>.Exito(result);
         }
 
-        public async Task<Result<object>> UpdateSocio(int id, CreateSocioDto dto)
+        public async Task<Result<object>> UpdateSocio(int id, UpdateSocio dto)
         {
             if (id <= 0)
             {
@@ -206,7 +206,7 @@ namespace APIClub.Application.Services
             socio.Dni = dto.Dni;
             socio.Telefono = telefonoFormateado;
             socio.Direcccion = dto.Direcccion;
-            socio.Lote = dto.Lote;
+            socio.LoteId = dto.IdLote;
             socio.Localidad = dto.Localidad;
 
             await _SocioRepository.UpdateSocio(socio);
@@ -241,7 +241,7 @@ namespace APIClub.Application.Services
                 Dni = socio.Dni,
                 Telefono = socio.Telefono?.FormatearForUserVisibility(),
                 Direcccion = socio.Direcccion,
-                Lote = socio.Lote,
+                nombreLote = socio.Lote?.NombreLote,
                 Localidad = socio.Localidad,
                 AdeudaCuotas = false // Tendriamos que calcularlo si fuera necesario, pero para el form no hace falta
             };
@@ -277,7 +277,7 @@ namespace APIClub.Application.Services
                 Dni = socio.Dni,
                 Telefono = socio.Telefono?.FormatearForUserVisibility(),
                 Direcccion = socio.Direcccion,
-                Lote = socio.Lote,
+                NombreLote = socio.Lote?.NombreLote,
                 Localidad = socio.Localidad,
                 FechaAsociacion = socio.FechaAsociacion,
                 AdeudaCuotas = debeCuota,
