@@ -103,12 +103,7 @@ const handleDelete = async (socio) => {
   <div class="min-h-screen bg-slate-50 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Header -->
-      <div class="mb-8">
-        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Gestión de Cobradores</h1>
-        <p class="mt-2 text-lg text-slate-600">
-          Seleccione un lote para gestionar los socios deudores.
-        </p>
-      </div>
+      <!-- Header (Removed, handled by AppHeader) -->
 
       <!-- Selector de Lote -->
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8">

@@ -16,21 +16,25 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
+      meta: { hideHeader: true }
     },
     {
       path: '/socios',
       name: 'socios',
       component: SociosDashboard,
+      meta: { module: 'socios', headerTitle: 'Gestión de Socios', headerDescription: 'Administración del padrón' }
     },
     {
       path: '/socios/:id',
       name: 'socio-detail',
       component: SocioDetailView,
+      meta: { hideHeader: true }
     },
     {
       path: '/reservas-salones',
       name: 'reservas-salones',
       component: AlquilerEspaciosDashboard,
+      meta: { module: 'reservas', headerTitle: 'Gestión de Reservas', headerDescription: 'Calendario de espacios' }
     },
     {
       path: '/reservas',
@@ -41,26 +45,31 @@ const router = createRouter({
       path: '/pago-online',
       name: 'pago-online',
       component: OnlinePaymentView,
+      meta: { hideHeader: true }
     },
     {
       path: '/pagos',
       name: 'pagos',
       component: GestionCuotasDashboard,
+      meta: { module: 'pagos', headerTitle: 'Registrar Pagos', headerDescription: 'Ingreso rápido de cuotas' }
     },
     {
       path: '/alquiler-articulos',
       name: 'alquiler-articulos',
       component: AlquilerArticulosDashboard,
+      meta: { module: 'articulos', headerTitle: 'Alquiler de Artículos', headerDescription: 'Ortopedia e inventario' }
     },
     {
       path: '/ortopedia/alquileres/:id',
       name: 'alquiler-detail',
       component: AlquilerArticuloDetailView,
+      meta: { hideHeader: true }
     },
     {
       path: '/cobradores',
       name: 'cobradores',
       component: CobradorDashboard,
+      meta: { module: 'cobradores', headerTitle: 'Módulo de Cobradores', headerDescription: 'Gestión de rutas y cobros' }
     },
   ],
 })

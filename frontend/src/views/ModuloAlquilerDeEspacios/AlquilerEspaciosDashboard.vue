@@ -212,59 +212,7 @@ const refreshData = async () => {
 <template>
   <div class="min-h-screen bg-slate-50 font-sans text-slate-800">
     <!-- Header -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16 items-center">
-          <div class="flex items-center gap-3 cursor-pointer" @click="goHome">
-            <div
-              class="w-9 h-9 bg-blue-700 rounded-lg flex items-center justify-center shadow-md text-white"
-            >
-              <!-- Icono -->
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
-            </div>
-            <div>
-              <h1 class="text-lg font-bold text-slate-900 tracking-tight leading-none">
-                Sistema Club Abuelos
-              </h1>
-              <span class="text-xs text-slate-500 font-medium">Gestión de Reservas</span>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-6">
-            <div class="hidden md:flex flex-col items-end">
-              <span class="text-xs font-semibold text-slate-700">Administrador</span>
-              <span class="text-[10px] text-slate-400 uppercase tracking-wider">
-                {{
-                  new Date().toLocaleDateString('es-AR', {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'short',
-                  })
-                }}
-              </span>
-            </div>
-            <div
-              class="h-9 w-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 text-xs font-bold shadow-sm ring-2 ring-white"
-            >
-              AD
-            </div>
-          </div>
-        </div>
-      </div>
-    </header>
+    <!-- Header -->
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <!-- Breadcrumb -->
