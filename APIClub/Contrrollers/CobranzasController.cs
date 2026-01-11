@@ -1,4 +1,5 @@
-﻿using APIClub.Domain.GestionSocios;
+﻿using APIClub.Application.Dtos.Lote;
+using APIClub.Domain.GestionSocios;
 using Microsoft.AspNetCore.Mvc;
 
 namespace APIClub.Contrrollers
@@ -24,11 +25,21 @@ namespace APIClub.Contrrollers
         }
 
         [HttpGet("lotes")]
-        public async Task<IActionResult> ListarLotes(int IdLote)
+        public async Task<IActionResult> ListarLotes()
         {
             var lotes = await _cobranzasServices.GetLotesPreview();
 
             return Ok(lotes);   
+        }
+
+        [HttpPost("lotes")]
+        public async Task<IActionResult> CrearLote(CreateLoteDto dto)
+        {
+            var result = await _cobranzasServices.CrearLote(dto);
+
+            if(!result.Exit) return BadRequest(result.Errormessage);
+
+            return Ok(result.Data);
         }
 
     }

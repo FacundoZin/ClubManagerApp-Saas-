@@ -64,5 +64,29 @@ namespace APIClub.Application.Services
             }
             
         }
+        
+        public async Task<Result<bool>> CrearLote(CreateLoteDto dto)
+        {
+            try
+            {
+                var nuevoLote = new APIClub.Domain.GestionSocios.Models.Lote
+                {
+                    NombreLote = dto.NombreLote,
+                    Calle1 = dto.Calle1,
+                    Calle2 = dto.Calle2,
+                    Calle3 = dto.Calle3,
+                    Calle4 = dto.Calle4
+                };
+
+                _context.Lotes.Add(nuevoLote);
+                await _context.SaveChangesAsync();
+
+                return Result<bool>.Exito(true);
+            }
+            catch (Exception ex)
+            {
+                return Result<bool>.Error("Error al crear el lote: " + ex.Message, 500);
+            }
+        }
     }
 }

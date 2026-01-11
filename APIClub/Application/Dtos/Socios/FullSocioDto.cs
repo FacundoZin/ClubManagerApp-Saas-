@@ -11,6 +11,7 @@ namespace APIClub.Application.Dtos.Socios
         public string? Telefono { get; set; }
         public string? Direcccion { get; set; }
         public string? NombreLote { get; set; }
+        public int? IdLote { get; set; }
         public string? Localidad { get; set; }
         public DateOnly? FechaAsociacion { get; set; }
         public bool AdeudaCuotas { get; set; }

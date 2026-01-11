@@ -2,7 +2,6 @@
 using APIClub.Domain.ReservasSalones.Repositories;
 using APIClub.Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.CodeAnalysis;
 
 namespace APIClub.Infrastructure.Persistence.Repositorio
 {

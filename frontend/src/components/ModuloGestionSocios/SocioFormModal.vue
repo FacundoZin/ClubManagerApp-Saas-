@@ -1,6 +1,7 @@
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, onMounted, watch } from 'vue'
 import ConfirmModal from '../Common/ConfirmModal.vue'
+import CobranzasService from '../../services/CobranzasService'
 
 const props = defineProps({
   isOpen: Boolean,
@@ -18,9 +19,37 @@ const form = reactive({
   dni: '',
   telefono: '',
   direcccion: '', // Note: keeping typo to match DTO
-  lote: '',
+  idLote: '',
   localidad: '',
 })
+
+const lotes = ref([])
+const isLoadingLotes = ref(false)
+
+const fetchLotes = async () => {
+  try {
+    isLoadingLotes.value = true
+    lotes.value = await CobranzasService.listarLotes()
+  } catch (error) {
+    console.error('Error fetching lotes:', error)
+  } finally {
+    isLoadingLotes.value = false
+  }
+}
+
+onMounted(() => {
+  fetchLotes()
+})
+
+// Watch for modal opening to ensure lotes are refreshed if needed
+watch(
+  () => props.isOpen,
+  (newVal) => {
+    if (newVal && lotes.value.length === 0) {
+      fetchLotes()
+    }
+  },
+)
 
 const isSubmitting = ref(false)
 const errorMessage = ref('')
@@ -31,7 +60,7 @@ const resetForm = () => {
   form.dni = ''
   form.telefono = ''
   form.direcccion = ''
-  form.lote = ''
+  form.idLote = ''
   form.localidad = ''
   errorMessage.value = ''
 }
@@ -249,13 +278,22 @@ const handleSubmit = async () => {
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label for="lote" class="block text-sm font-medium text-slate-700">Lote</label>
-                <input
-                  type="text"
+                <label for="lote" class="block text-sm font-medium text-slate-700"
+                  >Lote / Zona</label
+                >
+                <select
                   id="lote"
-                  v-model="form.lote"
-                  class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
-                />
+                  v-model="form.idLote"
+                  class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border bg-white"
+                >
+                  <option value="">Seleccione un lote</option>
+                  <option v-for="lote in lotes" :key="lote.id" :value="lote.id">
+                    {{ lote.nombreLote }}
+                  </option>
+                </select>
+                <p v-if="isLoadingLotes" class="mt-1 text-xs text-slate-500 italic">
+                  Cargando lotes...
+                </p>
               </div>
               <div>
                 <label for="localidad" class="block text-sm font-medium text-slate-700"

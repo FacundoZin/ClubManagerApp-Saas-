@@ -9,5 +9,6 @@ namespace APIClub.Domain.GestionSocios
     {
         Task<Result<List<PreviewSocioForCobranzaDto>>> ListarSociosDedudoresPorLote(int Idlote);
         Task<List<PreviewLote>> GetLotesPreview();
+        Task<Result<bool>> CrearLote(CreateLoteDto dto);
     }
 }
