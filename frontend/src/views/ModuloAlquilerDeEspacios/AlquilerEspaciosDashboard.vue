@@ -263,7 +263,7 @@ const refreshData = async () => {
           </ol>
         </nav>
         <h2 class="text-3xl font-bold text-slate-900 tracking-tight">Gestión de Reservas</h2>
-        <p class="text-slate-500 mt-1 text-lg">Administre las reservas de los salones del club.</p>
+        <p class="text-slate-500 mt-1 text-lg">Administre las reservas de los espacios del club.</p>
       </div>
 
       <!-- Action Cards -->

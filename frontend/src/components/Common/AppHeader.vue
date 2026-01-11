@@ -56,8 +56,8 @@ const moduleName = computed(() => route.meta.headerTitle || currentModule.value.
 <template>
   <!-- Renderizado condicional basado en meta.hideHeader -->
   <!-- Envolvemos en un div w-full para evitar conflictos con estilos globales de 'header' en App.vue -->
-  <div v-if="!route.meta.hideHeader" class="w-full font-sans">
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm w-full">
+  <div v-if="!route.meta.hideHeader" class="w-full font-sans h-16">
+    <header class="bg-white border-b border-slate-200 fixed top-0 w-full z-30 shadow-sm">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center w-full">
           <!-- Logo / Título -->

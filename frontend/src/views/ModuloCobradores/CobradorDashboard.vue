@@ -1,10 +1,15 @@
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import CobradorSocioCard from '../../components/ModuloCobradores/CobradorSocioCard.vue'
 import SocioUpdateModal from '../../components/ModuloGestionSocios/SocioUpdateModal.vue'
 import CobranzasService from '../../services/CobranzasService'
 import CuotasService from '../../services/CuotasService'
 import SociosService from '../../services/SociosService'
+
+// Router
+const router = useRouter()
+const goHome = () => router.push('/')
 
 // Estado
 const lotes = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'] // Ejemplo de lotes, idealmente vendrían de una API o config
@@ -43,21 +48,12 @@ const handlePago = async (socio) => {
   try {
     const paymentData = {
       socioId: socio.id,
-      monto: socio.deuda, // O el monto que corresponda, la API debe validar. Asumo deuda total o cuota.
-      // El requerimiento dice "El resto de los datos necesarios para registrar la cuota deben enviarse según lo definido por la API."
-      // Sin ver la API de Cuotas, asumo que necesito enviar el ID del socio y la forma de pago.
-      // Si es 'RegistrarCuota', quizás necesite el ID de la cuota o detalle.
-      // Pero el usuario dijo "comportamiento general... permitir que un cobrador gestione socios... Registrar pago".
-      // Y "forma de pago COBRADOR".
-      // Voy a asumir una estructura genérica { socioId, formaPago: 'COBRADOR' } y quizás el monto si es variable.
-      // Si falla, el error nos dirá.
+      monto: socio.deuda,
       formaPago: 'COBRADOR',
-      // Otras propiedades pueden ser necesarias.
     }
 
     await CuotasService.registrarCuota(paymentData)
     alert('Pago registrado exitosamente')
-    // Recargar lista para actualizar deuda/estado
     buscarSocios()
   } catch (e) {
     alert(`Error al registrar pago: ${e.message}`)
@@ -102,8 +98,56 @@ const handleDelete = async (socio) => {
 <template>
   <div class="min-h-screen bg-slate-50 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <!-- Header -->
-      <!-- Header (Removed, handled by AppHeader) -->
+      <!-- Breadcrumb -->
+      <div class="mb-8">
+        <nav class="flex mb-2" aria-label="Breadcrumb">
+          <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+              <a
+                href="#"
+                @click.prevent="goHome"
+                class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-blue-600"
+              >
+                <svg
+                  class="w-3 h-3 mr-2.5"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z"
+                  />
+                </svg>
+                Inicio
+              </a>
+            </li>
+            <li>
+              <div class="flex items-center">
+                <svg
+                  class="w-3 h-3 text-slate-400 mx-1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 6 10"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="m1 9 4-4-4-4"
+                  />
+                </svg>
+                <span class="ml-1 text-sm font-medium text-slate-700 md:ml-2"
+                  >Gestión de Cobranzas</span
+                >
+              </div>
+            </li>
+          </ol>
+        </nav>
+        <h2 class="text-3xl font-bold text-slate-900 tracking-tight">Gestión de Cobranzas</h2>
+        <p class="text-slate-500 mt-1 text-lg">Maneje las cobranzas desde un solo lugar</p>
+      </div>
 
       <!-- Selector de Lote -->
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8">

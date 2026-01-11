@@ -15,7 +15,7 @@ const modules = [
     route: '/socios',
     color: 'text-blue-600',
     bg: 'bg-blue-50',
-    hoverBorder: 'group-hover:border-blue-200'
+    hoverBorder: 'group-hover:border-blue-200',
   },
   {
     title: 'Gestión Reservas',
@@ -24,7 +24,7 @@ const modules = [
     route: '/reservas-salones',
     color: 'text-indigo-600',
     bg: 'bg-indigo-50',
-    hoverBorder: 'group-hover:border-indigo-200'
+    hoverBorder: 'group-hover:border-indigo-200',
   },
   {
     title: 'Alquiler de artículos',
@@ -33,16 +33,16 @@ const modules = [
     route: '/alquiler-articulos',
     color: 'text-sky-600',
     bg: 'bg-sky-50',
-    hoverBorder: 'group-hover:border-sky-200'
+    hoverBorder: 'group-hover:border-sky-200',
   },
   {
     title: 'Módulo para cobradores',
-    description: 'Gestión de cobranzas y rutas de pago.',
+    description: 'Menejo de cobranzas desde un solo lugar',
     icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z',
     route: '/cobradores',
     color: 'text-cyan-600',
     bg: 'bg-cyan-50',
-    hoverBorder: 'group-hover:border-cyan-200'
+    hoverBorder: 'group-hover:border-cyan-200',
   },
   {
     title: 'Gestión de viajes',
@@ -51,7 +51,7 @@ const modules = [
     route: '/viajes',
     color: 'text-teal-600',
     bg: 'bg-teal-50',
-    hoverBorder: 'group-hover:border-teal-200'
+    hoverBorder: 'group-hover:border-teal-200',
   },
   {
     title: 'Registrar pago',
@@ -60,42 +60,64 @@ const modules = [
     route: '/pagos',
     color: 'text-emerald-600',
     bg: 'bg-emerald-50',
-    hoverBorder: 'group-hover:border-emerald-200'
-  }
+    hoverBorder: 'group-hover:border-emerald-200',
+  },
 ]
 </script>
 
 <template>
   <div class="min-h-screen bg-slate-50 font-sans text-slate-800">
-    
     <!-- Header Institucional -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center">
           <!-- Logo / Título -->
           <div class="flex items-center gap-3">
-            <div class="w-9 h-9 bg-blue-700 rounded-lg flex items-center justify-center shadow-md text-white">
-               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-               </svg>
+            <div
+              class="w-9 h-9 bg-blue-700 rounded-lg flex items-center justify-center shadow-md text-white"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                />
+              </svg>
             </div>
             <div>
-              <h1 class="text-lg font-bold text-slate-900 tracking-tight leading-none">Sistema Club Abuelos</h1>
+              <h1 class="text-lg font-bold text-slate-900 tracking-tight leading-none">
+                Sistema Club Abuelos
+              </h1>
               <span class="text-xs text-slate-500 font-medium">Panel de Administración</span>
             </div>
           </div>
 
           <!-- User / Date Info -->
           <div class="flex items-center gap-6">
-             <div class="hidden md:flex flex-col items-end">
-                <span class="text-xs font-semibold text-slate-700">Administrador</span>
-                <span class="text-[10px] text-slate-400 uppercase tracking-wider">
-                  {{ new Date().toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'short' }) }}
-                </span>
-             </div>
-             <div class="h-9 w-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 text-xs font-bold shadow-sm ring-2 ring-white">
-                AD
-             </div>
+            <div class="hidden md:flex flex-col items-end">
+              <span class="text-xs font-semibold text-slate-700">Administrador</span>
+              <span class="text-[10px] text-slate-400 uppercase tracking-wider">
+                {{
+                  new Date().toLocaleDateString('es-AR', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'short',
+                  })
+                }}
+              </span>
+            </div>
+            <div
+              class="h-9 w-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 text-xs font-bold shadow-sm ring-2 ring-white"
+            >
+              AD
+            </div>
           </div>
         </div>
       </div>
@@ -103,23 +125,45 @@ const modules = [
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      
       <!-- Breadcrumb & Page Title -->
       <div class="mb-8">
         <nav class="flex mb-2" aria-label="Breadcrumb">
           <ol class="inline-flex items-center space-x-1 md:space-x-3">
             <li class="inline-flex items-center">
-              <a href="#" class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-blue-600">
-                <svg class="w-3 h-3 mr-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z"/>
+              <a
+                href="#"
+                class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-blue-600"
+              >
+                <svg
+                  class="w-3 h-3 mr-2.5"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z"
+                  />
                 </svg>
                 Inicio
               </a>
             </li>
             <li>
               <div class="flex items-center">
-                <svg class="w-3 h-3 text-slate-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                <svg
+                  class="w-3 h-3 text-slate-400 mx-1"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 6 10"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="m1 9 4-4-4-4"
+                  />
                 </svg>
                 <span class="ml-1 text-sm font-medium text-slate-700 md:ml-2">Panel General</span>
               </div>
@@ -127,37 +171,67 @@ const modules = [
           </ol>
         </nav>
         <h2 class="text-3xl font-bold text-slate-900 tracking-tight">Bienvenido de nuevo</h2>
-        <p class="text-slate-500 mt-1 text-lg">Seleccione un módulo para gestionar las operaciones del club.</p>
+        <p class="text-slate-500 mt-1 text-lg">
+          Seleccione un módulo para gestionar las operaciones del club.
+        </p>
       </div>
 
       <!-- Modules Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        
-        <button 
-          v-for="(module, index) in modules" 
+        <button
+          v-for="(module, index) in modules"
           :key="index"
           @click="navigateTo(module.route)"
           class="group relative flex flex-col p-6 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-left overflow-hidden"
           :class="module.hoverBorder"
         >
           <!-- Hover Background Effect -->
-          <div class="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div
+            class="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          ></div>
 
           <div class="relative z-10 flex items-start justify-between mb-5">
-            <div class="p-3.5 rounded-lg transition-colors duration-300 shadow-sm ring-1 ring-black/5" :class="[module.bg, module.color]">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" :d="module.icon" />
+            <div
+              class="p-3.5 rounded-lg transition-colors duration-300 shadow-sm ring-1 ring-black/5"
+              :class="[module.bg, module.color]"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-7 w-7"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  :d="module.icon"
+                />
               </svg>
             </div>
             <div class="text-slate-300 group-hover:text-blue-500 transition-colors duration-300">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
             </div>
           </div>
 
           <div class="relative z-10 mt-auto">
-            <h3 class="text-lg font-bold text-slate-900 mb-1 group-hover:text-blue-700 transition-colors duration-300">
+            <h3
+              class="text-lg font-bold text-slate-900 mb-1 group-hover:text-blue-700 transition-colors duration-300"
+            >
               {{ module.title }}
             </h3>
             <p class="text-sm text-slate-500 leading-relaxed font-medium">
@@ -165,13 +239,14 @@ const modules = [
             </p>
           </div>
         </button>
-
       </div>
     </main>
 
     <!-- Footer -->
     <footer class="border-t border-slate-200 bg-white mt-auto py-8">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4"
+      >
         <div class="text-center md:text-left">
           <p class="text-slate-500 text-sm font-medium">
             &copy; {{ new Date().getFullYear() }} Sistema Club Abuelos.
@@ -185,6 +260,5 @@ const modules = [
         </div>
       </div>
     </footer>
-
   </div>
 </template>
