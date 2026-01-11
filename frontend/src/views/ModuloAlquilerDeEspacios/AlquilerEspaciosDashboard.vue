@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import SalonService from '../../services/SalonService'
 
 // Componentes del Módulo
-import ConfirmModal from '../../components/ConfirmModal.vue'
+import ConfirmModal from '../../components/Common/ConfirmModal.vue'
 import AvailabilityModal from '../../components/ModuloReservaSalones/AvailabilityModal.vue'
 import ReservaCard from '../../components/ModuloReservaSalones/ReservaCard.vue'
 import ReservaDetailsModal from '../../components/ModuloReservaSalones/ReservaDetailsModal.vue'
@@ -216,12 +216,23 @@ const refreshData = async () => {
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center">
           <div class="flex items-center gap-3 cursor-pointer" @click="goHome">
-            <div class="w-9 h-9 bg-blue-700 rounded-lg flex items-center justify-center shadow-md text-white">
+            <div
+              class="w-9 h-9 bg-blue-700 rounded-lg flex items-center justify-center shadow-md text-white"
+            >
               <!-- Icono -->
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
               </svg>
             </div>
             <div>
@@ -246,7 +257,8 @@ const refreshData = async () => {
               </span>
             </div>
             <div
-              class="h-9 w-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 text-xs font-bold shadow-sm ring-2 ring-white">
+              class="h-9 w-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 text-xs font-bold shadow-sm ring-2 ring-white"
+            >
               AD
             </div>
           </div>
@@ -260,24 +272,44 @@ const refreshData = async () => {
         <nav class="flex mb-2" aria-label="Breadcrumb">
           <ol class="inline-flex items-center space-x-1 md:space-x-3">
             <li class="inline-flex items-center">
-              <a href="#" @click.prevent="goHome"
-                class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-blue-600">
-                <svg class="w-3 h-3 mr-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
-                  viewBox="0 0 20 20">
+              <a
+                href="#"
+                @click.prevent="goHome"
+                class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-blue-600"
+              >
+                <svg
+                  class="w-3 h-3 mr-2.5"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
                   <path
-                    d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z" />
+                    d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z"
+                  />
                 </svg>
                 Inicio
               </a>
             </li>
             <li>
               <div class="flex items-center">
-                <svg class="w-3 h-3 text-slate-400 mx-1" xmlns="http://www.w3.org/2000/svg" fill="none"
-                  viewBox="0 0 6 10">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="m1 9 4-4-4-4" />
+                <svg
+                  class="w-3 h-3 text-slate-400 mx-1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 6 10"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="m1 9 4-4-4-4"
+                  />
                 </svg>
-                <span class="ml-1 text-sm font-medium text-slate-700 md:ml-2">Reservas Salones</span>
+                <span class="ml-1 text-sm font-medium text-slate-700 md:ml-2"
+                  >Reservas Salones</span
+                >
               </div>
             </li>
           </ol>
@@ -288,28 +320,46 @@ const refreshData = async () => {
 
       <!-- Action Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-        <button v-for="action in actions" :key="action.id" @click="selectAction(action.id)"
+        <button
+          v-for="action in actions"
+          :key="action.id"
+          @click="selectAction(action.id)"
           class="group relative flex flex-col p-6 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-left overflow-hidden"
           :class="[
             action.hoverBorder,
             currentAction === action.id ? 'ring-2 ring-blue-500 border-transparent' : '',
-          ]">
+          ]"
+        >
           <div
-            class="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          </div>
+            class="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          ></div>
 
           <div class="relative z-10 flex items-start justify-between mb-5">
-            <div class="p-3.5 rounded-lg transition-colors duration-300 shadow-sm ring-1 ring-black/5"
-              :class="[action.bg, action.color]">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" :d="action.icon" />
+            <div
+              class="p-3.5 rounded-lg transition-colors duration-300 shadow-sm ring-1 ring-black/5"
+              :class="[action.bg, action.color]"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  :d="action.icon"
+                />
               </svg>
             </div>
           </div>
 
           <div class="relative z-10 mt-auto">
-            <h3 class="text-lg font-bold text-slate-900 mb-1 group-hover:text-blue-700 transition-colors duration-300">
+            <h3
+              class="text-lg font-bold text-slate-900 mb-1 group-hover:text-blue-700 transition-colors duration-300"
+            >
               {{ action.title }}
             </h3>
             <p class="text-xs text-slate-500 leading-relaxed font-medium">
@@ -320,23 +370,39 @@ const refreshData = async () => {
       </div>
 
       <!-- Content Area -->
-      <div v-if="currentAction !== 'none'"
-        class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 min-h-[400px]">
+      <div
+        v-if="currentAction !== 'none'"
+        class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 min-h-[400px]"
+      >
         <!-- CREATE PLACEHOLDER -->
-        <div v-if="currentAction === 'create'"
-          class="flex flex-col items-center justify-center h-full py-12 text-center">
+        <div
+          v-if="currentAction === 'create'"
+          class="flex flex-col items-center justify-center h-full py-12 text-center"
+        >
           <div class="p-4 bg-blue-50 rounded-full mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-8 w-8 text-blue-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4v16m8-8H4"
+              />
             </svg>
           </div>
           <h3 class="text-lg font-medium text-slate-900">Nueva Reserva</h3>
           <p class="text-slate-500 mt-2">
             El formulario está abierto. Si lo cerró, ábralo nuevamente.
           </p>
-          <button @click="isFormModalOpen = true"
-            class="mt-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
+          <button
+            @click="isFormModalOpen = true"
+            class="mt-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
+          >
             Abrir formulario
           </button>
         </div>
@@ -346,8 +412,11 @@ const refreshData = async () => {
           <div class="flex flex-col sm:flex-row gap-4 mb-6">
             <div class="w-full sm:w-1/3">
               <label class="block text-sm font-medium text-slate-700 mb-1">Seleccionar Salón</label>
-              <select v-model="selectedSalonId" @change="handleListReservas"
-                class="block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border px-3 py-2">
+              <select
+                v-model="selectedSalonId"
+                @change="handleListReservas"
+                class="block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border px-3 py-2"
+              >
                 <option value="" disabled>-- Elija un salón --</option>
                 <option v-for="salon in salones" :key="salon.id" :value="salon.id">
                   {{ salon.nombre }}
@@ -357,17 +426,34 @@ const refreshData = async () => {
           </div>
 
           <div v-if="isLoadingData" class="flex justify-center py-12">
-            <svg class="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none"
-              viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-              </path>
+            <svg
+              class="animate-spin h-8 w-8 text-indigo-600"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
             </svg>
           </div>
           <div v-else-if="dataError" class="text-red-500 text-center py-12">{{ dataError }}</div>
           <div v-else-if="selectedSalonId">
-            <ReservaList :reservas="reservationsList" @view-details="handleViewDetails" @cancel="handleDeleteRequest" />
+            <ReservaList
+              :reservas="reservationsList"
+              @view-details="handleViewDetails"
+              @cancel="handleDeleteRequest"
+            />
           </div>
           <div v-else class="text-center py-12 text-slate-400">
             Seleccione un salón para ver sus reservas.
@@ -379,8 +465,10 @@ const refreshData = async () => {
           <div class="flex flex-col sm:flex-row gap-4 items-end mb-6 max-w-2xl mx-auto mt-8">
             <div class="w-full sm:w-1/2">
               <label class="block text-sm font-medium text-slate-700 mb-1">Salón</label>
-              <select v-model="selectedSalonId"
-                class="block w-full rounded-md border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm border px-3 py-2">
+              <select
+                v-model="selectedSalonId"
+                class="block w-full rounded-md border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm border px-3 py-2"
+              >
                 <option value="" disabled>-- Elija un salón --</option>
                 <option v-for="salon in salones" :key="salon.id" :value="salon.id">
                   {{ salon.nombre }}
@@ -389,12 +477,18 @@ const refreshData = async () => {
             </div>
             <div class="w-full sm:w-1/2">
               <label class="block text-sm font-medium text-slate-700 mb-1">Fecha</label>
-              <input type="date" v-model="selectedDate"
-                class="block w-full rounded-md border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm border px-3 py-2" />
+              <input
+                type="date"
+                v-model="selectedDate"
+                class="block w-full rounded-md border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm border px-3 py-2"
+              />
             </div>
             <div>
-              <button @click="handleCheckAvailability" :disabled="!selectedSalonId || !selectedDate"
-                class="w-full sm:w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50">
+              <button
+                @click="handleCheckAvailability"
+                :disabled="!selectedSalonId || !selectedDate"
+                class="w-full sm:w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50"
+              >
                 Verificar
               </button>
             </div>
@@ -409,8 +503,10 @@ const refreshData = async () => {
           <div class="flex flex-col sm:flex-row gap-4 items-end mb-6 max-w-3xl mx-auto">
             <div class="w-full sm:w-1/3">
               <label class="block text-sm font-medium text-slate-700 mb-1">Salón</label>
-              <select v-model="selectedSalonId"
-                class="block w-full rounded-md border-slate-300 shadow-sm focus:border-violet-500 focus:ring-violet-500 sm:text-sm border px-3 py-2">
+              <select
+                v-model="selectedSalonId"
+                class="block w-full rounded-md border-slate-300 shadow-sm focus:border-violet-500 focus:ring-violet-500 sm:text-sm border px-3 py-2"
+              >
                 <option value="" disabled>-- Elija un salón --</option>
                 <option v-for="salon in salones" :key="salon.id" :value="salon.id">
                   {{ salon.nombre }}
@@ -419,12 +515,18 @@ const refreshData = async () => {
             </div>
             <div class="w-full sm:w-1/3">
               <label class="block text-sm font-medium text-slate-700 mb-1">Fecha</label>
-              <input type="date" v-model="selectedDate"
-                class="block w-full rounded-md border-slate-300 shadow-sm focus:border-violet-500 focus:ring-violet-500 sm:text-sm border px-3 py-2" />
+              <input
+                type="date"
+                v-model="selectedDate"
+                class="block w-full rounded-md border-slate-300 shadow-sm focus:border-violet-500 focus:ring-violet-500 sm:text-sm border px-3 py-2"
+              />
             </div>
             <div class="w-full sm:w-auto">
-              <button @click="handleSearchReserva" :disabled="!selectedSalonId || !selectedDate || isLoadingData"
-                class="w-full sm:w-auto px-6 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-violet-600 hover:bg-violet-700 disabled:opacity-50">
+              <button
+                @click="handleSearchReserva"
+                :disabled="!selectedSalonId || !selectedDate || isLoadingData"
+                class="w-full sm:w-auto px-6 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-violet-600 hover:bg-violet-700 disabled:opacity-50"
+              >
                 {{ isLoadingData ? 'Buscando...' : 'Buscar' }}
               </button>
             </div>
@@ -436,14 +538,30 @@ const refreshData = async () => {
             <h4 class="text-sm font-medium text-slate-500 mb-3 uppercase tracking-wider">
               Resultado de la búsqueda
             </h4>
-            <ReservaCard :reserva="searchResult" @delete="handleDeleteRequest" @view="handleViewDetails" />
+            <ReservaCard
+              :reserva="searchResult"
+              @delete="handleDeleteRequest"
+              @view="handleViewDetails"
+            />
           </div>
 
-          <div v-else-if="searchPerformed && !searchResult && !isLoadingData" class="text-center py-12">
+          <div
+            v-else-if="searchPerformed && !searchResult && !isLoadingData"
+            class="text-center py-12"
+          >
             <div class="inline-flex items-center justify-center p-4 bg-slate-50 rounded-full mb-3">
-              <svg class="h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              <svg
+                class="h-8 w-8 text-slate-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
               </svg>
             </div>
             <p class="text-slate-500 max-w-xs mx-auto">
@@ -458,7 +576,8 @@ const refreshData = async () => {
                   month: 'long',
                   year: 'numeric',
                 })
-              }}</span>.
+              }}</span
+              >.
             </p>
           </div>
         </div>
@@ -466,42 +585,93 @@ const refreshData = async () => {
     </main>
 
     <!-- Modals -->
-    <ReservaFormModal :is-open="isFormModalOpen" :salones="salones" @close="isFormModalOpen = false"
-      @save="handleSaveReserva" />
-    <AvailabilityModal :is-open="isAvailabilityModalOpen" :loading="availabilityLoading" :result="availabilityResult"
-      @close="isAvailabilityModalOpen = false" />
+    <ReservaFormModal
+      :is-open="isFormModalOpen"
+      :salones="salones"
+      @close="isFormModalOpen = false"
+      @save="handleSaveReserva"
+    />
+    <AvailabilityModal
+      :is-open="isAvailabilityModalOpen"
+      :loading="availabilityLoading"
+      :result="availabilityResult"
+      @close="isAvailabilityModalOpen = false"
+    />
 
-    <ConfirmModal :is-open="isConfirmDeleteOpen" title="Cancelar Reserva"
+    <ConfirmModal
+      :is-open="isConfirmDeleteOpen"
+      title="Cancelar Reserva"
       message="¿Está seguro que desea cancelar esta reserva? Esta acción no se puede deshacer."
-      confirm-text="Si, Cancelar" type="danger" @close="isConfirmDeleteOpen = false" @confirm="confirmDelete" />
+      confirm-text="Si, Cancelar"
+      type="danger"
+      @close="isConfirmDeleteOpen = false"
+      @confirm="confirmDelete"
+    />
 
-    <ReservaDetailsModal :is-open="isDetailsModalOpen" :reserva-id="selectedReservaId"
-      @close="isDetailsModalOpen = false" @payment-registered="refreshData" />
+    <ReservaDetailsModal
+      :is-open="isDetailsModalOpen"
+      :reserva-id="selectedReservaId"
+      @close="isDetailsModalOpen = false"
+      @payment-registered="refreshData"
+    />
 
     <!-- Toast Notification -->
-    <Transition enter-active-class="transform ease-out duration-300 transition"
+    <Transition
+      enter-active-class="transform ease-out duration-300 transition"
       enter-from-class="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
-      enter-to-class="translate-y-0 opacity-100 sm:translate-x-0" leave-active-class="transition ease-in duration-100"
-      leave-from-class="opacity-100" leave-to-class="opacity-0">
-      <div v-if="toast.show"
-        class="fixed bottom-5 right-5 z-50 flex w-full max-w-sm overflow-hidden bg-white rounded-lg shadow-2xl border border-slate-200 pointer-events-auto ring-1 ring-black ring-opacity-5">
-        <div class="flex items-center justify-center w-12" :class="{
-          'bg-emerald-500': toast.type === 'success',
-          'bg-red-500': toast.type === 'error',
-        }">
-          <svg v-if="toast.type === 'success'" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24"
-            stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      enter-to-class="translate-y-0 opacity-100 sm:translate-x-0"
+      leave-active-class="transition ease-in duration-100"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div
+        v-if="toast.show"
+        class="fixed bottom-5 right-5 z-50 flex w-full max-w-sm overflow-hidden bg-white rounded-lg shadow-2xl border border-slate-200 pointer-events-auto ring-1 ring-black ring-opacity-5"
+      >
+        <div
+          class="flex items-center justify-center w-12"
+          :class="{
+            'bg-emerald-500': toast.type === 'success',
+            'bg-red-500': toast.type === 'error',
+          }"
+        >
+          <svg
+            v-if="toast.type === 'success'"
+            class="w-6 h-6 text-white"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 13l4 4L19 7"
+            />
           </svg>
-          <svg v-else class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          <svg
+            v-else
+            class="w-6 h-6 text-white"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </div>
         <div class="px-4 py-3">
-          <span class="font-semibold" :class="{
-            'text-emerald-500': toast.type === 'success',
-            'text-red-500': toast.type === 'error',
-          }">
+          <span
+            class="font-semibold"
+            :class="{
+              'text-emerald-500': toast.type === 'success',
+              'text-red-500': toast.type === 'error',
+            }"
+          >
             {{ toast.type === 'success' ? 'Éxito' : 'Error' }}
           </span>
           <p class="text-sm text-slate-600">{{ toast.message }}</p>
