@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APIClub.Migrations
 {
     [DbContext(typeof(AppDbcontext))]
-    [Migration("20260111212518_addTableLote")]
-    partial class addTableLote
+    [Migration("20260113213705_NewMigration")]
+    partial class NewMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -81,7 +81,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = 5,
-                            FechaAlquiler = new DateTime(2026, 1, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FechaAlquiler = new DateTime(2026, 1, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Finalizado = false,
                             IdSocio = 3,
                             Observaciones = "Alquiler Activo para Test"
@@ -319,22 +319,22 @@ namespace APIClub.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Calle1")
+                    b.Property<string>("CalleEste")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Calle2")
+                    b.Property<string>("CalleNorte")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Calle3")
+                    b.Property<string>("CalleOeste")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Calle4")
+                    b.Property<string>("CalleSur")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
@@ -351,28 +351,28 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = 1,
-                            Calle1 = "Mitre",
-                            Calle2 = "San Martín",
-                            Calle3 = "Belgrano",
-                            Calle4 = "Urquiza",
+                            CalleEste = "Belgrano",
+                            CalleNorte = "Mitre",
+                            CalleOeste = "Urquiza",
+                            CalleSur = "San Martín",
                             NombreLote = "Lote A"
                         },
                         new
                         {
                             Id = 2,
-                            Calle1 = "Av. Pellegrini",
-                            Calle2 = "Bv. Oroño",
-                            Calle3 = "Salta",
-                            Calle4 = "Jujuy",
+                            CalleEste = "Salta",
+                            CalleNorte = "Av. Pellegrini",
+                            CalleOeste = "Jujuy",
+                            CalleSur = "Bv. Oroño",
                             NombreLote = "Lote B"
                         },
                         new
                         {
                             Id = 3,
-                            Calle1 = "Av. Corrientes",
-                            Calle2 = "Florida",
-                            Calle3 = "Lavalle",
-                            Calle4 = "Sarmiento",
+                            CalleEste = "Lavalle",
+                            CalleNorte = "Av. Corrientes",
+                            CalleOeste = "Sarmiento",
+                            CalleSur = "Florida",
                             NombreLote = "Lote C"
                         });
                 });
@@ -537,7 +537,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111111"),
-                            FechaExpiracion = new DateOnly(2026, 2, 10),
+                            FechaExpiracion = new DateOnly(2026, 2, 12),
                             IdSocio = 1,
                             anio = 2025,
                             monto = 2500.00m,
@@ -548,7 +548,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("22222222-2222-2222-2222-222222222222"),
-                            FechaExpiracion = new DateOnly(2026, 2, 10),
+                            FechaExpiracion = new DateOnly(2026, 2, 12),
                             IdSocio = 1,
                             anio = 2025,
                             monto = 2500.00m,
@@ -559,7 +559,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("33333333-3333-3333-3333-333333333333"),
-                            FechaExpiracion = new DateOnly(2026, 2, 10),
+                            FechaExpiracion = new DateOnly(2026, 2, 12),
                             IdSocio = 2,
                             anio = 2025,
                             monto = 2500.00m,
@@ -570,7 +570,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("44444444-4444-4444-4444-444444444444"),
-                            FechaExpiracion = new DateOnly(2026, 2, 10),
+                            FechaExpiracion = new DateOnly(2026, 2, 12),
                             IdSocio = 2,
                             anio = 2025,
                             monto = 2500.00m,

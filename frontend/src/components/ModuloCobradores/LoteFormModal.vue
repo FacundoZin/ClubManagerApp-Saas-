@@ -10,10 +10,10 @@ const emit = defineEmits(['close', 'save'])
 
 const form = reactive({
   nombreLote: '',
-  calle1: '',
-  calle2: '',
-  calle3: '',
-  calle4: '',
+  calleNorte: '',
+  calleSur: '',
+  calleEste: '',
+  calleOeste: '',
 })
 
 const isSubmitting = ref(false)
@@ -21,10 +21,10 @@ const errorMessage = ref('')
 
 const resetForm = () => {
   form.nombreLote = ''
-  form.calle1 = ''
-  form.calle2 = ''
-  form.calle3 = ''
-  form.calle4 = ''
+  form.calleNorte = ''
+  form.calleSur = ''
+  form.calleEste = ''
+  form.calleOeste = ''
   errorMessage.value = ''
 }
 
@@ -121,49 +121,49 @@ const handleSubmit = async () => {
               <p class="text-sm font-medium text-slate-700">Calles que delimitan el lote</p>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label for="calle1" class="block text-xs font-medium text-slate-600"
-                    >Calle 1</label
+                  <label for="calleNorte" class="block text-xs font-medium text-slate-600"
+                    >Calle Norte</label
                   >
                   <input
                     type="text"
-                    id="calle1"
-                    v-model="form.calle1"
+                    id="calleNorte"
+                    v-model="form.calleNorte"
                     class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm px-3 py-2 border"
                     placeholder="Nombre de calle"
                   />
                 </div>
                 <div>
-                  <label for="calle2" class="block text-xs font-medium text-slate-600"
-                    >Calle 2</label
+                  <label for="calleSur" class="block text-xs font-medium text-slate-600"
+                    >Calle Sur</label
                   >
                   <input
                     type="text"
-                    id="calle2"
-                    v-model="form.calle2"
+                    id="calleSur"
+                    v-model="form.calleSur"
                     class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm px-3 py-2 border"
                     placeholder="Nombre de calle"
                   />
                 </div>
                 <div>
-                  <label for="calle3" class="block text-xs font-medium text-slate-600"
-                    >Calle 3</label
+                  <label for="calleEste" class="block text-xs font-medium text-slate-600"
+                    >Calle Este</label
                   >
                   <input
                     type="text"
-                    id="calle3"
-                    v-model="form.calle3"
+                    id="calleEste"
+                    v-model="form.calleEste"
                     class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm px-3 py-2 border"
                     placeholder="Nombre de calle"
                   />
                 </div>
                 <div>
-                  <label for="calle4" class="block text-xs font-medium text-slate-600"
-                    >Calle 4</label
+                  <label for="calleOeste" class="block text-xs font-medium text-slate-600"
+                    >Calle Oeste</label
                   >
                   <input
                     type="text"
-                    id="calle4"
-                    v-model="form.calle4"
+                    id="calleOeste"
+                    v-model="form.calleOeste"
                     class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm px-3 py-2 border"
                     placeholder="Nombre de calle"
                   />

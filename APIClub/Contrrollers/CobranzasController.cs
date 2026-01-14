@@ -15,9 +15,9 @@ namespace APIClub.Contrrollers
         }
 
         [HttpGet("lotes/{IdLote}/deudores")]
-        public async Task<IActionResult> ListarSociosDeudoresPorLote(int IdLote)
+        public async Task<IActionResult> ListarSociosDeudoresPorLote(int IdLote, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var result = await _cobranzasServices.ListarSociosDedudoresPorLote(IdLote);
+            var result = await _cobranzasServices.ListarSociosDedudoresPorLote(IdLote, pageNumber, pageSize);
 
             if(!result.Exit) return BadRequest(result.Errormessage);
 

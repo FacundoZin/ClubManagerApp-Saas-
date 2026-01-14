@@ -3,10 +3,10 @@ namespace APIClub.Domain.GestionSocios.Models
     public class Lote
     {
         public int Id { get; set; }
-        public string NombreLote { get; set; }
-        public string Calle1 { get; set; } = string.Empty;
-        public string Calle2 { get; set; } = string.Empty;
-        public string Calle3 { get; set; } = string.Empty;
-        public string Calle4 { get; set; } = string.Empty;
+        public string NombreLote { get; set; } = string.Empty;
+        public string CalleNorte { get; set; } = string.Empty;
+        public string CalleSur { get; set; } = string.Empty;
+        public string CalleEste { get; set; } = string.Empty;
+        public string CalleOeste { get; set; } = string.Empty;
     }
 }

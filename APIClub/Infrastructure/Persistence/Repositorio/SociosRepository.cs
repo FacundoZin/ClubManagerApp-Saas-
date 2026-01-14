@@ -115,13 +115,23 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
             .ToListAsync();
         }
 
-        public async Task<List<Socio>> GetSociosDeudoresByLote(int IdLote, int anioActual, int semestreActual)
+        public async Task<(List<Socio> Items, int TotalCount)> GetSociosDeudoresByLote(int IdLote, int anioActual, int semestreActual, int pageNumber, int pageSize)
         {
-            return await _Dbcontext.Socios.
+            var query = _Dbcontext.Socios.
                 Where(s => s.Lote.Id == IdLote && !s.HistorialCuotas
                 .Any(c => c.Anio == anioActual && c.Semestre == semestreActual))
-                .AsNoTracking()
+                .AsNoTracking();
+
+            int totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderBy(s => s.Apellido)
+                .ThenBy(s => s.Nombre)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
+
+            return (items, totalCount);
         }
     }
 }

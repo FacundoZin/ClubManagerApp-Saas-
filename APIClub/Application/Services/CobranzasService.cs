@@ -2,6 +2,7 @@
 using APIClub.Application.Dtos.Lote;
 using APIClub.Application.Dtos.Socios;
 using APIClub.Domain.GestionSocios;
+using APIClub.Domain.GestionSocios.Models;
 using APIClub.Domain.GestionSocios.Repositories;
 using APIClub.Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
@@ -27,14 +28,14 @@ namespace APIClub.Application.Services
             {
                 Id = s.Id,
                 NombreLote = s.NombreLote,
-                Calle1 = s.Calle1,
-                Calle2 = s.Calle2,
-                Calle3 = s.Calle3,
-                Calle4 = s.Calle4,
+                CalleNorte = s.CalleNorte,
+                CalleSur = s.CalleSur,
+                CalleEste = s.CalleEste,
+                CalleOeste = s.CalleOeste,
             }).ToList();
         }
 
-        public async Task<Result<List<PreviewSocioForCobranzaDto>>> ListarSociosDedudoresPorLote(int Idlote)
+        public async Task<Result<PagedResult<PreviewSocioForCobranzaDto>>> ListarSociosDedudoresPorLote(int Idlote, int pageNumber = 1, int pageSize = 10)
         {
             try
             {
@@ -42,9 +43,9 @@ namespace APIClub.Application.Services
                 int anioActual = hoy.Year;
                 int semestreActual = hoy.Month <= 6 ? 1 : 2;
 
-                var socios = await _SociosRepository.GetSociosDeudoresByLote(Idlote, anioActual, semestreActual);
+                var (paginatedSocios, totalCount) = await _SociosRepository.GetSociosDeudoresByLote(Idlote, anioActual, semestreActual, pageNumber, pageSize);
 
-                var dto = socios.Select(s => new PreviewSocioForCobranzaDto
+                var dto = paginatedSocios.Select(s => new PreviewSocioForCobranzaDto
                 {
                     Id = s.Id,
                     Nombre = s.Nombre,
@@ -55,12 +56,14 @@ namespace APIClub.Application.Services
 
                 }).ToList();
 
-                return Result<List<PreviewSocioForCobranzaDto>>.Exito(dto);
+                var pagedResult = new PagedResult<PreviewSocioForCobranzaDto>(dto, totalCount, pageNumber, pageSize);
+
+                return Result<PagedResult<PreviewSocioForCobranzaDto>>.Exito(pagedResult);
 
             }
             catch (Exception ex)
             {
-                return Result<List<PreviewSocioForCobranzaDto>>.Error("algo salio mal al obtener los socios", 500);
+                return Result<PagedResult<PreviewSocioForCobranzaDto>>.Error("algo salio mal al obtener los socios", 500);
             }
             
         }
@@ -69,13 +72,13 @@ namespace APIClub.Application.Services
         {
             try
             {
-                var nuevoLote = new APIClub.Domain.GestionSocios.Models.Lote
+                var nuevoLote = new Lote
                 {
                     NombreLote = dto.NombreLote,
-                    Calle1 = dto.Calle1,
-                    Calle2 = dto.Calle2,
-                    Calle3 = dto.Calle3,
-                    Calle4 = dto.Calle4
+                    CalleNorte = dto.CalleNorte,
+                    CalleSur = dto.CalleSur,
+                    CalleEste = dto.CalleEste,
+                    CalleOeste = dto.CalleOeste
                 };
 
                 _context.Lotes.Add(nuevoLote);

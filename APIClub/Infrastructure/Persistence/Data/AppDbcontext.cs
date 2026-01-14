@@ -54,10 +54,10 @@ namespace APIClub.Infrastructure.Persistence.Data
 
             modelBuilder.Entity<Lote>(entity =>
             {
-                entity.Property(l => l.Calle1).IsRequired().HasMaxLength(100);
-                entity.Property(l => l.Calle2).IsRequired().HasMaxLength(100);
-                entity.Property(l => l.Calle3).IsRequired().HasMaxLength(100);
-                entity.Property(l => l.Calle4).IsRequired().HasMaxLength(100);
+                entity.Property(l => l.CalleNorte).IsRequired().HasMaxLength(100);
+                entity.Property(l => l.CalleSur).IsRequired().HasMaxLength(100);
+                entity.Property(l => l.CalleEste).IsRequired().HasMaxLength(100);
+                entity.Property(l => l.CalleOeste).IsRequired().HasMaxLength(100);
             });
 
             modelBuilder.Entity<Salon>(entity =>
@@ -191,28 +191,28 @@ namespace APIClub.Infrastructure.Persistence.Data
                 {
                     Id = 1,
                     NombreLote = "Lote A",
-                    Calle1 = "Mitre",
-                    Calle2 = "San Martín",
-                    Calle3 = "Belgrano",
-                    Calle4 = "Urquiza"
+                    CalleNorte = "Mitre",
+                    CalleSur = "San Martín",
+                    CalleEste = "Belgrano",
+                    CalleOeste = "Urquiza"
                 },
                 new Lote
                 {
                     Id = 2,
                     NombreLote = "Lote B",
-                    Calle1 = "Av. Pellegrini",
-                    Calle2 = "Bv. Oroño",
-                    Calle3 = "Salta",
-                    Calle4 = "Jujuy"
+                    CalleNorte = "Av. Pellegrini",
+                    CalleSur = "Bv. Oroño",
+                    CalleEste = "Salta",
+                    CalleOeste = "Jujuy"
                 },
                 new Lote
                 {
                     Id = 3,
                     NombreLote = "Lote C",
-                    Calle1 = "Av. Corrientes",
-                    Calle2 = "Florida",
-                    Calle3 = "Lavalle",
-                    Calle4 = "Sarmiento"
+                    CalleNorte = "Av. Corrientes",
+                    CalleSur = "Florida",
+                    CalleEste = "Lavalle",
+                    CalleOeste = "Sarmiento"
                 }
             );
 

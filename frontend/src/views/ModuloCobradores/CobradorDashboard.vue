@@ -4,6 +4,8 @@ import { useRouter } from 'vue-router'
 import CobradorSocioCard from '../../components/ModuloCobradores/CobradorSocioCard.vue'
 import SocioUpdateModal from '../../components/ModuloGestionSocios/SocioUpdateModal.vue'
 import LoteFormModal from '../../components/ModuloCobradores/LoteFormModal.vue'
+import Pagination from '../../components/Common/Pagination.vue'
+import ConfirmModal from '../../components/Common/ConfirmModal.vue'
 import CobranzasService from '../../services/CobranzasService'
 import CuotasService from '../../services/CuotasService'
 import SociosService from '../../services/SociosService'
@@ -25,12 +27,38 @@ const socios = ref([])
 const loadingSocios = ref(false)
 const errorSocios = ref('')
 
+// Pagination state
+const currentPage = ref(1)
+const totalPages = ref(0)
+const totalCount = ref(0)
+const pageSize = ref(10)
+
 // Modal Editar Socio
 const isEditModalOpen = ref(false)
 const selectedSocioId = ref(null)
 
 // Modal Crear Lote
 const isLoteModalOpen = ref(false)
+
+// Estados para Modales de Confirmación
+const confirmModal = ref({
+  isOpen: false,
+  title: '',
+  message: '',
+  type: 'info',
+  action: null,
+})
+
+const closeConfirm = () => {
+  confirmModal.value.isOpen = false
+}
+
+const handleConfirm = async () => {
+  if (confirmModal.value.action) {
+    await confirmModal.value.action()
+  }
+  closeConfirm()
+}
 
 // Toast
 const toast = ref({ show: false, message: '', type: 'success' })
@@ -53,41 +81,65 @@ const loadLotes = async () => {
 }
 
 // Buscar socios por lote
-const buscarSocios = async () => {
+const buscarSocios = async (page = 1) => {
   if (!selectedLote.value) {
     socios.value = []
+    currentPage.value = 1
+    totalPages.value = 0
+    totalCount.value = 0
     return
   }
 
   loadingSocios.value = true
   errorSocios.value = ''
   try {
-    const data = await CobranzasService.listarSociosDeudoresPorLote(selectedLote.value)
-    socios.value = data
+    const data = await CobranzasService.listarSociosDeudoresPorLote(
+      selectedLote.value,
+      page,
+      pageSize.value,
+    )
+    socios.value = data.items
+    currentPage.value = data.pageNumber
+    totalPages.value = data.totalPages
+    totalCount.value = data.totalCount
   } catch (e) {
     errorSocios.value = e.message
     socios.value = []
+    currentPage.value = 1
+    totalPages.value = 0
+    totalCount.value = 0
   } finally {
     loadingSocios.value = false
   }
 }
 
+// Handle page change
+const handlePageChange = (page) => {
+  buscarSocios(page)
+}
+
 // Manejar pago
-const handlePago = async (socio) => {
-  if (!confirm(`¿Registrar pago para ${socio.nombre} ${socio.apellido}?`)) return
+const handlePago = (socio) => {
+  confirmModal.value = {
+    isOpen: true,
+    title: 'Confirmar Pago',
+    message: `¿Está seguro que desea registrar el pago de $${socio.deuda || '0.00'} para ${socio.nombre} ${socio.apellido}?`,
+    type: 'info',
+    action: async () => {
+      try {
+        const paymentData = {
+          socioId: socio.id,
+          monto: socio.deuda,
+          formaPago: 'COBRADOR',
+        }
 
-  try {
-    const paymentData = {
-      socioId: socio.id,
-      monto: socio.deuda,
-      formaPago: 'COBRADOR',
-    }
-
-    await CuotasService.registrarCuota(paymentData)
-    showToast('Pago registrado exitosamente')
-    buscarSocios()
-  } catch (e) {
-    showToast(`Error al registrar pago: ${e.message}`, 'error')
+        await CuotasService.registrarCuota(paymentData)
+        showToast('Pago registrado exitosamente')
+        buscarSocios(currentPage.value)
+      } catch (e) {
+        showToast(`Error al registrar pago: ${e.message}`, 'error')
+      }
+    },
   }
 }
 
@@ -107,20 +159,21 @@ const handleSocioUpdated = (updatedSocio) => {
 }
 
 // Manejar eliminación de socio
-const handleDelete = async (socio) => {
-  if (
-    !confirm(
-      `¿Está seguro de dar de baja a ${socio.nombre} ${socio.apellido}? Esta acción no se puede deshacer.`,
-    )
-  )
-    return
-
-  try {
-    await SociosService.removeSocio(socio.id)
-    showToast('Socio dado de baja exitosamente')
-    socios.value = socios.value.filter((s) => s.id !== socio.id)
-  } catch (e) {
-    showToast(`Error al dar de baja: ${e.message}`, 'error')
+const handleDelete = (socio) => {
+  confirmModal.value = {
+    isOpen: true,
+    title: 'Dar de Baja Socio',
+    message: `¿Está seguro de dar de baja a ${socio.nombre} ${socio.apellido}? Esta acción no se puede deshacer.`,
+    type: 'danger',
+    action: async () => {
+      try {
+        await SociosService.removeSocio(socio.id)
+        showToast('Socio dado de baja exitosamente')
+        socios.value = socios.value.filter((s) => s.id !== socio.id)
+      } catch (e) {
+        showToast(`Error al dar de baja: ${e.message}`, 'error')
+      }
+    },
   }
 }
 
@@ -234,7 +287,7 @@ onMounted(() => {
             <select
               id="lote-select"
               v-model="selectedLote"
-              @change="buscarSocios"
+              @change="buscarSocios()"
               class="block w-full rounded-xl border-slate-200 bg-slate-50/50 shadow-sm focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 sm:text-base px-4 py-3 border transition-all"
             >
               <option value="">Seleccione un lote</option>
@@ -290,18 +343,28 @@ onMounted(() => {
         </div>
 
         <!-- Lista de Socios -->
-        <div
-          v-else-if="socios.length > 0"
-          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-        >
-          <CobradorSocioCard
-            v-for="socio in socios"
-            :key="socio.id"
-            :socio="socio"
-            @pay="handlePago"
-            @edit="openEditModal"
-            @delete="handleDelete"
-          />
+        <div v-else-if="socios.length > 0">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <CobradorSocioCard
+              v-for="socio in socios"
+              :key="socio.id"
+              :socio="socio"
+              @pay="handlePago"
+              @edit="openEditModal"
+              @delete="handleDelete"
+            />
+          </div>
+
+          <!-- Pagination -->
+          <div class="mt-8">
+            <Pagination
+              :current-page="currentPage"
+              :total-pages="totalPages"
+              :total-count="totalCount"
+              :page-size="pageSize"
+              @change-page="handlePageChange"
+            />
+          </div>
         </div>
 
         <!-- Empty State -->
@@ -399,6 +462,15 @@ onMounted(() => {
       :is-open="isLoteModalOpen"
       @close="isLoteModalOpen = false"
       @save="handleLoteCreated"
+    />
+
+    <ConfirmModal
+      :is-open="confirmModal.isOpen"
+      :title="confirmModal.title"
+      :message="confirmModal.message"
+      :type="confirmModal.type"
+      @close="closeConfirm"
+      @confirm="handleConfirm"
     />
 
     <!-- Toast Notification -->

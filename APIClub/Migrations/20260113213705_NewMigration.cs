@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace APIClub.Migrations
 {
     /// <inheritdoc />
-    public partial class addTableLote : Migration
+    public partial class NewMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,10 +34,10 @@ namespace APIClub.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     NombreLote = table.Column<string>(type: "TEXT", nullable: false),
-                    Calle1 = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    Calle2 = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    Calle3 = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    Calle4 = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false)
+                    CalleNorte = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    CalleSur = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    CalleEste = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    CalleOeste = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -259,12 +259,12 @@ namespace APIClub.Migrations
 
             migrationBuilder.InsertData(
                 table: "Lotes",
-                columns: new[] { "Id", "Calle1", "Calle2", "Calle3", "Calle4", "NombreLote" },
+                columns: new[] { "Id", "CalleEste", "CalleNorte", "CalleOeste", "CalleSur", "NombreLote" },
                 values: new object[,]
                 {
-                    { 1, "Mitre", "San Martín", "Belgrano", "Urquiza", "Lote A" },
-                    { 2, "Av. Pellegrini", "Bv. Oroño", "Salta", "Jujuy", "Lote B" },
-                    { 3, "Av. Corrientes", "Florida", "Lavalle", "Sarmiento", "Lote C" }
+                    { 1, "Belgrano", "Mitre", "Urquiza", "San Martín", "Lote A" },
+                    { 2, "Salta", "Av. Pellegrini", "Jujuy", "Bv. Oroño", "Lote B" },
+                    { 3, "Lavalle", "Av. Corrientes", "Sarmiento", "Florida", "Lote C" }
                 });
 
             migrationBuilder.InsertData(
@@ -277,10 +277,10 @@ namespace APIClub.Migrations
                 columns: new[] { "Id", "FechaExpiracion", "IdSocio", "PaymentStatus", "Preference_Id", "StatusDetail", "anio", "monto", "nombreSocio", "semestre", "usado" },
                 values: new object[,]
                 {
-                    { new Guid("11111111-1111-1111-1111-111111111111"), new DateOnly(2026, 2, 10), 1, null, null, null, 2025, 2500.00m, "Juan Pérez", 1, false },
-                    { new Guid("22222222-2222-2222-2222-222222222222"), new DateOnly(2026, 2, 10), 1, null, null, null, 2025, 2500.00m, "Juan Pérez", 2, false },
-                    { new Guid("33333333-3333-3333-3333-333333333333"), new DateOnly(2026, 2, 10), 2, null, null, null, 2025, 2500.00m, "María Gómez", 1, false },
-                    { new Guid("44444444-4444-4444-4444-444444444444"), new DateOnly(2026, 2, 10), 2, null, null, null, 2025, 2500.00m, "María Gómez", 2, false }
+                    { new Guid("11111111-1111-1111-1111-111111111111"), new DateOnly(2026, 2, 12), 1, null, null, null, 2025, 2500.00m, "Juan Pérez", 1, false },
+                    { new Guid("22222222-2222-2222-2222-222222222222"), new DateOnly(2026, 2, 12), 1, null, null, null, 2025, 2500.00m, "Juan Pérez", 2, false },
+                    { new Guid("33333333-3333-3333-3333-333333333333"), new DateOnly(2026, 2, 12), 2, null, null, null, 2025, 2500.00m, "María Gómez", 1, false },
+                    { new Guid("44444444-4444-4444-4444-444444444444"), new DateOnly(2026, 2, 12), 2, null, null, null, 2025, 2500.00m, "María Gómez", 2, false }
                 });
 
             migrationBuilder.InsertData(
@@ -329,7 +329,7 @@ namespace APIClub.Migrations
                     { 2, new DateTime(2025, 10, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), true, 2, "Préstamo semanal" },
                     { 3, new DateTime(2025, 9, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 1, "Rehabilitación post operación" },
                     { 4, new DateTime(2025, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), true, 2, "Alquiler viejo ya cerrado" },
-                    { 5, new DateTime(2026, 1, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 3, "Alquiler Activo para Test" }
+                    { 5, new DateTime(2026, 1, 8, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 3, "Alquiler Activo para Test" }
                 });
 
             migrationBuilder.InsertData(
