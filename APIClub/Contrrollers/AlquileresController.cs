@@ -123,14 +123,14 @@ namespace APIClub.Contrrollers
         }
 
         [HttpPost("{idAlquiler}/pagos")]
-        public async Task<IActionResult> RegistrarPago(int idAlquiler)
+        public async Task<IActionResult> RegistrarPago([FromRoute] int idAlquiler, [FromQuery] int mes, [FromQuery] int anio)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var result = await _alquileresService.RegistrarPago(idAlquiler);
+            var result = await _alquileresService.RegistrarPago(idAlquiler, mes, anio);
 
             if (!result.Exit)
             {

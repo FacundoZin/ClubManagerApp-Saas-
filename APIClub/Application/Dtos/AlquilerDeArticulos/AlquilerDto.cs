@@ -23,9 +23,15 @@ namespace APIClub.Application.Dtos.AlquilerDeArticulos
 
         // Pagos
         public List<PagoAlquilerDto> HistorialDePagos { get; set; } = new List<PagoAlquilerDto>();
+        public List<PagoAlquilerAdeudadoDto> MesesAdeudados { get; set; } = new List<PagoAlquilerAdeudadoDto>();
     }
 
-
+    public class PagoAlquilerAdeudadoDto
+    {
+        public int Anio { get; set; }
+        public int Mes { get; set; }
+        public int Monto { get; set; }
+    }
 
     public class PagoAlquilerDto
     {

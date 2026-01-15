@@ -1,6 +1,7 @@
 ﻿using APIClub.Application.Common;
 using APIClub.Application.Dtos.AlquilerDeArticulos;
 using APIClub.Application.Dtos.ItemsAlquiler;
+using APIClub.Application.Helpers;
 using APIClub.Domain.AlquilerArticulos;
 using APIClub.Domain.AlquilerArticulos.Models;
 
@@ -9,7 +10,6 @@ namespace APIClub.Application.Services
     public class AlquilerArticulosService : IAlquilerArticulosService
     {
         private readonly UnitOfWork _UnitOfWork;
-
 
         public AlquilerArticulosService(UnitOfWork unitOfWork)
         {
@@ -130,23 +130,39 @@ namespace APIClub.Application.Services
             return Result<object?>.Exito(null);
         }
 
-        public async Task<Result<PagoAlquilerDto>> RegistrarPago(int idAlquiler)
+        public async Task<Result<PagoAlquilerDto>> RegistrarPago(int idAlquiler, int mes, int anio)
         {
-            var now = DateOnly.FromDateTime(DateTime.Now);
             var alquiler = await _UnitOfWork._AlquilerRepository.GetAlquilerByIdWithDetails(idAlquiler);
 
             if (alquiler == null)
                 return Result<PagoAlquilerDto>.Error("No se encontró un alquiler con ese ID", 404);
-            if(alquiler.HistorialDePagos.Any(p => p.Anio == now.Year && p.Mes == now.Month))
-                return Result<PagoAlquilerDto>.Error("El alquiler ya tiene registrado el pago de este mes", 400);
+
+            if (alquiler.HistorialDePagos.Any(p => p.Anio == anio && p.Mes == mes))
+                return Result<PagoAlquilerDto>.Error($"El alquiler ya tiene registrado un pago en {MontHelper.MapMonthToText(mes)} del {anio}", 400);
+
+            // Validación: No permitir pagos antes de la fecha de inicio del alquiler
+            if (anio < alquiler.FechaAlquiler.Year || (anio == alquiler.FechaAlquiler.Year && mes < alquiler.FechaAlquiler.Month))
+                return Result<PagoAlquilerDto>.Error($"No se puede registrar un pago para un periodo anterior a la fecha de inicio del alquiler ({MontHelper.MapMonthToText(alquiler.FechaAlquiler.Month)} {alquiler.FechaAlquiler.Year})", 400);
+
+            // Validación: No permitir pagar un mes si hay meses anteriores adeudados
+            var inicioAlquiler = new DateOnly(alquiler.FechaAlquiler.Year, alquiler.FechaAlquiler.Month, 1);
+            var periodoAPagar = new DateOnly(anio, mes, 1);
+
+            while (inicioAlquiler < periodoAPagar)
+            {
+                if (!alquiler.HistorialDePagos.Any(p => p.Anio == inicioAlquiler.Year && p.Mes == inicioAlquiler.Month))
+                {
+                    return Result<PagoAlquilerDto>.Error($"No se puede registrar el pago de {MontHelper.MapMonthToText(mes)} {anio} porque hay meses anteriores que no fueron pagados", 400);
+                }
+                inicioAlquiler = inicioAlquiler.AddMonths(1);
+            }
 
             int monto = await _UnitOfWork._AlquilerRepository.CalcularMontoAlquiler(idAlquiler);
-            var dateHoy = DateOnly.FromDateTime(DateTime.Now);
 
             var pago = new PagoAlquilerDeArticulos
             {
-                Anio = dateHoy.Year,
-                Mes = dateHoy.Month,
+                Anio = anio,
+                Mes = mes,
                 Monto = monto,
                 IdAlquiler = idAlquiler
             };
@@ -230,7 +246,7 @@ namespace APIClub.Application.Services
                 estaAlDia = alquiler.HistorialDePagos.Any(p =>
                     p.Anio == hoy.Year &&
                     p.Mes == hoy.Month
-                    )
+                )
             };
 
             return Result<AlquilerPreviewDto?>.Exito(dto);
@@ -239,6 +255,30 @@ namespace APIClub.Application.Services
         private AlquilerDto MapearAlquilerADto(Alquiler alquiler)
         {
             var hoy = DateOnly.FromDateTime(DateTime.Today);
+            var montoMensual = alquiler.Items.Sum(i => i.Articulo.PrecioAlquiler * i.Cantidad);
+
+            var mesesAdeudados = new List<PagoAlquilerAdeudadoDto>();
+            
+            // Empezamos desde la fecha del alquiler hasta el mes actual
+            var inicioAlquiler = new DateOnly(alquiler.FechaAlquiler.Year, alquiler.FechaAlquiler.Month, 1);
+            var mesActual = new DateOnly(hoy.Year, hoy.Month, 1);
+
+            while (inicioAlquiler <= mesActual)
+            {
+                bool pagado = alquiler.HistorialDePagos.Any(p => p.Anio == inicioAlquiler.Year && p.Mes == inicioAlquiler.Month);
+                
+                if (!pagado)
+                {
+                    mesesAdeudados.Add(new PagoAlquilerAdeudadoDto
+                    {
+                        Anio = inicioAlquiler.Year,
+                        Mes = inicioAlquiler.Month,
+                        Monto = montoMensual
+                    });
+                }
+                
+                inicioAlquiler = inicioAlquiler.AddMonths(1);
+            }
 
             return new AlquilerDto
             {
@@ -246,10 +286,7 @@ namespace APIClub.Application.Services
                 FechaAlquiler = alquiler.FechaAlquiler,
                 Observaciones = alquiler.Observaciones,
 
-                estaAlDia = alquiler.HistorialDePagos.Any(p =>
-                    p.Anio == hoy.Year &&
-                    p.Anio == hoy.Year
-                    ),
+                estaAlDia = !mesesAdeudados.Any(m => m.Anio == hoy.Year && m.Mes == hoy.Month),
 
                 IdSocio = alquiler.IdSocio,
                 NombreSocio = alquiler.Socio.Nombre,
@@ -276,7 +313,9 @@ namespace APIClub.Application.Services
                     Mes = p.Mes,
                     Anio = p.Anio,
                     Monto = p.Monto
-                }).ToList(),
+                }).OrderByDescending(p => p.Anio).ThenByDescending(p => p.Mes).ToList(),
+
+                MesesAdeudados = mesesAdeudados
             };
         }
     }

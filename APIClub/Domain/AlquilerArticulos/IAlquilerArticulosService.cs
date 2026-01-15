@@ -10,7 +10,7 @@ namespace APIClub.Domain.AlquilerArticulos
         Task<Result<object?>> ModificarCantidadItem(int alquilerId, ModifyItemQuantityDto dto);
         Task<Result<object?>> AgregarItemAlquiler(int alquilerId, AddItemToAlquilerDto dto);
         Task<Result<object?>> EliminarItemDeAlquiler(int alquilerId, int itemId);
-        Task<Result<PagoAlquilerDto>> RegistrarPago(int idAlquiler);
+        Task<Result<PagoAlquilerDto>> RegistrarPago(int idAlquiler, int mes, int anio);
         Task<Result<object?>> FinalizarAlquiler(int alquilerId);
         Task<Result<AlquilerDto>> GetAlquilerById(int id);
         Task<Result<List<AlquilerPreviewDto>>> GetAlquileresActivos();

@@ -1,10 +1,11 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ConfirmModal from '../../components/Common/ConfirmModal.vue'
 import LoadingOverlay from '../../components/Common/LoadingOverlay.vue'
 import AddItemModal from '../../components/ModuloAlquilerArticulos/Alquileres/AddItemModal.vue'
 import ArticulosAlquiladosCard from '../../components/ModuloAlquilerArticulos/Articulos/ArticulosAlquiladosCard.vue'
+import RegisterPaymentModal from '../../components/ModuloAlquilerArticulos/Alquileres/RegisterPaymentModal.vue'
 import AlquilerService from '../../services/AlquilerService'
 
 const route = useRoute()
@@ -19,6 +20,7 @@ const paymentError = ref('')
 // Modals
 const isAddItemModalOpen = ref(false)
 const isConfirmFinalizeOpen = ref(false)
+const isRegisterPaymentModalOpen = ref(false)
 
 // Toast
 const toast = ref({ show: false, message: '', type: 'success' })
@@ -58,15 +60,9 @@ const handleAddItem = async () => {
   loadAlquiler(true) // Silent refresh
 }
 
-const handleRegisterPayment = async () => {
-  paymentError.value = ''
-  try {
-    await AlquilerService.registerPayment(alquilerId)
-    showToast('Pago registrado correctamente')
-    loadAlquiler()
-  } catch (e) {
-    paymentError.value = e.message
-  }
+const handleRegisterPayment = (message) => {
+  showToast(message || 'Pago registrado correctamente')
+  loadAlquiler()
 }
 
 const handleFinalize = async () => {
@@ -81,6 +77,45 @@ const handleFinalize = async () => {
 }
 
 const goBack = () => router.push('/alquiler-articulos')
+
+const meses = [
+  'Enero',
+  'Febrero',
+  'Marzo',
+  'Abril',
+  'Mayo',
+  'Junio',
+  'Julio',
+  'Agosto',
+  'Septiembre',
+  'Octubre',
+  'Noviembre',
+  'Diciembre',
+]
+
+const getNombreMes = (mesNum) => {
+  return meses[mesNum - 1] || mesNum
+}
+
+const allMonthsCombined = computed(() => {
+  if (!alquiler.value) return []
+
+  const paid = (alquiler.value.historialDePagos || []).map((p) => ({
+    ...p,
+    tipo: 'pagado',
+  }))
+
+  const pending = (alquiler.value.mesesAdeudados || []).map((m) => ({
+    ...m,
+    tipo: 'pendiente',
+    id: `pending-${m.anio}-${m.mes}`,
+  }))
+
+  return [...paid, ...pending].sort((a, b) => {
+    if (a.anio !== b.anio) return a.anio - b.anio
+    return a.mes - b.mes
+  })
+})
 </script>
 
 <template>
@@ -200,7 +235,7 @@ const goBack = () => router.push('/alquiler-articulos')
 
           <div class="mt-6 flex flex-col gap-3">
             <button
-              @click="handleRegisterPayment"
+              @click="isRegisterPaymentModalOpen = true"
               class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-teal-700 bg-teal-100 hover:bg-teal-200 transition-colors"
             >
               <svg
@@ -272,28 +307,58 @@ const goBack = () => router.push('/alquiler-articulos')
         @add-item="isAddItemModalOpen = true"
       />
 
-      <!-- Historial Pagos -->
+      <!-- Estado de Pagos (Historial y Deuda combinados) -->
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-12">
-        <div class="px-6 py-4 border-b border-slate-200 bg-slate-50">
-          <h2 class="text-base font-bold text-slate-900">Historial de Pagos</h2>
-        </div>
         <div
-          class="p-6 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4"
-          v-if="alquiler.historialDePagos && alquiler.historialDePagos.length > 0"
+          class="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between"
         >
+          <h2 class="text-base font-bold text-slate-900">Estado de Pagos</h2>
           <div
-            v-for="pago in alquiler.historialDePagos"
-            :key="pago.id"
-            class="bg-emerald-50 border border-emerald-100 rounded-lg p-3 text-center"
+            v-if="alquiler.mesesAdeudados?.length > 0"
+            class="text-xs font-semibold text-rose-600 bg-rose-50 px-2 py-1 rounded-full border border-rose-100"
           >
-            <div class="text-xs text-emerald-600 uppercase font-semibold">
-              {{ pago.mes }}/{{ pago.anio }}
-            </div>
-            <div class="text-lg font-bold text-emerald-700">${{ pago.monto }}</div>
+            {{ alquiler.mesesAdeudados.length }} mes(es) pendiente(s)
           </div>
         </div>
-        <div v-else class="p-8 text-center text-slate-400">
-          No se han registrado pagos para este alquiler.
+
+        <div class="p-6">
+          <div
+            v-if="allMonthsCombined.length > 0"
+            class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4"
+          >
+            <div
+              v-for="pago in allMonthsCombined"
+              :key="pago.id"
+              class="rounded-lg p-3 text-center transition-all hover:shadow-md border"
+              :class="
+                pago.tipo === 'pagado'
+                  ? 'bg-emerald-50 border-emerald-100'
+                  : 'bg-rose-50 border-rose-100'
+              "
+            >
+              <div
+                class="text-[10px] uppercase font-bold mb-1"
+                :class="pago.tipo === 'pagado' ? 'text-emerald-400' : 'text-rose-400'"
+              >
+                {{ pago.tipo === 'pagado' ? 'Pagado' : 'Pendiente' }}
+              </div>
+              <div
+                class="text-xs uppercase font-extrabold"
+                :class="pago.tipo === 'pagado' ? 'text-emerald-600' : 'text-rose-600'"
+              >
+                {{ getNombreMes(pago.mes) }} {{ pago.anio }}
+              </div>
+              <div
+                class="text-lg font-bold mt-1"
+                :class="pago.tipo === 'pagado' ? 'text-emerald-700' : 'text-rose-700'"
+              >
+                ${{ pago.monto }}
+              </div>
+            </div>
+          </div>
+          <div v-else class="py-10 text-center border-2 border-dashed border-slate-100 rounded-xl">
+            <p class="text-sm text-slate-400">No hay registros de pagos ni deudas.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -304,6 +369,13 @@ const goBack = () => router.push('/alquiler-articulos')
       :alquiler-id="parseInt(alquilerId)"
       @close="isAddItemModalOpen = false"
       @save="handleAddItem"
+    />
+
+    <RegisterPaymentModal
+      :is-open="isRegisterPaymentModalOpen"
+      :alquiler-id="parseInt(alquilerId)"
+      @close="isRegisterPaymentModalOpen = false"
+      @saved="handleRegisterPayment"
     />
 
     <ConfirmModal

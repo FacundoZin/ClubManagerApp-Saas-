@@ -99,8 +99,8 @@ export default {
         return true;
     },
 
-    async registerPayment(idAlquiler) {
-        const response = await fetch(`${API_URL}/${idAlquiler}/pagos`, {
+    async registerPayment(idAlquiler, mes, anio) {
+        const response = await fetch(`${API_URL}/${idAlquiler}/pagos?mes=${mes}&anio=${anio}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({})
