@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using APIClub.Infrastructure.Persistence.Data;
 using APIClub.Application.Dtos.Reservas;
+using APIClub.Application.Common;
 
 namespace APIClub.Contrrollers
 {
@@ -31,14 +32,10 @@ namespace APIClub.Contrrollers
         }
 
         [HttpGet("{idSalon}/reservas")]
-        public async Task<IActionResult> GetReservasBySalon(int idSalon)
+        public async Task<IActionResult> GetReservasBySalon(int idSalon, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var result = await _SalonesServices.GetReservasBySalon(idSalon);
-
-            if (!result.Exit)
-                return StatusCode(result.Errorcode, result.Errormessage);
-
-            return Ok(result.Data);
+            var result = await _SalonesServices.GetReservasBySalon(idSalon, pageNumber, pageSize);
+            return Ok(result);
         }
 
         [HttpGet("{salonId}/disponibilidad")]

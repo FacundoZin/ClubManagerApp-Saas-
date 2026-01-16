@@ -10,6 +10,7 @@ import ReservaCard from '../../components/ModuloReservaSalones/ReservaCard.vue'
 import ReservaDetailsModal from '../../components/ModuloReservaSalones/ReservaDetailsModal.vue'
 import ReservaFormModal from '../../components/ModuloReservaSalones/ReservaFormModal.vue'
 import ReservaList from '../../components/ModuloReservaSalones/ReservaList.vue'
+import Pagination from '../../components/Common/Pagination.vue'
 
 // -- GLOBAL STATE --
 const router = useRouter()
@@ -42,6 +43,12 @@ const searchResult = ref(null)
 const searchPerformed = ref(false)
 const isLoadingData = ref(false)
 const dataError = ref('')
+
+// -- PAGINATION STATE --
+const currentPage = ref(1)
+const pageSize = ref(12)
+const totalCount = ref(0)
+const totalPages = ref(0)
 
 // -- ACTIONS CONFIG --
 const actions = [
@@ -107,6 +114,8 @@ const selectAction = (actionId) => {
   if (actionId === 'create') {
     isFormModalOpen.value = true
   }
+  // Reset pagination
+  currentPage.value = 1
 }
 
 const goHome = () => router.push('/')
@@ -119,12 +128,29 @@ const handleListReservas = async () => {
   reservationsList.value = []
 
   try {
-    reservationsList.value = await SalonService.getReservasBySalon(selectedSalonId.value)
+    const result = await SalonService.getReservasBySalon(
+      selectedSalonId.value,
+      currentPage.value,
+      pageSize.value,
+    )
+    reservationsList.value = result.items
+    totalCount.value = result.totalCount
+    totalPages.value = result.totalPages
   } catch (e) {
     dataError.value = e.message
   } finally {
     isLoadingData.value = false
   }
+}
+
+const handlePageChange = (newPage) => {
+  currentPage.value = newPage
+  handleListReservas()
+}
+
+const handleSalonChange = () => {
+  currentPage.value = 1
+  handleListReservas()
 }
 
 // CHECK AVAILABILITY
@@ -362,7 +388,7 @@ const refreshData = async () => {
               <label class="block text-sm font-medium text-slate-700 mb-1">Seleccionar Salón</label>
               <select
                 v-model="selectedSalonId"
-                @change="handleListReservas"
+                @change="handleSalonChange"
                 class="block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border px-3 py-2"
               >
                 <option value="" disabled>-- Elija un salón --</option>
@@ -402,6 +428,16 @@ const refreshData = async () => {
               @view-details="handleViewDetails"
               @cancel="handleDeleteRequest"
             />
+            <!-- Pagination -->
+            <div v-if="reservationsList.length > 0" class="mt-6">
+              <Pagination
+                :current-page="currentPage"
+                :total-pages="totalPages"
+                :total-count="totalCount"
+                :page-size="pageSize"
+                @change-page="handlePageChange"
+              />
+            </div>
           </div>
           <div v-else class="text-center py-12 text-slate-400">
             Seleccione un salón para ver sus reservas.

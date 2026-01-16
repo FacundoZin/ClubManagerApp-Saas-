@@ -26,15 +26,23 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
             return true;
         }
 
-        public async Task<List<ReservaSalon>> GetAlquileresBySalon(int IdSalon)
+        public async Task<(List<ReservaSalon> Items, int TotalCount)> GetAlquileresBySalon(int IdSalon, int pageNumber, int pageSize)
         {
             var now = DateOnly.FromDateTime(DateTime.Now);
-            return await _Context.ReservasSalones
-                .Where(a => a.SalonId == IdSalon && a.FechaAlquiler > now)
+            var query = _Context.ReservasSalones
+                .Where(a => a.SalonId == IdSalon && a.FechaAlquiler > now);
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
                 .Include(s => s.Socio)
                 .OrderBy(a => a.FechaAlquiler)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .AsNoTracking()
                 .ToListAsync();
+
+            return (items, totalCount);
         }
 
         public async Task<ReservaSalon?> SearchReservaByFecha(DateOnly fehca, int IdSalon)

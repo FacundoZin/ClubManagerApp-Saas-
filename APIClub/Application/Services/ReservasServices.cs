@@ -21,11 +21,11 @@ namespace APIClub.Application.Services
             _UnitOfWork = unitOfWork;   
         }
 
-        public async Task<Result<List<PreviewReservaBySalonDto>>> GetReservasBySalon(int salonId)
+        public async Task<PagedResult<PreviewReservaBySalonDto>> GetReservasBySalon(int salonId, int pageNumber, int pageSize)
         {
-            var alquileres = await _ReservasRepository.GetAlquileresBySalon(salonId);
+            var (items, totalCount) = await _ReservasRepository.GetAlquileresBySalon(salonId, pageNumber, pageSize);
 
-            var dto = alquileres.Select(a => new PreviewReservaBySalonDto
+            var dtos = items.Select(a => new PreviewReservaBySalonDto
             {
                 Id = a.Id,
                 Titulo = a.Titulo,
@@ -34,7 +34,7 @@ namespace APIClub.Application.Services
                 NombreReservante = $"{a.Socio.Nombre} {a.Socio.Apellido}"
             }).ToList();
 
-            return Result<List<PreviewReservaBySalonDto>>.Exito(dto);
+            return new PagedResult<PreviewReservaBySalonDto>(dtos, totalCount, pageNumber, pageSize);
         }
 
         public async Task<Result<FechaDisponible>> GetDisponibilidadFecha(DateOnly fecha, int salon)

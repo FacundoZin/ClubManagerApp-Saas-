@@ -4,7 +4,7 @@ namespace APIClub.Domain.ReservasSalones.Repositories
 {
     public interface IReservasRepository
     {
-        Task<List<ReservaSalon>> GetAlquileresBySalon(int IdSalon);
+        Task<(List<ReservaSalon> Items, int TotalCount)> GetAlquileresBySalon(int IdSalon, int pageNumber, int pageSize);
         Task<ReservaSalon?> SearchReservaByFecha(DateOnly fehca, int IdSalon);
         Task<bool> verificarDisponibilidad(DateOnly fecha, int IdSalon);
         Task<ReservaSalon?> SearchReservaById(int idReserva);

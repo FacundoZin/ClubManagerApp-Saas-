@@ -5,7 +5,7 @@ namespace APIClub.Domain.ReservasSalones
 {
     public interface IReservasServices
     {
-        Task<Result<List<PreviewReservaBySalonDto>>> GetReservasBySalon(int salonId);
+        Task<PagedResult<PreviewReservaBySalonDto>> GetReservasBySalon(int salonId, int pageNumber, int pageSize);
         Task<Result<FechaDisponible>> GetDisponibilidadFecha(DateOnly fecha, int Idsalon);
         Task<Result<InfoReservaPreview?>> GetReservaByFechaAndSalon(DateOnly fecha, int salonId);
         Task<Result<InfoReservaCompletaDto?>> GetReservaById(int reservaId);

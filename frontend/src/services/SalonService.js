@@ -30,8 +30,8 @@ export default {
         return await response.json();
     },
 
-    async getReservasBySalon(idSalon) {
-        const response = await fetch(`${API_URL}/${idSalon}/reservas`);
+    async getReservasBySalon(idSalon, page = 1, pageSize = 10) {
+        const response = await fetch(`${API_URL}/${idSalon}/reservas?pageNumber=${page}&pageSize=${pageSize}`);
         if (!response.ok) {
             const msg = await handleError(response, 'Error al obtener reservas');
             throw new Error(msg);
