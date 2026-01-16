@@ -329,6 +329,61 @@ const handleRegistrarPago = async () => {
                 </div>
               </div>
             </div>
+            <!-- Payment History -->
+            <div
+              v-if="reserva.historialPagos && reserva.historialPagos.length > 0"
+              class="space-y-4"
+            >
+              <h4
+                class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2"
+              >
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                Historial de Pagos
+              </h4>
+              <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                <table class="min-w-full divide-y divide-slate-200">
+                  <thead class="bg-slate-50/80">
+                    <tr>
+                      <th
+                        scope="col"
+                        class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider"
+                      >
+                        Fecha
+                      </th>
+                      <th
+                        scope="col"
+                        class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider"
+                      >
+                        Monto
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-200">
+                    <tr
+                      v-for="(pago, index) in reserva.historialPagos"
+                      :key="index"
+                      class="hover:bg-slate-50/50 transition-colors"
+                    >
+                      <td class="px-6 py-3 whitespace-nowrap text-sm text-slate-700 font-medium">
+                        {{ formatDate(pago.fecha) }}
+                      </td>
+                      <td
+                        class="px-6 py-3 whitespace-nowrap text-sm text-right text-emerald-600 font-bold bg-emerald-50/10"
+                      >
+                        {{ formatCurrency(pago.monto) }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
 
           <!-- Payment Input Section (Conditional) -->
@@ -414,7 +469,7 @@ const handleRegistrarPago = async () => {
               @click="showPaymentInput = true"
               class="px-5 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all shadow-md shadow-blue-200"
             >
-              Registrar Pago
+              Registrar Otro Pago
             </button>
           </div>
 

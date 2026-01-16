@@ -20,6 +20,8 @@
         public string apellidoSocio { get; set; }
         public string? telefonoSocio { get; set; }
         public string? direccionSocio { get; set; }
-        public string? localidad {  get; set; } 
+        public string? localidad { get; set; }
+
+        public List<PagoDeReservaDto> HistorialPagos { get; set; } = new List<PagoDeReservaDto>();
     }
 }

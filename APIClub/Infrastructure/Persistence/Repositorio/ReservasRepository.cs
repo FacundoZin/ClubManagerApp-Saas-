@@ -14,18 +14,6 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
             _Context = dbcontext;
         }
 
-        public async Task<bool> BorrarReserva(int idReserva)
-        {
-            var reserva = await _Context.ReservasSalones.FindAsync(idReserva);
-
-            if (reserva == null)
-                return false;
-
-            _Context.ReservasSalones.Remove(reserva);
-
-            return await _Context.SaveChangesAsync() > 0;
-        }
-
         public async Task<bool> CrearReserva(ReservaSalon reserva)
         {
             _Context.ReservasSalones.Add(reserva);
@@ -62,7 +50,8 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
         {
             return await _Context.ReservasSalones
                 .Include(r => r.Salon)
-                .Include(s => s.Socio)
+                .Include(r => r.Socio)
+                .Include(r => r.historialPagos)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(r => r.Id == idReserva);
         }

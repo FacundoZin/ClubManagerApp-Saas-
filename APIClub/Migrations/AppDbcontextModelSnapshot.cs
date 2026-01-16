@@ -78,7 +78,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = 5,
-                            FechaAlquiler = new DateTime(2026, 1, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FechaAlquiler = new DateTime(2026, 1, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Finalizado = false,
                             IdSocio = 3,
                             Observaciones = "Alquiler Activo para Test"
@@ -534,7 +534,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111111"),
-                            FechaExpiracion = new DateOnly(2026, 2, 12),
+                            FechaExpiracion = new DateOnly(2026, 2, 15),
                             IdSocio = 1,
                             anio = 2025,
                             monto = 2500.00m,
@@ -545,7 +545,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("22222222-2222-2222-2222-222222222222"),
-                            FechaExpiracion = new DateOnly(2026, 2, 12),
+                            FechaExpiracion = new DateOnly(2026, 2, 15),
                             IdSocio = 1,
                             anio = 2025,
                             monto = 2500.00m,
@@ -556,7 +556,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("33333333-3333-3333-3333-333333333333"),
-                            FechaExpiracion = new DateOnly(2026, 2, 12),
+                            FechaExpiracion = new DateOnly(2026, 2, 15),
                             IdSocio = 2,
                             anio = 2025,
                             monto = 2500.00m,
@@ -567,13 +567,79 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("44444444-4444-4444-4444-444444444444"),
-                            FechaExpiracion = new DateOnly(2026, 2, 12),
+                            FechaExpiracion = new DateOnly(2026, 2, 15),
                             IdSocio = 2,
                             anio = 2025,
                             monto = 2500.00m,
                             nombreSocio = "María Gómez",
                             semestre = 2,
                             usado = false
+                        });
+                });
+
+            modelBuilder.Entity("APIClub.Domain.ReservasSalones.Models.PagoReservaSalon", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("FechaPago")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ReservaSalonId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("monto")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReservaSalonId");
+
+                    b.ToTable("pagoReservaSalon");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            FechaPago = new DateTime(2026, 3, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ReservaSalonId = 1,
+                            monto = 2000.00m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            FechaPago = new DateTime(2026, 4, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ReservaSalonId = 1,
+                            monto = 2000.00m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            FechaPago = new DateTime(2026, 4, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ReservaSalonId = 2,
+                            monto = 3000.00m
+                        },
+                        new
+                        {
+                            Id = 4,
+                            FechaPago = new DateTime(2026, 5, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ReservaSalonId = 2,
+                            monto = 2000.00m
+                        },
+                        new
+                        {
+                            Id = 5,
+                            FechaPago = new DateTime(2026, 5, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ReservaSalonId = 2,
+                            monto = 2000.00m
+                        },
+                        new
+                        {
+                            Id = 6,
+                            FechaPago = new DateTime(2026, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ReservaSalonId = 4,
+                            monto = 3000.00m
                         });
                 });
 
@@ -588,6 +654,9 @@ namespace APIClub.Migrations
 
                     b.Property<decimal>("Importe")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsCancelled")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("SalonId")
                         .HasColumnType("INTEGER");
@@ -614,22 +683,46 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = 1,
-                            FechaAlquiler = new DateTime(2025, 5, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FechaAlquiler = new DateTime(2026, 5, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Importe = 5000.00m,
+                            IsCancelled = false,
                             SalonId = 1,
                             SocioId = 1,
                             Titulo = "fiesta de 15 cele",
-                            TotalPagado = 0.00m
+                            TotalPagado = 4000.00m
                         },
                         new
                         {
                             Id = 2,
-                            FechaAlquiler = new DateTime(2025, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FechaAlquiler = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Importe = 7000.00m,
+                            IsCancelled = false,
                             SalonId = 2,
                             SocioId = 2,
                             Titulo = "baile abuelos",
                             TotalPagado = 7000.00m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            FechaAlquiler = new DateTime(2026, 7, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Importe = 6000.00m,
+                            IsCancelled = false,
+                            SalonId = 1,
+                            SocioId = 3,
+                            Titulo = "Cumpleaños de Carlos",
+                            TotalPagado = 0.00m
+                        },
+                        new
+                        {
+                            Id = 4,
+                            FechaAlquiler = new DateTime(2026, 8, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Importe = 8000.00m,
+                            IsCancelled = false,
+                            SalonId = 2,
+                            SocioId = 1,
+                            Titulo = "Reunión Familiar",
+                            TotalPagado = 3000.00m
                         });
                 });
 
@@ -730,6 +823,15 @@ namespace APIClub.Migrations
                     b.Navigation("Lote");
                 });
 
+            modelBuilder.Entity("APIClub.Domain.ReservasSalones.Models.PagoReservaSalon", b =>
+                {
+                    b.HasOne("APIClub.Domain.ReservasSalones.Models.ReservaSalon", null)
+                        .WithMany("historialPagos")
+                        .HasForeignKey("ReservaSalonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("APIClub.Domain.ReservasSalones.Models.ReservaSalon", b =>
                 {
                     b.HasOne("APIClub.Domain.ReservasSalones.Models.Salon", "Salon")
@@ -759,6 +861,11 @@ namespace APIClub.Migrations
             modelBuilder.Entity("APIClub.Domain.GestionSocios.Models.Socio", b =>
                 {
                     b.Navigation("HistorialCuotas");
+                });
+
+            modelBuilder.Entity("APIClub.Domain.ReservasSalones.Models.ReservaSalon", b =>
+                {
+                    b.Navigation("historialPagos");
                 });
 #pragma warning restore 612, 618
         }

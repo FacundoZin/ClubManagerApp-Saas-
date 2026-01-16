@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace APIClub.Migrations
 {
     /// <inheritdoc />
-    public partial class NewMigration : Migration
+    public partial class changesInSchemaOfReservas : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -177,6 +177,7 @@ namespace APIClub.Migrations
                     FechaAlquiler = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Importe = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TotalPagado = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    IsCancelled = table.Column<bool>(type: "INTEGER", nullable: false),
                     SocioId = table.Column<int>(type: "INTEGER", nullable: false),
                     SalonId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
@@ -246,6 +247,27 @@ namespace APIClub.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "pagoReservaSalon",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    FechaPago = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    monto = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ReservaSalonId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_pagoReservaSalon", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_pagoReservaSalon_ReservasSalones_ReservaSalonId",
+                        column: x => x.ReservaSalonId,
+                        principalTable: "ReservasSalones",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "Articulos",
                 columns: new[] { "Id", "Nombre", "PrecioAlquiler" },
@@ -277,10 +299,10 @@ namespace APIClub.Migrations
                 columns: new[] { "Id", "FechaExpiracion", "IdSocio", "PaymentStatus", "Preference_Id", "StatusDetail", "anio", "monto", "nombreSocio", "semestre", "usado" },
                 values: new object[,]
                 {
-                    { new Guid("11111111-1111-1111-1111-111111111111"), new DateOnly(2026, 2, 12), 1, null, null, null, 2025, 2500.00m, "Juan Pérez", 1, false },
-                    { new Guid("22222222-2222-2222-2222-222222222222"), new DateOnly(2026, 2, 12), 1, null, null, null, 2025, 2500.00m, "Juan Pérez", 2, false },
-                    { new Guid("33333333-3333-3333-3333-333333333333"), new DateOnly(2026, 2, 12), 2, null, null, null, 2025, 2500.00m, "María Gómez", 1, false },
-                    { new Guid("44444444-4444-4444-4444-444444444444"), new DateOnly(2026, 2, 12), 2, null, null, null, 2025, 2500.00m, "María Gómez", 2, false }
+                    { new Guid("11111111-1111-1111-1111-111111111111"), new DateOnly(2026, 2, 15), 1, null, null, null, 2025, 2500.00m, "Juan Pérez", 1, false },
+                    { new Guid("22222222-2222-2222-2222-222222222222"), new DateOnly(2026, 2, 15), 1, null, null, null, 2025, 2500.00m, "Juan Pérez", 2, false },
+                    { new Guid("33333333-3333-3333-3333-333333333333"), new DateOnly(2026, 2, 15), 2, null, null, null, 2025, 2500.00m, "María Gómez", 1, false },
+                    { new Guid("44444444-4444-4444-4444-444444444444"), new DateOnly(2026, 2, 15), 2, null, null, null, 2025, 2500.00m, "María Gómez", 2, false }
                 });
 
             migrationBuilder.InsertData(
@@ -313,11 +335,13 @@ namespace APIClub.Migrations
 
             migrationBuilder.InsertData(
                 table: "ReservasSalones",
-                columns: new[] { "Id", "FechaAlquiler", "Importe", "SalonId", "SocioId", "Titulo", "TotalPagado" },
+                columns: new[] { "Id", "FechaAlquiler", "Importe", "IsCancelled", "SalonId", "SocioId", "Titulo", "TotalPagado" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2025, 5, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 5000.00m, 1, 1, "fiesta de 15 cele", 0.00m },
-                    { 2, new DateTime(2025, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), 7000.00m, 2, 2, "baile abuelos", 7000.00m }
+                    { 1, new DateTime(2026, 5, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 5000.00m, false, 1, 1, "fiesta de 15 cele", 4000.00m },
+                    { 2, new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), 7000.00m, false, 2, 2, "baile abuelos", 7000.00m },
+                    { 3, new DateTime(2026, 7, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), 6000.00m, false, 1, 3, "Cumpleaños de Carlos", 0.00m },
+                    { 4, new DateTime(2026, 8, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), 8000.00m, false, 2, 1, "Reunión Familiar", 3000.00m }
                 });
 
             migrationBuilder.InsertData(
@@ -329,7 +353,7 @@ namespace APIClub.Migrations
                     { 2, new DateTime(2025, 10, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), true, 2, "Préstamo semanal" },
                     { 3, new DateTime(2025, 9, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 1, "Rehabilitación post operación" },
                     { 4, new DateTime(2025, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), true, 2, "Alquiler viejo ya cerrado" },
-                    { 5, new DateTime(2026, 1, 8, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 3, "Alquiler Activo para Test" }
+                    { 5, new DateTime(2026, 1, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 3, "Alquiler Activo para Test" }
                 });
 
             migrationBuilder.InsertData(
@@ -356,6 +380,19 @@ namespace APIClub.Migrations
                     { 3, 2025, 1, 3, 10500 }
                 });
 
+            migrationBuilder.InsertData(
+                table: "pagoReservaSalon",
+                columns: new[] { "Id", "FechaPago", "ReservaSalonId", "monto" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2026, 3, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, 2000.00m },
+                    { 2, new DateTime(2026, 4, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, 2000.00m },
+                    { 3, new DateTime(2026, 4, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, 3000.00m },
+                    { 4, new DateTime(2026, 5, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, 2000.00m },
+                    { 5, new DateTime(2026, 5, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, 2000.00m },
+                    { 6, new DateTime(2026, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 4, 3000.00m }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_alquileresArticulos_IdSocio",
                 table: "alquileresArticulos",
@@ -375,6 +412,11 @@ namespace APIClub.Migrations
                 name: "IX_ItemALquiler_ArticuloId",
                 table: "ItemALquiler",
                 column: "ArticuloId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_pagoReservaSalon_ReservaSalonId",
+                table: "pagoReservaSalon",
+                column: "ReservaSalonId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PagosAlquilerDeArticulos_IdAlquiler_Anio_Mes",
@@ -411,16 +453,19 @@ namespace APIClub.Migrations
                 name: "MontoCuota");
 
             migrationBuilder.DropTable(
+                name: "pagoReservaSalon");
+
+            migrationBuilder.DropTable(
                 name: "PagosAlquilerDeArticulos");
 
             migrationBuilder.DropTable(
                 name: "PaymentTokens");
 
             migrationBuilder.DropTable(
-                name: "ReservasSalones");
+                name: "Articulos");
 
             migrationBuilder.DropTable(
-                name: "Articulos");
+                name: "ReservasSalones");
 
             migrationBuilder.DropTable(
                 name: "alquileresArticulos");

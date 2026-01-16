@@ -15,6 +15,7 @@ namespace APIClub.Infrastructure.Persistence.Data
         }
 
         public DbSet<ReservaSalon> ReservasSalones { get; set; }
+        public DbSet<PagoReservaSalon> pagoReservaSalon { get; set; }  
         public DbSet<Cuota> Cuotas { get; set; }
         public DbSet<Salon> Salones { get; set; }
         public DbSet<Socio> Socios { get; set; }
@@ -93,6 +94,12 @@ namespace APIClub.Infrastructure.Persistence.Data
                       .HasForeignKey(r => r.SalonId)
                       .OnDelete(DeleteBehavior.Restrict);
 
+                entity.HasMany(r => r.historialPagos)
+                      .WithOne()
+                      .HasForeignKey("ReservaSalonId")
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasQueryFilter(r => !r.IsCancelled);
             });
 
             modelBuilder.Entity<ReservaSalon>()
@@ -100,6 +107,16 @@ namespace APIClub.Infrastructure.Persistence.Data
                 .HasConversion(
                     v => v.ToDateTime(new TimeOnly(0, 0)),
                     v => DateOnly.FromDateTime(v));
+
+            modelBuilder.Entity<PagoReservaSalon>(entity =>
+            {
+                entity.Property(p => p.monto).HasColumnType("decimal(18,2)");
+                
+                entity.Property(p => p.FechaPago)
+                      .HasConversion(
+                          v => v.ToDateTime(new TimeOnly(0, 0)),
+                          v => DateOnly.FromDateTime(v));
+            });
 
             modelBuilder.Entity<Cuota>()
                 .Property(c => c.FechaPago)
@@ -292,25 +309,102 @@ namespace APIClub.Infrastructure.Persistence.Data
 
             // 5) Reservas de prueba
             modelBuilder.Entity<ReservaSalon>().HasData(
+                // Reserva 1: Parcialmente pagada (2 pagos de 2000, total 4000 de 5000)
                 new
                 {
                     Id = 1,
                     Titulo = "fiesta de 15 cele",
-                    FechaAlquiler = DateOnly.FromDateTime(new DateTime(2025, 5, 20)),
+                    FechaAlquiler = DateOnly.FromDateTime(new DateTime(2026, 5, 20)),
                     Importe = 5000.00m,
-                    TotalPagado = 0.00m,
+                    TotalPagado = 4000.00m,
                     SocioId = 1,
-                    SalonId = 1
+                    SalonId = 1,
+                    IsCancelled = false
                 },
+                // Reserva 2: Totalmente pagada (3 pagos que suman 7000)
                 new
                 {
                     Id = 2,
                     Titulo = "baile abuelos",
-                    FechaAlquiler = DateOnly.FromDateTime(new DateTime(2025, 6, 15)),
+                    FechaAlquiler = DateOnly.FromDateTime(new DateTime(2026, 6, 15)),
                     Importe = 7000.00m,
                     TotalPagado = 7000.00m,
                     SocioId = 2,
-                    SalonId = 2
+                    SalonId = 2,
+                    IsCancelled = false
+                },
+                // Reserva 3: Sin pagos aún
+                new
+                {
+                    Id = 3,
+                    Titulo = "Cumpleaños de Carlos",
+                    FechaAlquiler = DateOnly.FromDateTime(new DateTime(2026, 7, 10)),
+                    Importe = 6000.00m,
+                    TotalPagado = 0.00m,
+                    SocioId = 3,
+                    SalonId = 1,
+                    IsCancelled = false
+                },
+                // Reserva 4: Parcialmente pagada (1 pago de 3000 de 8000)
+                new
+                {
+                    Id = 4,
+                    Titulo = "Reunión Familiar",
+                    FechaAlquiler = DateOnly.FromDateTime(new DateTime(2026, 8, 5)),
+                    Importe = 8000.00m,
+                    TotalPagado = 3000.00m,
+                    SocioId = 1,
+                    SalonId = 2,
+                    IsCancelled = false
+                }
+            );
+
+            // 5.1) Historial de pagos de las reservas
+            modelBuilder.Entity<PagoReservaSalon>().HasData(
+                // Pagos para Reserva 1 (Id = 1)
+                new
+                {
+                    Id = 1,
+                    ReservaSalonId = 1,
+                    FechaPago = DateOnly.FromDateTime(new DateTime(2026, 3, 15)),
+                    monto = 2000.00m
+                },
+                new
+                {
+                    Id = 2,
+                    ReservaSalonId = 1,
+                    FechaPago = DateOnly.FromDateTime(new DateTime(2026, 4, 10)),
+                    monto = 2000.00m
+                },
+                // Pagos para Reserva 2 (Id = 2)
+                new
+                {
+                    Id = 3,
+                    ReservaSalonId = 2,
+                    FechaPago = DateOnly.FromDateTime(new DateTime(2026, 4, 20)),
+                    monto = 3000.00m
+                },
+                new
+                {
+                    Id = 4,
+                    ReservaSalonId = 2,
+                    FechaPago = DateOnly.FromDateTime(new DateTime(2026, 5, 5)),
+                    monto = 2000.00m
+                },
+                new
+                {
+                    Id = 5,
+                    ReservaSalonId = 2,
+                    FechaPago = DateOnly.FromDateTime(new DateTime(2026, 5, 25)),
+                    monto = 2000.00m
+                },
+                // Pago para Reserva 4 (Id = 4)
+                new
+                {
+                    Id = 6,
+                    ReservaSalonId = 4,
+                    FechaPago = DateOnly.FromDateTime(new DateTime(2026, 6, 1)),
+                    monto = 3000.00m
                 }
             );
 

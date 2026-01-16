@@ -9,6 +9,7 @@ namespace APIClub.Domain.ReservasSalones.Models
         public DateOnly FechaAlquiler { get; set; }
         public decimal Importe { get; set; }
         public decimal TotalPagado { get; set; } = 0;
+        public bool IsCancelled { get; set; } = false;
 
         //Relaciones
         public int SocioId { get; set; }
@@ -16,5 +17,7 @@ namespace APIClub.Domain.ReservasSalones.Models
 
         public int SalonId { get; set; }
         public Salon Salon { get; set; }
+
+        public List<PagoReservaSalon> historialPagos { get; set; } = new List<PagoReservaSalon>();  
     }
 }

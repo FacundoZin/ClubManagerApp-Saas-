@@ -57,34 +57,29 @@ namespace APIClub.Application.Services
             return Result<FechaDisponible>.Exito(dto);  
         }
 
-        public async Task<Result<InfoReservaCompletaDto?>> GetReservaByFechaAndSalon(DateOnly fecha, int salonId)
+        public async Task<Result<InfoReservaPreview?>> GetReservaByFechaAndSalon(DateOnly fecha, int salonId)
         {
             var reserva = await _ReservasRepository.SearchReservaByFecha(fecha, salonId);
 
             if(reserva == null)
             {
-                return Result<InfoReservaCompletaDto?>.NotFound("No se encontró ninguna reserva para la fecha y el salón especificados.");
+                return Result<InfoReservaPreview?>.NotFound("No se encontró ninguna reserva para la fecha y el salón especificados.");
             }
 
-            InfoReservaCompletaDto infoReserva = new InfoReservaCompletaDto();
+            InfoReservaPreview infoReserva = new InfoReservaPreview();
 
             infoReserva.IdReserva = reserva.Id;
             infoReserva.Titulo = reserva.Titulo;
             infoReserva.FechaAlquiler = reserva.FechaAlquiler;
             infoReserva.Importe = reserva.Importe;
-            infoReserva.TotalPagado = reserva.TotalPagado;
 
             infoReserva.nombreSalon = reserva.Salon.Name;
-            infoReserva.direccionSalon = reserva.Salon.Direccion;
 
             infoReserva.nombreSocio = reserva.Socio.Nombre;
             infoReserva.apellidoSocio = reserva.Socio.Apellido;
-            infoReserva.telefonoSocio = reserva.Socio.Telefono;
-            infoReserva.direccionSocio = reserva.Socio.Direcccion;
-            infoReserva.localidad = reserva.Socio.Localidad;
 
 
-            return Result<InfoReservaCompletaDto?>.Exito(infoReserva);
+            return Result<InfoReservaPreview?>.Exito(infoReserva);
         }
 
         public async Task<Result<InfoReservaCompletaDto?>> GetReservaById(int reservaId)
@@ -114,6 +109,11 @@ namespace APIClub.Application.Services
             infoReserva.direccionSocio = reserva.Socio.Direcccion;
             infoReserva.localidad = reserva.Socio.Localidad;
 
+            infoReserva.HistorialPagos = reserva.historialPagos.Select(p => new PagoDeReservaDto
+            {
+                Fecha = p.FechaPago,
+                monto = p.monto
+            }).ToList();
 
             return Result<InfoReservaCompletaDto?>.Exito(infoReserva);
         }
@@ -143,6 +143,9 @@ namespace APIClub.Application.Services
             reserva.TotalPagado = dto.TotalPagado;
             reserva.SocioId = socio.Id;
             reserva.SalonId = dto.SalonId;  
+            reserva.IsCancelled = false;
+
+            reserva.historialPagos.Add(new PagoReservaSalon { FechaPago= DateOnly.FromDateTime(DateTime.Now), monto = dto.TotalPagado});
 
             bool exit = await _ReservasRepository.CrearReserva(reserva);
 
@@ -159,9 +162,14 @@ namespace APIClub.Application.Services
 
         public async Task<Result<object?>> CancelarReservas(int idReserva)
         {
-            var exit = await _ReservasRepository.BorrarReserva(idReserva);
+            var reserva = await _ReservasRepository.SearchReservaByIdWithTracking(idReserva);
 
-            if (!exit) return Result<object?>.Error("algo fallo al borrar la reserva en la db", 500);
+            if (reserva == null) 
+                return Result<object?>.Error("No se encontró la reserva que intenta cancelar.", 404);
+
+            reserva.IsCancelled = true;
+
+            await _UnitOfWork.SaveChangesAsync();
 
             return Result<object?>.Exito(null);
         }
@@ -178,6 +186,7 @@ namespace APIClub.Application.Services
                 return Result<object?>.Error("el monto de dinero que quiere abonar es mayor al monto de dinero que resta pagar", 400);            
 
             reserva.TotalPagado += montoAbonado;
+            reserva.historialPagos.Add(new PagoReservaSalon { FechaPago = DateOnly.FromDateTime(DateTime.Now), monto = montoAbonado });
 
             await _UnitOfWork.SaveChangesAsync();
 
