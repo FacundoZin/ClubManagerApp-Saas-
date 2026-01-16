@@ -9,7 +9,7 @@ namespace APIClub.Domain.AlquilerArticulos.Repositories
         Task<Alquiler?> GetAlquilerById(int id);
         Task<Alquiler?> GetAlquilerByIdWithDetails(int id);
         Task<Alquiler?> GetAlquilerBySocio(int idSocio);
-        Task<List<AlquilerPreviewDto>> GetAlquileresActivos();
+        Task<(List<AlquilerPreviewDto> Items, int TotalCount)> GetAlquileresActivos(int pageNumber, int pageSize);
         Task<bool> UpdateAlquiler(Alquiler alquiler);
         Task<PagoAlquilerDeArticulos> RegistrarPago(PagoAlquilerDeArticulos pago);
         Task<ItemAlquiler> AgregarItem(ItemAlquiler item);

@@ -211,11 +211,13 @@ namespace APIClub.Application.Services
             return Result<AlquilerDto>.Exito(alquilerDto);
         }
 
-        public async Task<Result<List<AlquilerPreviewDto>>> GetAlquileresActivos()
+        public async Task<Result<PagedResult<AlquilerPreviewDto>>> GetAlquileresActivos(int pageNumber, int pageSize)
         {
-            var alquileres = await _UnitOfWork._AlquilerRepository.GetAlquileresActivos();
+            var (items, totalCount) = await _UnitOfWork._AlquilerRepository.GetAlquileresActivos(pageNumber, pageSize);
 
-            return Result<List<AlquilerPreviewDto>>.Exito(alquileres);
+            var result = new PagedResult<AlquilerPreviewDto>(items, totalCount, pageNumber, pageSize);
+
+            return Result<PagedResult<AlquilerPreviewDto>>.Exito(result);
         }
 
         public async Task<Result<AlquilerPreviewDto?>> GetAlquilerBySocio(string dniSocio)

@@ -50,14 +50,20 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<List<AlquilerPreviewDto>> GetAlquileresActivos()
+        public async Task<(List<AlquilerPreviewDto> Items, int TotalCount)> GetAlquileresActivos(int pageNumber, int pageSize)
         {
             var hoy = DateOnly.FromDateTime(DateTime.Today);
 
-            return await _dbContext.alquileresArticulos
+            var query = _dbContext.alquileresArticulos
+                .Where(a => !a.Finalizado);
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
                 .AsNoTracking()
-                .Where(a => !a.Finalizado)
                 .OrderByDescending(a => a.FechaAlquiler)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .Select(a => new AlquilerPreviewDto
                 {
                     Id = a.Id,
@@ -76,6 +82,8 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
                     )
                 })
                 .ToListAsync();
+
+            return (items, totalCount);
         }
 
         public async Task<bool> UpdateAlquiler(Alquiler alquiler)

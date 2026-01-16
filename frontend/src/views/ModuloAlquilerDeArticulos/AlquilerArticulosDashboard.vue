@@ -11,6 +11,7 @@ import AlquilerCard from '../../components/ModuloAlquilerArticulos/Alquileres/Al
 import ArticuloCard from '../../components/ModuloAlquilerArticulos/Articulos/ArticuloCard.vue'
 import ArticuloFormModal from '../../components/ModuloAlquilerArticulos/Articulos/ArticuloFormModal.vue'
 import UpdatePrecioModal from '../../components/ModuloAlquilerArticulos/Articulos/UpdatePrecioModal.vue'
+import Pagination from '../../components/Common/Pagination.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -32,6 +33,12 @@ const searchDni = ref('')
 const searchResultAlquileres = ref([])
 const isSearching = ref(false)
 const searchError = ref('')
+
+// Pagination
+const currentPage = ref(1)
+const pageSize = ref(12)
+const totalCount = ref(0)
+const totalPages = ref(0)
 
 // State - Nuevo Alquiler
 const searchSocioDni = ref('')
@@ -106,13 +113,20 @@ const loadAlquileresActivos = async () => {
   isSearching.value = false
   searchDni.value = ''
   try {
-    const result = await AlquilerService.getAllActive()
-    alquileres.value = result // Assuming list
+    const result = await AlquilerService.getAllActive(currentPage.value, pageSize.value)
+    alquileres.value = result.items
+    totalCount.value = result.totalCount
+    totalPages.value = result.totalPages
   } catch (e) {
     showToast('Error cargando alquileres activos: ' + e.message, 'error')
   } finally {
     loadingAlquileres.value = false
   }
+}
+
+const handlePageChange = (newPage) => {
+  currentPage.value = newPage
+  loadAlquileresActivos()
 }
 
 const handleSearch = async () => {
@@ -490,6 +504,17 @@ const goHome = () => router.push('/')
               :key="alq.id"
               :alquiler="alq"
               @view-detail="goToAlquilerDetail"
+            />
+          </div>
+
+          <!-- Pagination -->
+          <div v-if="!isSearching && alquileres.length > 0" class="mt-8">
+            <Pagination
+              :current-page="currentPage"
+              :total-pages="totalPages"
+              :total-count="totalCount"
+              :page-size="pageSize"
+              @change-page="handlePageChange"
             />
           </div>
 

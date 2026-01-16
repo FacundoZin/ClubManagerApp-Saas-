@@ -16,9 +16,9 @@ export default {
         return await response.json();
     },
 
-    async getAllActive() {
+    async getAllActive(page = 1, pageSize = 12) {
         // GET /api/Alquileres/activos
-        const response = await fetch(`${API_URL}/activos`);
+        const response = await fetch(`${API_URL}/activos?pageNumber=${page}&pageSize=${pageSize}`);
         if (!response.ok) {
             if (response.status >= 500) throw new Error('Lo sentimos, algo salió mal');
             const error = await response.text();
@@ -26,7 +26,7 @@ export default {
         }
         
         const text = await response.text();
-        return text ? JSON.parse(text) : [];
+        return text ? JSON.parse(text) : { items: [], totalCount: 0, totalPages: 0 };
     },
 
     async getBySocio(dni) {

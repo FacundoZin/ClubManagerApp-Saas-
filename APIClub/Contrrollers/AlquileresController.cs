@@ -2,6 +2,7 @@ using APIClub.Application.Dtos.AlquilerDeArticulos;
 using APIClub.Application.Dtos.ItemsAlquiler;
 using APIClub.Domain.AlquilerArticulos;
 using Microsoft.AspNetCore.Mvc;
+using APIClub.Application.Common;
 
 namespace APIClub.Contrrollers
 {
@@ -48,9 +49,9 @@ namespace APIClub.Contrrollers
         }
 
         [HttpGet("activos")]
-        public async Task<IActionResult> GetAlquileresActivos()
+        public async Task<IActionResult> GetAlquileresActivos([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 12)
         {
-            var result = await _alquileresService.GetAlquileresActivos();
+            var result = await _alquileresService.GetAlquileresActivos(pageNumber, pageSize);
 
             if (!result.Exit)
             {

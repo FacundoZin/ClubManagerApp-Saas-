@@ -13,7 +13,7 @@ namespace APIClub.Domain.AlquilerArticulos
         Task<Result<PagoAlquilerDto>> RegistrarPago(int idAlquiler, int mes, int anio);
         Task<Result<object?>> FinalizarAlquiler(int alquilerId);
         Task<Result<AlquilerDto>> GetAlquilerById(int id);
-        Task<Result<List<AlquilerPreviewDto>>> GetAlquileresActivos();
+        Task<Result<PagedResult<AlquilerPreviewDto>>> GetAlquileresActivos(int pageNumber, int pageSize);
         Task<Result<AlquilerPreviewDto?>> GetAlquilerBySocio(string dniSocio);
     }
 }
