@@ -1,4 +1,5 @@
-﻿using APIClub.Domain.GestionSocios.Models;
+﻿using APIClub.Domain.Enums;
+using APIClub.Domain.GestionSocios.Models;
 using APIClub.Domain.GestionSocios.Repositories;
 using APIClub.Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
@@ -118,7 +119,7 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
         public async Task<(List<Socio> Items, int TotalCount)> GetSociosDeudoresByLote(int IdLote, int anioActual, int semestreActual, int pageNumber, int pageSize)
         {
             var query = _Dbcontext.Socios.
-                Where(s => s.Lote.Id == IdLote && !s.HistorialCuotas
+                Where(s => s.Lote.Id == IdLote && s.PreferenciaDePago == FormasDePago.Cobrador && !s.HistorialCuotas
                 .Any(c => c.Anio == anioActual && c.Semestre == semestreActual))
                 .AsNoTracking();
 

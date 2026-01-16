@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using APIClub.Domain.Enums;
 
 namespace APIClub.Application.Dtos.Socios
 {
@@ -17,5 +18,8 @@ namespace APIClub.Application.Dtos.Socios
         public string? Direcccion { get; set; }
         public int? IdLote { get; set; }
         public string? Localidad { get; set; }
+
+        [Required(ErrorMessage = "La forma de pago es requerida")]
+        public FormasDePago PreferenciaDePago { get; set; }
     }
 }

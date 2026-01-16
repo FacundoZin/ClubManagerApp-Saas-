@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import SocioFeeCard from '../../components/ModuloGestionCuotas/SocioFeeCard.vue'
+import CuotasService from '../../services/CuotasService'
+import SociosService from '../../services/SociosService'
 
 const router = useRouter()
 
@@ -72,20 +74,7 @@ const handleSearch = async () => {
   searchResult.value = null
 
   try {
-    const response = await fetch(`http://localhost:5194/api/Socios/${searchDni.value}`)
-
-    if (response.status === 404) {
-      searchError.value = 'El socio no existe'
-      return
-    }
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}))
-      searchError.value = errorData.mensaje || 'Algo salió mal lo sentimos'
-      return
-    }
-
-    const data = await response.json()
+    const data = await SociosService.getByDni(searchDni.value)
 
     if (!data.adeudaCuotas) {
       searchError.value = 'Este socio ya pagó su cuota'
@@ -95,7 +84,7 @@ const handleSearch = async () => {
 
     searchResult.value = data
   } catch (error) {
-    searchError.value = 'Algo salió mal lo sentimos'
+    searchError.value = error.message || 'Algo salió mal lo sentimos'
   } finally {
     isSearching.value = false
   }
@@ -106,21 +95,10 @@ const handleRegisterPayment = async () => {
 
   isProcessing.value = true
   try {
-    const response = await fetch('http://localhost:5194/api/Cuotas/pagarCuota', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        idSocio: searchResult.value.id,
-        formaPago: parseInt(formaPagoSelected.value),
-      }),
+    await CuotasService.registrarCuota({
+      socioId: searchResult.value.id,
+      formaPago: parseInt(formaPagoSelected.value),
     })
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}))
-      throw new Error(errorData.mensaje || 'Error al registrar el pago')
-    }
 
     showToast('El pago se registró correctamente')
     searchResult.value = null
@@ -140,22 +118,12 @@ const handleUpdateValue = async () => {
 
   isProcessing.value = true
   try {
-    const response = await fetch('http://localhost:5194/api/Cuotas/actualizarValor', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(nuevoValorCuota.value),
-    })
-
-    if (!response.ok) {
-      throw new Error('Error al actualizar el valor')
-    }
+    await CuotasService.actualizarValor(nuevoValorCuota.value)
 
     showToast('El valor de la cuota se actualizó correctamente')
     nuevoValorCuota.value = 0
   } catch (error) {
-    showToast('Algo salió mal lo sentimos', 'error')
+    showToast(error.message || 'Algo salió mal lo sentimos', 'error')
   } finally {
     isProcessing.value = false
   }

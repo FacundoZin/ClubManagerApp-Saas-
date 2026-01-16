@@ -34,7 +34,7 @@ namespace APIClub.Application.Helpers
                 digits = digits.Substring(1);
 
             // 4. Validación mínima
-            if (digits.Length < 10 || digits.Length > 11)
+            if (digits.Length != 10)
                 return Result<string>.Error($"Número inválido, debe tener 10 caracteres, asegurese de NO incluir el +54 y la caracteristica solo de la provincia sin el 15, por ejemplo 3564 65 1745", 400);
 
             // 5. Resultado final para la API

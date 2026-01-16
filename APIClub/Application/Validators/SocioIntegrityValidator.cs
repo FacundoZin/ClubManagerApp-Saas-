@@ -25,7 +25,8 @@ namespace APIClub.Application.Validators
             var hasFutureReservas = await _unitOfWork._ReservasRepository.HasFutureReservationsBySocio(socioId);
             if (hasFutureReservas)
             {
-                return Result<bool>.Error("No se puede dar de baja al socio porque posee reservas de salones futuras pendientes.", 400);
+                return Result<bool>.Error("No se puede dar de baja al socio porque tiene una reserva de salon activa, " +
+                    "cancele la reserva si quiere dar de baja al socio", 400);
             }
 
             // Si pasa todas las validaciones

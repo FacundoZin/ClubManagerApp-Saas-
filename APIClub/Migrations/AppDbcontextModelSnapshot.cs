@@ -438,6 +438,9 @@ namespace APIClub.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("PreferenciaDePago")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Telefono")
                         .HasColumnType("TEXT");
 
@@ -459,6 +462,7 @@ namespace APIClub.Migrations
                             Localidad = "Rosario",
                             LoteId = 1,
                             Nombre = "Juan",
+                            PreferenciaDePago = 0,
                             Telefono = "341-1234567"
                         },
                         new
@@ -472,6 +476,7 @@ namespace APIClub.Migrations
                             Localidad = "Córdoba",
                             LoteId = 2,
                             Nombre = "María",
+                            PreferenciaDePago = 2,
                             Telefono = "341-7654321"
                         },
                         new
@@ -485,6 +490,7 @@ namespace APIClub.Migrations
                             Localidad = "Rosario",
                             LoteId = 3,
                             Nombre = "Carlos",
+                            PreferenciaDePago = 1,
                             Telefono = "341-9988776"
                         });
                 });

@@ -1,4 +1,6 @@
-﻿namespace APIClub.Application.Dtos.Socios
+﻿using APIClub.Domain.Enums;
+
+namespace APIClub.Application.Dtos.Socios
 {
     public class PreviewSocioDto
     {
@@ -11,6 +13,7 @@
         public string? nombreLote { get; set; }
         public int? IdLote { get; set; }
         public string? Localidad { get; set; }
+        public FormasDePago PreferenciaDePago { get; set; }
         public DateOnly? FechaAsociacion { get; set; }
 
         public bool AdeudaCuotas { get; set; }

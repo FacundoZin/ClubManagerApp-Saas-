@@ -130,7 +130,7 @@ const handlePago = (socio) => {
         const paymentData = {
           socioId: socio.id,
           monto: socio.deuda,
-          formaPago: 'COBRADOR',
+          formaPago: 0, // 0 = Cobrador
         }
 
         await CuotasService.registrarCuota(paymentData)
@@ -152,10 +152,9 @@ const openEditModal = (socio) => {
 // Manejar actualización de socio
 const handleSocioUpdated = (updatedSocio) => {
   isEditModalOpen.value = false
-  const index = socios.value.findIndex((s) => s.id === updatedSocio.id)
-  if (index !== -1) {
-    socios.value[index] = { ...socios.value[index], ...updatedSocio }
-  }
+  showToast('Socio actualizado correctamente')
+  // Refrescamos la lista completa para asegurar que la UI refleje cambios como el lote
+  buscarSocios(currentPage.value)
 }
 
 // Manejar eliminación de socio
@@ -169,7 +168,12 @@ const handleDelete = (socio) => {
       try {
         await SociosService.removeSocio(socio.id)
         showToast('Socio dado de baja exitosamente')
-        socios.value = socios.value.filter((s) => s.id !== socio.id)
+        // Al dar de baja, refrescamos la página actual o la anterior si esta quedó vacía
+        const pageToLoad =
+          socios.value.length === 1 && currentPage.value > 1
+            ? currentPage.value - 1
+            : currentPage.value
+        buscarSocios(pageToLoad)
       } catch (e) {
         showToast(`Error al dar de baja: ${e.message}`, 'error')
       }

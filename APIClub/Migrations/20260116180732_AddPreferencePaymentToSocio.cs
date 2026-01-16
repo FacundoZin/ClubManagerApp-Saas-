@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace APIClub.Migrations
 {
     /// <inheritdoc />
-    public partial class changesInSchemaOfReservas : Migration
+    public partial class AddPreferencePaymentToSocio : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -105,6 +105,7 @@ namespace APIClub.Migrations
                     Telefono = table.Column<string>(type: "TEXT", nullable: true),
                     Direcccion = table.Column<string>(type: "TEXT", nullable: true),
                     Localidad = table.Column<string>(type: "TEXT", nullable: true),
+                    PreferenciaDePago = table.Column<int>(type: "INTEGER", nullable: false),
                     LoteId = table.Column<int>(type: "INTEGER", nullable: true),
                     FechaAsociacion = table.Column<DateOnly>(type: "TEXT", nullable: false),
                     IsActivo = table.Column<bool>(type: "INTEGER", nullable: false),
@@ -316,12 +317,12 @@ namespace APIClub.Migrations
 
             migrationBuilder.InsertData(
                 table: "Socios",
-                columns: new[] { "Id", "Apellido", "Direcccion", "Dni", "FechaAsociacion", "FechaDeBaja", "IsActivo", "Localidad", "LoteId", "Nombre", "Telefono" },
+                columns: new[] { "Id", "Apellido", "Direcccion", "Dni", "FechaAsociacion", "FechaDeBaja", "IsActivo", "Localidad", "LoteId", "Nombre", "PreferenciaDePago", "Telefono" },
                 values: new object[,]
                 {
-                    { 1, "Pérez", "Mitre 100", "12345678", new DateOnly(2020, 5, 10), null, true, "Rosario", 1, "Juan", "341-1234567" },
-                    { 2, "Gómez", "San Martín 200", "87654321", new DateOnly(2021, 3, 15), null, true, "Córdoba", 2, "María", "341-7654321" },
-                    { 3, "Ruiz", "Belgrano 500", "11223344", new DateOnly(2022, 1, 10), null, true, "Rosario", 3, "Carlos", "341-9988776" }
+                    { 1, "Pérez", "Mitre 100", "12345678", new DateOnly(2020, 5, 10), null, true, "Rosario", 1, "Juan", 0, "341-1234567" },
+                    { 2, "Gómez", "San Martín 200", "87654321", new DateOnly(2021, 3, 15), null, true, "Córdoba", 2, "María", 2, "341-7654321" },
+                    { 3, "Ruiz", "Belgrano 500", "11223344", new DateOnly(2022, 1, 10), null, true, "Rosario", 3, "Carlos", 1, "341-9988776" }
                 });
 
             migrationBuilder.InsertData(

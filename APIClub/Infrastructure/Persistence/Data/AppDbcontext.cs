@@ -245,6 +245,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                     Direcccion = "Mitre 100",
                     Localidad = "Rosario",
                     LoteId = 1,
+                    PreferenciaDePago = FormasDePago.Cobrador,
                     FechaAsociacion = DateOnly.FromDateTime(new DateTime(2020, 5, 10))
                 },
                 new Socio
@@ -257,6 +258,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                     Direcccion = "San Martín 200",
                     Localidad = "Córdoba",
                     LoteId = 2,
+                    PreferenciaDePago = FormasDePago.Sede,
                     FechaAsociacion = DateOnly.FromDateTime(new DateTime(2021, 3, 15))
                 },
                 new Socio
@@ -269,6 +271,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                     Direcccion = "Belgrano 500",
                     Localidad = "Rosario",
                     LoteId = 3,
+                    PreferenciaDePago = FormasDePago.LinkDePago,
                     FechaAsociacion = DateOnly.FromDateTime(new DateTime(2022, 1, 10))
                 }
             );

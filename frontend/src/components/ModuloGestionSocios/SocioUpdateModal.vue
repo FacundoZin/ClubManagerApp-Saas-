@@ -20,7 +20,14 @@ const form = reactive({
   direcccion: '', // Note: keeping typo to match DTO
   idLote: '',
   localidad: '',
+  preferenciaDePago: '',
 })
+
+const paymentOptions = [
+  { value: 0, label: 'Cobrador' },
+  { value: 1, label: 'Link de Pago' },
+  { value: 2, label: 'Sede' },
+]
 
 const lotes = ref([])
 const isLoadingLotes = ref(false)
@@ -52,6 +59,9 @@ const resetForm = () => {
   form.direcccion = ''
   form.idLote = ''
   form.localidad = ''
+  form.idLote = ''
+  form.localidad = ''
+  form.preferenciaDePago = ''
   errorMessage.value = ''
 }
 
@@ -76,6 +86,9 @@ const fetchSocioData = async (id) => {
     form.direcccion = data.direcccion || ''
     form.idLote = data.idLote || ''
     form.localidad = data.localidad || ''
+    form.idLote = data.idLote || ''
+    form.localidad = data.localidad || ''
+    form.preferenciaDePago = data.preferenciaDePago !== undefined ? data.preferenciaDePago : ''
   } catch (error) {
     errorMessage.value = error.message
   } finally {
@@ -340,6 +353,23 @@ const handleSubmit = async () => {
                   placeholder="Ciudad o Barrio"
                 />
               </div>
+            </div>
+
+            <div class="space-y-1.5">
+              <label for="edit-preferenciaDePago" class="block text-sm font-bold text-slate-700"
+                >Preferencia de Pago</label
+              >
+              <select
+                id="edit-preferenciaDePago"
+                v-model="form.preferenciaDePago"
+                required
+                class="block w-full rounded-xl border-slate-200 bg-slate-50/50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 sm:text-sm px-4 py-3 border transition-all"
+              >
+                <option value="" disabled>Seleccione una forma de pago</option>
+                <option v-for="option in paymentOptions" :key="option.value" :value="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
             </div>
           </div>
 

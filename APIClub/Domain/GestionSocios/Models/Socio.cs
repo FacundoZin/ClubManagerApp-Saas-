@@ -1,4 +1,5 @@
 ﻿using APIClub.Domain.GestionSocios.Validations;
+using APIClub.Domain.Enums;
 
 namespace APIClub.Domain.GestionSocios.Models
 {
@@ -13,6 +14,7 @@ namespace APIClub.Domain.GestionSocios.Models
         public string? Telefono { get; set; }
         public string? Direcccion { get; set; }
         public string? Localidad { get; set; }
+        public FormasDePago PreferenciaDePago { get; set; }
         public int? LoteId { get; set; }
         public Lote? Lote { get; set; }
         public DateOnly FechaAsociacion { get; set; }

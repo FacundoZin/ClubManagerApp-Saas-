@@ -65,7 +65,8 @@ namespace APIClub.Application.Services
                 LoteId = _dto.IdLote,
                 Localidad = _dto.Localidad,
                 FechaAsociacion = DateOnly.FromDateTime(DateTime.Now),
-                IsActivo = true
+                IsActivo = true,
+                PreferenciaDePago = _dto.PreferenciaDePago
             };
 
             await _SocioRepository.cargarSocio(socio);
@@ -133,6 +134,7 @@ namespace APIClub.Application.Services
                 nombreLote = socio.Lote?.NombreLote,
                 IdLote = socio.LoteId,
                 Localidad = socio.Localidad,
+                PreferenciaDePago = socio.PreferenciaDePago,
                 AdeudaCuotas = debeCuota,
             };
 
@@ -209,6 +211,9 @@ namespace APIClub.Application.Services
             socio.Direcccion = dto.Direcccion;
             socio.LoteId = dto.IdLote;
             socio.Localidad = dto.Localidad;
+            socio.LoteId = dto.IdLote;
+            socio.Localidad = dto.Localidad;
+            socio.PreferenciaDePago = dto.PreferenciaDePago;
 
             await _SocioRepository.UpdateSocio(socio);
 
@@ -245,6 +250,7 @@ namespace APIClub.Application.Services
                 nombreLote = socio.Lote?.NombreLote,
                 IdLote = socio.LoteId,
                 Localidad = socio.Localidad,
+                PreferenciaDePago = socio.PreferenciaDePago,
                 AdeudaCuotas = false // Tendriamos que calcularlo si fuera necesario, pero para el form no hace falta
             };
 
