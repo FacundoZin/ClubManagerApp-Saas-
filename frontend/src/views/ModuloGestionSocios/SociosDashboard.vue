@@ -7,6 +7,7 @@ import SocioCard from '../../components/ModuloGestionSocios/SocioCard.vue'
 import SocioFormModal from '../../components/ModuloGestionSocios/SocioFormModal.vue'
 import SocioList from '../../components/ModuloGestionSocios/SocioList.vue'
 import SocioUpdateModal from '../../components/ModuloGestionSocios/SocioUpdateModal.vue'
+import SociosService from '../../services/SociosService'
 
 // State
 const currentAction = ref('none') // 'none', 'add', 'search', 'debtors'
@@ -145,20 +146,13 @@ const handleSearch = async () => {
   searchResult.value = null
 
   try {
-    const response = await fetch(`http://localhost:5194/api/Socios/${searchDni.value}`)
+    const data = await SociosService.getByDni(searchDni.value)
 
-    if (response.status === 404) {
+    if (!data) {
       searchError.value = 'No se encontró ningún socio con ese DNI'
       return
     }
 
-    if (!response.ok) {
-      // Try to parse error message
-      const errorData = await response.json().catch(() => ({}))
-      throw new Error(errorData.mensaje || 'Error al buscar socio')
-    }
-
-    const data = await response.json()
     searchResult.value = data
   } catch (error) {
     searchError.value = error.message
@@ -174,13 +168,7 @@ const fetchDebtors = async (page = 1) => {
   debtorsError.value = ''
 
   try {
-    const response = await fetch(
-      `http://localhost:5194/api/Socios/deudores?pageNumber=${page}&pageSize=${pageSize.value}`,
-    )
-    if (!response.ok) {
-      throw new Error('Error al obtener lista de deudores')
-    }
-    const data = await response.json()
+    const data = await SociosService.getDebtors(page, pageSize.value)
     debtorsList.value = data.items
     totalCount.value = data.totalCount
     totalPages.value = data.totalPages
@@ -208,30 +196,7 @@ const confirmDelete = async () => {
   const socio = socioToDelete.value
 
   try {
-    const response = await fetch(`http://localhost:5194/api/Socios/${socio.id}`, {
-      method: 'DELETE',
-    })
-
-    if (!response.ok) {
-      // Intentar parsear el mensaje de error del backend
-      const text = await response.text()
-      if (text) {
-        // Si el texto parece JSON, intentamos parsearlo
-        try {
-          // El backend suele devolver texto plano para 400 o JSON para 409/otros
-          // Si el primer caracter es '{' asumimos JSON
-          if (text.trim().startsWith('{')) {
-            const json = JSON.parse(text)
-            throw new Error(json.mensaje || json.message || text)
-          } else {
-            throw new Error(text)
-          }
-        } catch (e) {
-          throw new Error(text)
-        }
-      }
-      throw new Error('Error al eliminar socio')
-    }
+    await SociosService.removeSocio(socio.id)
 
     // Refresh
     if (currentAction.value === 'search') {

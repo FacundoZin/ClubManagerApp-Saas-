@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5194/api/Salon';
+const API_URL = `${import.meta.env.VITE_API_URL}/Salon`;
 
 const handleError = async (response, defaultMessage) => {
     if (response.status >= 500) {

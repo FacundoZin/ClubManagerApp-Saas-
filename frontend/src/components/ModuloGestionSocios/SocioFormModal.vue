@@ -2,6 +2,7 @@
 import { reactive, ref, onMounted, watch } from 'vue'
 import ConfirmModal from '../Common/ConfirmModal.vue'
 import CobranzasService from '../../services/CobranzasService'
+import SociosService from '../../services/SociosService'
 
 const props = defineProps({
   isOpen: Boolean,
@@ -86,21 +87,10 @@ const confirmModalConfig = reactive({
 const handleReactivationConfirm = async () => {
   try {
     const socioId = confirmModalConfig.socioId
-    const reactivateResponse = await fetch(
-      `http://localhost:5194/api/Socios/reactivar/${socioId}`,
-      {
-        method: 'POST',
-      },
-    )
-
-    if (reactivateResponse.ok) {
-      const data = await reactivateResponse.json()
-      emit('save', data)
-      resetForm()
-      showConfirmModal.value = false
-    } else {
-      throw new Error('Error al reactivar el socio.')
-    }
+    const data = await SociosService.reactivar(socioId)
+    emit('save', data)
+    resetForm()
+    showConfirmModal.value = false
   } catch (error) {
     errorMessage.value = error.message
     showConfirmModal.value = false
@@ -112,55 +102,24 @@ const handleSubmit = async () => {
   errorMessage.value = ''
 
   try {
-    const response = await fetch('http://localhost:5194/api/Socios', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(form),
-    })
-
-    if (response.status === 409) {
-      try {
-        const responseData = await response.json()
-        const { message, data } = responseData
-
-        if (data && data.id) {
-          confirmModalConfig.title = 'Socio Inactivo Detectado'
-          confirmModalConfig.message = `El socio ${data.nombre} ya existe en el sistema pero está dado de baja. ¿Desea reactivarlo?`
-          confirmModalConfig.socioId = data.id
-          showConfirmModal.value = true
-          isSubmitting.value = false
-          return
-        }
-      } catch (e) {
-        console.error('Error parsing conflict response', e)
-      }
-
-      throw new Error('El socio existe pero está inactivo.')
-    }
-
-    if (!response.ok) {
-      let message = 'Error al guardar el socio'
-
-      // Si es un error del cliente (400-499), intentamos obtener el mensaje del backend
-      if (response.status >= 400 && response.status < 500) {
-        try {
-          const backendError = await response.text()
-          if (backendError) message = backendError
-        } catch (e) {
-          // Fallback to default message
-        }
-      }
-
-      throw new Error(message)
-    }
-
-    const data = await response.json()
+    const data = await SociosService.create(form)
     emit('save', data)
     resetForm()
   } catch (error) {
-    errorMessage.value = error.message
+    if (error.status === 409) {
+      const { data } = error.data
+      if (data && data.id) {
+        confirmModalConfig.title = 'Socio Inactivo Detectado'
+        confirmModalConfig.message = `El socio ${data.nombre} ya existe en el sistema pero está dado de baja. ¿Desea reactivarlo?`
+        confirmModalConfig.socioId = data.id
+        showConfirmModal.value = true
+        isSubmitting.value = false
+        return
+      }
+      errorMessage.value = 'El socio existe pero está inactivo.'
+    } else {
+      errorMessage.value = error.message
+    }
   } finally {
     isSubmitting.value = false
   }

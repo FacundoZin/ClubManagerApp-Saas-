@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import SociosService from '../../services/SociosService'
 
 const route = useRoute()
 const router = useRouter()
@@ -13,11 +14,7 @@ const error = ref('')
 const fetchSocioDetails = async () => {
   isLoading.value = true
   try {
-    const response = await fetch(`http://localhost:5194/api/Socios/full/${socioId}`)
-    if (!response.ok) {
-      throw new Error('No se pudo cargar la información del socio')
-    }
-    socio.value = await response.json()
+    socio.value = await SociosService.getFullDetail(socioId)
   } catch (err) {
     error.value = err.message
   } finally {

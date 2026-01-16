@@ -1,6 +1,7 @@
 <script setup>
 import { reactive, ref, watch, onMounted } from 'vue'
 import CobranzasService from '../../services/CobranzasService'
+import SociosService from '../../services/SociosService'
 
 const props = defineProps({
   isOpen: Boolean,
@@ -72,11 +73,7 @@ const fetchSocioData = async (id) => {
   errorMessage.value = ''
 
   try {
-    const response = await fetch(`http://localhost:5194/api/Socios/byId/${id}`)
-    if (!response.ok) {
-      throw new Error('No se pudo cargar la información del socio')
-    }
-    const data = await response.json()
+    const data = await SociosService.getById(id)
 
     // Populate form
     form.nombre = data.nombre || ''
@@ -84,8 +81,6 @@ const fetchSocioData = async (id) => {
     form.dni = data.dni || ''
     form.telefono = data.telefono || ''
     form.direcccion = data.direcccion || ''
-    form.idLote = data.idLote || ''
-    form.localidad = data.localidad || ''
     form.idLote = data.idLote || ''
     form.localidad = data.localidad || ''
     form.preferenciaDePago = data.preferenciaDePago !== undefined ? data.preferenciaDePago : ''
@@ -113,35 +108,8 @@ const handleSubmit = async () => {
   errorMessage.value = ''
 
   try {
-    const response = await fetch(`http://localhost:5194/api/Socios/${props.socioId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(form),
-    })
-
-    if (!response.ok) {
-      let message = 'Error al actualizar el socio'
-
-      // Si es un error del cliente (400-499), intentamos obtener el mensaje del backend
-      if (response.status >= 400 && response.status < 500) {
-        try {
-          const backendError = await response.text()
-          if (backendError) message = backendError
-        } catch (e) {
-          // Fallback to default message
-        }
-      }
-
-      throw new Error(message)
-    }
-
-    const data = await response.json()
-    // The PUT endpoint in SocioController returns Ok(result.Data)
-    // which in SociosManagmentService is: { Message = "...", SocioId = ... }
-    // But SociosView might expect the full socio object to update the list.
-    // Let's emit the updated form data as if it was the socio.
+    await SociosService.update(props.socioId, form)
+    // The view expects the updated object to refresh the UI
     emit('save', { ...form, id: props.socioId })
     resetForm()
   } catch (error) {

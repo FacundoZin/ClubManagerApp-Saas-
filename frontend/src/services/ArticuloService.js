@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5194/api/Articulos';
+const API_URL = `${import.meta.env.VITE_API_URL}/Articulos`;
 
 export default {
     async getAll() {
@@ -8,14 +8,7 @@ export default {
             const error = await response.text();
             throw new Error(error || 'Error al obtener artículos');
         }
-        // Result wrapper { exit: boolean, data: [], ... }
         const result = await response.json();
-        // Controller returns Ok(result.Data), so it's already the array or object?
-        // Checking controller: 
-        // return Ok(result.Data); 
-        // So it returns the list directly or the object? 
-        // _articulosService.GetAllArticulos() returns Result<List<ArticuloDto>>
-        // Controller: return Ok(result.Data); -> The body IS the list/dta.
         return result;
     },
 

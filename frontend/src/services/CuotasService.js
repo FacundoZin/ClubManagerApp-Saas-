@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5194/api/Cuotas';
+const API_URL = `${import.meta.env.VITE_API_URL}/Cuotas`;
 
 export default {
     async registrarCuota(paymentData) {

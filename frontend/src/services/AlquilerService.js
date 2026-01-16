@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5194/api/Alquileres';
+const API_URL = `${import.meta.env.VITE_API_URL}/Alquileres`;
 
 export default {
     async create(dto) {
