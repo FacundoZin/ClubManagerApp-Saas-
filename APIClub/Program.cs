@@ -6,9 +6,7 @@ using APIClub.Domain.GestionSocios.Repositories;
 using APIClub.Domain.ReservasSalones;
 using APIClub.Domain.ReservasSalones.Repositories;
 using APIClub.Domain.Notificaciones;
-using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Headers;
-using Microsoft.Extensions.Options;
 using APIClub.Domain.PaymentsOnline;
 using APIClub.Domain.PaymentsOnline.Repository;
 using APIClub.Domain.GestionSocios.Validations;
@@ -18,15 +16,13 @@ using APIClub.Infrastructure.Persistence.Data;
 using APIClub.Application.Services;
 using APIClub.Application.Common;
 using APIClub.Application.Validators;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-                       ?? "Data Source=club.db";
-
 
 builder.Services.AddDbContext<AppDbcontext>(options =>
-    options.UseSqlite(connectionString));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Configurar WhatsApp
 builder.Services.Configure<WhatsAppConfig>(
