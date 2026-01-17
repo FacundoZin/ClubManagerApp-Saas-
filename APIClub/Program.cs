@@ -20,6 +20,11 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configuración para PostgreSQL: permitir DateTime sin especificar UTC explícitamente
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+builder.Configuration.AddEnvironmentVariables();
+
 
 builder.Services.AddDbContext<AppDbcontext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));

@@ -264,7 +264,7 @@ namespace APIClub.Application.Services
                 return Result<FullSocioDto>.Error("El ID proporcionado no es válido.", 400);
             }
 
-            var socio = await _SocioRepository.GetSocioByIdWithCuotas(id);
+            var socio = await _SocioRepository.GetSocioByIdWithFullInfo(id);
 
             if (socio is null)
             {

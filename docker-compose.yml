@@ -1,9 +1,7 @@
-version: "3.9"
-
 services:
   postgres:
     image: postgres:16
-    container_name: club-postgres
+    container_name: db_casadeljubilado
     restart: always
     ports:
       - "${POSTGRES_PORT}:5432"

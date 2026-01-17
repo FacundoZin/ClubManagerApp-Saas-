@@ -282,7 +282,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                 {
                     Id = 1,
                     MontoCuotaFija = 2500.00m,
-                    FechaActualizacion = new DateTime(2025, 01, 01)
+                    FechaActualizacion = new DateTime(2025, 01, 01, 0, 0, 0, DateTimeKind.Utc)
                 }
             );
 
@@ -475,7 +475,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                 new
                 {
                     Id = 5,
-                    FechaAlquiler = DateOnly.FromDateTime(DateTime.Now.AddDays(-5)),
+                    FechaAlquiler = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-5)),
                     Observaciones = "Alquiler Activo para Test",
                     IdSocio = 3,
                     Finalizado = false
@@ -574,7 +574,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                     anio = 2025,
                     semestre = 1,
                     monto = 2500.00m,
-                    FechaExpiracion = DateOnly.FromDateTime(DateTime.Now.AddDays(30)),
+                    FechaExpiracion = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30)),
                     usado = false,
                     Preference_Id = null
                 },
@@ -586,7 +586,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                     anio = 2025,
                     semestre = 2,
                     monto = 2500.00m,
-                    FechaExpiracion = DateOnly.FromDateTime(DateTime.Now.AddDays(30)),
+                    FechaExpiracion = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30)),
                     usado = false,
                     Preference_Id = null
                 },
@@ -598,7 +598,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                     anio = 2025,
                     semestre = 1,
                     monto = 2500.00m,
-                    FechaExpiracion = DateOnly.FromDateTime(DateTime.Now.AddDays(30)),
+                    FechaExpiracion = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30)),
                     usado = false,
                     Preference_Id = null
                 },
@@ -610,7 +610,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                     anio = 2025,
                     semestre = 2,
                     monto = 2500.00m,
-                    FechaExpiracion = DateOnly.FromDateTime(DateTime.Now.AddDays(30)),
+                    FechaExpiracion = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30)),
                     usado = false,
                     Preference_Id = null
                 }
