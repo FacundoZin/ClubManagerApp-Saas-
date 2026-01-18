@@ -6,6 +6,7 @@ export default {
         const response = await fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify(dto)
         });
         if (!response.ok) {
@@ -18,7 +19,7 @@ export default {
 
     async getAllActive(page = 1, pageSize = 12) {
         // GET /api/Alquileres/activos
-        const response = await fetch(`${API_URL}/activos?pageNumber=${page}&pageSize=${pageSize}`);
+        const response = await fetch(`${API_URL}/activos?pageNumber=${page}&pageSize=${pageSize}`, { credentials: 'include' });
         if (!response.ok) {
             if (response.status >= 500) throw new Error('Lo sentimos, algo salió mal');
             const error = await response.text();
@@ -30,7 +31,7 @@ export default {
     },
 
     async getBySocio(dni) {
-        const response = await fetch(`${API_URL}/socio/${dni}`);
+        const response = await fetch(`${API_URL}/socio/${dni}`, { credentials: 'include' });
         
         if (!response.ok) {
             if (response.status >= 500) {
@@ -48,7 +49,7 @@ export default {
     },
 
     async getById(id) {
-        const response = await fetch(`${API_URL}/${id}`);
+        const response = await fetch(`${API_URL}/${id}`, { credentials: 'include' });
         if (!response.ok) {
             if (response.status >= 500) throw new Error('Lo sentimos, algo salió mal');
             const error = await response.text();
@@ -63,6 +64,7 @@ export default {
         const response = await fetch(`${API_URL}/agregar-item/${id}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify(dto)
         });
         if (!response.ok) {
@@ -77,6 +79,7 @@ export default {
         const response = await fetch(`${API_URL}/${id}/item/cantidad`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify(dto)
         });
         if (!response.ok) {
@@ -89,7 +92,8 @@ export default {
 
     async removeItem(id, itemId) {
         const response = await fetch(`${API_URL}/${id}/item/${itemId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            credentials: 'include'
         });
         if (!response.ok) {
             if (response.status >= 500) throw new Error('Lo sentimos, algo salió mal');
@@ -103,6 +107,7 @@ export default {
         const response = await fetch(`${API_URL}/${idAlquiler}/pagos?mes=${mes}&anio=${anio}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({})
         });
         if (!response.ok) {
@@ -117,7 +122,8 @@ export default {
 
     async finalize(id) {
         const response = await fetch(`${API_URL}/${id}/finalizar`, {
-            method: 'PUT'
+            method: 'PUT',
+            credentials: 'include'
         });
         if (!response.ok) {
             if (response.status >= 500) throw new Error('Lo sentimos, algo salió mal');

@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using APIClub.Infrastructure.Persistence.Data;
 using APIClub.Application.Dtos.Reservas;
 using APIClub.Application.Common;
+using Microsoft.AspNetCore.Authorization;
 
 namespace APIClub.Contrrollers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class SalonController : ControllerBase
     {
         private readonly IReservasServices _SalonesServices;

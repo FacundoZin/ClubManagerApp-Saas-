@@ -3,11 +3,13 @@ using APIClub.Application.Dtos.ItemsAlquiler;
 using APIClub.Domain.AlquilerArticulos;
 using Microsoft.AspNetCore.Mvc;
 using APIClub.Application.Common;
+using Microsoft.AspNetCore.Authorization;
 
 namespace APIClub.Contrrollers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AlquileresController : ControllerBase
     {
         private readonly IAlquilerArticulosService _alquileresService;

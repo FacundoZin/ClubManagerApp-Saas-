@@ -23,7 +23,8 @@ const handleError = async (response, defaultMessage) => {
 export default {
     async removeSocio(id) {
         const response = await fetch(`${API_URL}/${id}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            credentials: 'include'
         });
 
         if (!response.ok) {
@@ -35,7 +36,7 @@ export default {
     },
 
     async getByDni(dni) {
-        const response = await fetch(`${API_URL}/${dni}`);
+        const response = await fetch(`${API_URL}/${dni}`, { credentials: 'include' });
 
         if (response.status === 404) return null;
         if (!response.ok) {
@@ -47,7 +48,7 @@ export default {
     },
 
     async getById(id) {
-        const response = await fetch(`${API_URL}/byId/${id}`);
+        const response = await fetch(`${API_URL}/byId/${id}`, { credentials: 'include' });
         if (!response.ok) {
             const msg = await handleError(response, 'Error al obtener datos del socio');
             throw new Error(msg);
@@ -56,7 +57,7 @@ export default {
     },
 
     async getFullDetail(id) {
-        const response = await fetch(`${API_URL}/full/${id}`);
+        const response = await fetch(`${API_URL}/full/${id}`, { credentials: 'include' });
         if (!response.ok) {
             const msg = await handleError(response, 'No se pudo cargar la información del socio');
             throw new Error(msg);
@@ -65,7 +66,7 @@ export default {
     },
 
     async getDebtors(page = 1, pageSize = 10) {
-        const response = await fetch(`${API_URL}/deudores?pageNumber=${page}&pageSize=${pageSize}`);
+        const response = await fetch(`${API_URL}/deudores?pageNumber=${page}&pageSize=${pageSize}`, { credentials: 'include' });
         if (!response.ok) {
             const msg = await handleError(response, 'Error al obtener lista de deudores');
             throw new Error(msg);
@@ -79,6 +80,7 @@ export default {
             headers: {
                 'Content-Type': 'application/json'
             },
+            credentials: 'include',
             body: JSON.stringify(dto)
         });
 
@@ -104,6 +106,7 @@ export default {
             headers: {
                 'Content-Type': 'application/json'
             },
+            credentials: 'include',
             body: JSON.stringify(dto)
         });
 
@@ -117,7 +120,8 @@ export default {
 
     async reactivar(id) {
         const response = await fetch(`${API_URL}/reactivar/${id}`, {
-            method: 'POST'
+            method: 'POST',
+            credentials: 'include'
         });
 
         if (!response.ok) {

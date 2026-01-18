@@ -4,6 +4,7 @@ export default {
   async listarSociosDeudoresPorLote(lote, pageNumber = 1, pageSize = 10) {
     const response = await fetch(
       `${API_URL}/lotes/${lote}/deudores?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+      { credentials: 'include' },
     )
 
     if (!response.ok) {
@@ -15,7 +16,7 @@ export default {
   },
 
   async listarLotes() {
-    const response = await fetch(`${API_URL}/lotes`)
+    const response = await fetch(`${API_URL}/lotes`, { credentials: 'include' })
 
     if (!response.ok) {
       const error = await response.text()
@@ -31,6 +32,7 @@ export default {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify(loteData),
     })
 

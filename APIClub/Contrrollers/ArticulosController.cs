@@ -2,11 +2,13 @@
 using APIClub.Domain.AlquilerArticulos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace APIClub.Contrrollers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ArticulosController : ControllerBase
     {
         private readonly IManagmentArticulosService _articulosService;

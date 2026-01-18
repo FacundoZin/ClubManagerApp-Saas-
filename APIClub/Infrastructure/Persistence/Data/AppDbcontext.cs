@@ -1,4 +1,5 @@
 ﻿using APIClub.Domain.AlquilerArticulos.Models;
+using APIClub.Domain.Auth.Models;
 using APIClub.Domain.Enums;
 using APIClub.Domain.GestionSocios.Models;
 using APIClub.Domain.PaymentsOnline.Modelos;
@@ -26,6 +27,7 @@ namespace APIClub.Infrastructure.Persistence.Data
         public DbSet<PagoAlquilerDeArticulos> PagosAlquilerDeArticulos { get; set; }
         public DbSet<PaymentToken> PaymentTokens { get; set; }
         public DbSet<Lote> Lotes { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -180,6 +182,34 @@ namespace APIClub.Infrastructure.Persistence.Data
                 entity.HasIndex(p => new { p.IdAlquiler, p.Anio, p.Mes })
                       .IsUnique();
             });
+
+            modelBuilder.Entity<Usuario>(entity =>
+            {
+                entity.HasKey(u => u.Id);
+                entity.Property(u => u.NombreUsuario).IsRequired().HasMaxLength(50);
+                entity.Property(u => u.PasswordHash).IsRequired();
+                entity.Property(u => u.Rol).IsRequired();
+                
+                entity.HasIndex(u => u.NombreUsuario).IsUnique();
+            });
+
+            // 0) Usuarios (SuperAdmin)
+            // Password: "Admin123!" hasheado con BCrypt (Placeholder, se debe generar uno real al ejecutar)
+            // Usaremos un hash real generado previamente para "Admin123!"
+            // $2a$11$u.u.u.u.u.u.u.u.u.u.u.u.u.u.u.u.u.u.u.u.u.u.u.u.u.u (Ejemplo)
+            // Pondremos este string que simula ser un hash válido para que compile y funcione el seed inicial si se usa la lógica correcta.
+            // Nota: Para producción o test real, se generará desde la app o un script.
+            modelBuilder.Entity<Usuario>().HasData(
+                new Usuario
+                {
+                    Id = 1,
+                    NombreUsuario = "admin",
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123!"), // Hash generado para "Admin123!"
+                    Rol = RolUsuario.SuperAdmin,
+                    FechaCreacion = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    UltimoAcceso = null
+                }
+            );
 
 
             // ---------------------------

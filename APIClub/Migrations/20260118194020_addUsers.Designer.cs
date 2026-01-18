@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APIClub.Migrations
 {
     [DbContext(typeof(AppDbcontext))]
-    [Migration("20260116180732_AddPreferencePaymentToSocio")]
-    partial class AddPreferencePaymentToSocio
+    [Migration("20260118194020_addUsers")]
+    partial class addUsers
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -81,7 +81,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = 5,
-                            FechaAlquiler = new DateTime(2026, 1, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FechaAlquiler = new DateTime(2026, 1, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Finalizado = false,
                             IdSocio = 3,
                             Observaciones = "Alquiler Activo para Test"
@@ -257,6 +257,48 @@ namespace APIClub.Migrations
                             IdAlquiler = 1,
                             Mes = 3,
                             Monto = 10500
+                        });
+                });
+
+            modelBuilder.Entity("APIClub.Domain.Auth.Models.Usuario", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NombreUsuario")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Rol")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("UltimoAcceso")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NombreUsuario")
+                        .IsUnique();
+
+                    b.ToTable("Usuarios");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            FechaCreacion = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            NombreUsuario = "admin",
+                            PasswordHash = "$2a$11$70MiU/uEc.4l6c/ZJT1r4.853AC/g6hGV9IzsQb.u46dTMAVK6o7u",
+                            Rol = 1
                         });
                 });
 
@@ -543,7 +585,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111111"),
-                            FechaExpiracion = new DateOnly(2026, 2, 15),
+                            FechaExpiracion = new DateOnly(2026, 2, 17),
                             IdSocio = 1,
                             anio = 2025,
                             monto = 2500.00m,
@@ -554,7 +596,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("22222222-2222-2222-2222-222222222222"),
-                            FechaExpiracion = new DateOnly(2026, 2, 15),
+                            FechaExpiracion = new DateOnly(2026, 2, 17),
                             IdSocio = 1,
                             anio = 2025,
                             monto = 2500.00m,
@@ -565,7 +607,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("33333333-3333-3333-3333-333333333333"),
-                            FechaExpiracion = new DateOnly(2026, 2, 15),
+                            FechaExpiracion = new DateOnly(2026, 2, 17),
                             IdSocio = 2,
                             anio = 2025,
                             monto = 2500.00m,
@@ -576,7 +618,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("44444444-4444-4444-4444-444444444444"),
-                            FechaExpiracion = new DateOnly(2026, 2, 15),
+                            FechaExpiracion = new DateOnly(2026, 2, 17),
                             IdSocio = 2,
                             anio = 2025,
                             monto = 2500.00m,

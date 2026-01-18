@@ -1,75 +1,63 @@
 <template>
-  <AppHeader v-if="!route.meta.hideHeader" />
-  <RouterView />
+  <LoadingOverlay :show="isLoading" message="Cargando..." />
+  <AppHeader v-if="showContent && !route.meta.hideHeader" />
+  <main :class="{ 'pt-16': !route.meta.hideHeader }">
+    <router-view v-slot="{ Component }">
+      <transition name="fade" mode="out-in">
+        <component :is="Component" />
+      </transition>
+    </router-view>
+  </main>
 </template>
 
 <script setup>
-import { RouterView, useRoute } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { RouterView, useRoute, useRouter } from 'vue-router'
 import AppHeader from '@/components/Common/AppHeader.vue'
+import LoadingOverlay from '@/components/Common/LoadingOverlay.vue'
+import AuthService from '@/services/AuthService'
 
 const route = useRoute()
+const router = useRouter()
+const isLoading = ref(false)
+const showContent = ref(false)
+
+// Manejo de carga global
+router.beforeEach((to, from, next) => {
+  isLoading.value = true
+  next()
+})
+
+router.afterEach(() => {
+  // Delay mínimo para evitar parpadeos, ahora mucho más corto
+  setTimeout(() => {
+    isLoading.value = false
+  }, 100)
+})
+
+onMounted(async () => {
+  isLoading.value = true
+  // Verificar sesión al montar el app
+  await AuthService.checkAuth()
+  showContent.value = true
+  isLoading.value = false
+})
 </script>
 
-<style scoped>
+<style>
+/* Estilos globales para transiciones */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
 header {
   line-height: 1.5;
   max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
 }
 </style>

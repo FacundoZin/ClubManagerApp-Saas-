@@ -1,11 +1,13 @@
 ﻿using APIClub.Application.Dtos.Lote;
 using APIClub.Domain.GestionSocios;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace APIClub.Contrrollers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CobranzasController : ControllerBase
     {
         private readonly ICobranzasServices _cobranzasServices;
