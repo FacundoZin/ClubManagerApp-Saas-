@@ -148,11 +148,6 @@ const handleSearch = async () => {
   try {
     const data = await SociosService.getByDni(searchDni.value)
 
-    if (!data) {
-      searchError.value = 'No se encontró ningún socio con ese DNI'
-      return
-    }
-
     searchResult.value = data
   } catch (error) {
     searchError.value = error.message
@@ -430,10 +425,7 @@ const handleView = (socio) => {
                 </svg>
               </div>
               <div class="ml-3">
-                <h3 class="text-sm font-medium text-red-800">No se encontró el socio</h3>
-                <div class="mt-2 text-sm text-red-700">
-                  <p>{{ searchError }}</p>
-                </div>
+                <h3 class="text-sm font-medium text-red-800">{{ searchError }}</h3>
               </div>
             </div>
           </div>

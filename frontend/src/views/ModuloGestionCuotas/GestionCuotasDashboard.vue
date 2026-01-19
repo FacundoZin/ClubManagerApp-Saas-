@@ -84,7 +84,7 @@ const handleSearch = async () => {
 
     searchResult.value = data
   } catch (error) {
-    searchError.value = error.message || 'Algo salió mal lo sentimos'
+    searchError.value = error.message
   } finally {
     isSearching.value = false
   }
