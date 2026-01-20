@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace APIClub.Migrations
 {
     /// <inheritdoc />
-    public partial class initPostgresMigration : Migration
+    public partial class firstMigrationWithPostgres : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -288,30 +288,9 @@ namespace APIClub.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Articulos",
-                columns: new[] { "Id", "Nombre", "PrecioAlquiler" },
-                values: new object[,]
-                {
-                    { 1, "Silla de Ruedas", 10500m },
-                    { 2, "Andador", 8000m },
-                    { 3, "Muletas", 5000m },
-                    { 4, "Bastón", 4500m }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Lotes",
-                columns: new[] { "Id", "CalleEste", "CalleNorte", "CalleOeste", "CalleSur", "NombreLote" },
-                values: new object[,]
-                {
-                    { 1, "Belgrano", "Mitre", "Urquiza", "San Martín", "Lote A" },
-                    { 2, "Salta", "Av. Pellegrini", "Jujuy", "Bv. Oroño", "Lote B" },
-                    { 3, "Lavalle", "Av. Corrientes", "Sarmiento", "Florida", "Lote C" }
-                });
-
-            migrationBuilder.InsertData(
                 table: "MontoCuota",
                 columns: new[] { "Id", "FechaActualizacion", "MontoCuotaFija" },
-                values: new object[] { 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), 2500.00m });
+                values: new object[] { 1, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 5000.00m });
 
             migrationBuilder.InsertData(
                 table: "PaymentTokens",
@@ -329,93 +308,14 @@ namespace APIClub.Migrations
                 columns: new[] { "Id", "Direccion", "Name" },
                 values: new object[,]
                 {
-                    { 1, "Calle Falsa 123", "Salón Central" },
-                    { 2, "Av. Siempre Viva 742", "Salón Norte" }
+                    { 1, "Calle Falsa 123", "Salón chico" },
+                    { 2, "Av. Siempre Viva 742", "Salón grande" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Usuarios",
                 columns: new[] { "Id", "FechaCreacion", "NombreUsuario", "PasswordHash", "Rol", "UltimoAcceso" },
-                values: new object[] { 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "admin", "$2a$11$M2Fjq3K7LEm/QZJJRaywi.1nwsRdDQKM1jvtyzKiRjZCqLT6Ti0dW", 1, null });
-
-            migrationBuilder.InsertData(
-                table: "Socios",
-                columns: new[] { "Id", "Apellido", "Direcccion", "Dni", "FechaAsociacion", "FechaDeBaja", "IsActivo", "Localidad", "LoteId", "Nombre", "PreferenciaDePago", "Telefono" },
-                values: new object[,]
-                {
-                    { 1, "Pérez", "Mitre 100", "12345678", new DateOnly(2020, 5, 10), null, true, "Rosario", 1, "Juan", 0, "341-1234567" },
-                    { 2, "Gómez", "San Martín 200", "87654321", new DateOnly(2021, 3, 15), null, true, "Córdoba", 2, "María", 2, "341-7654321" },
-                    { 3, "Ruiz", "Belgrano 500", "11223344", new DateOnly(2022, 1, 10), null, true, "Rosario", 3, "Carlos", 1, "341-9988776" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Cuotas",
-                columns: new[] { "Id", "Anio", "FechaPago", "FormaDePago", "Monto", "Semestre", "SocioId" },
-                values: new object[,]
-                {
-                    { 1, 2024, new DateTime(2024, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, 2500.00m, 1, 1 },
-                    { 2, 2024, new DateTime(2024, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, 2500.00m, 2, 1 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "ReservasSalones",
-                columns: new[] { "Id", "FechaAlquiler", "Importe", "IsCancelled", "SalonId", "SocioId", "Titulo", "TotalPagado" },
-                values: new object[,]
-                {
-                    { 1, new DateTime(2026, 5, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 5000.00m, false, 1, 1, "fiesta de 15 cele", 4000.00m },
-                    { 2, new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), 7000.00m, false, 2, 2, "baile abuelos", 7000.00m },
-                    { 3, new DateTime(2026, 7, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), 6000.00m, false, 1, 3, "Cumpleaños de Carlos", 0.00m },
-                    { 4, new DateTime(2026, 8, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), 8000.00m, false, 2, 1, "Reunión Familiar", 3000.00m }
-                });
-
-            migrationBuilder.InsertData(
-                table: "alquileresArticulos",
-                columns: new[] { "Id", "FechaAlquiler", "Finalizado", "IdSocio", "Observaciones" },
-                values: new object[,]
-                {
-                    { 1, new DateTime(2025, 11, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 1, "Alquiler por 3 días" },
-                    { 2, new DateTime(2025, 10, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), true, 2, "Préstamo semanal" },
-                    { 3, new DateTime(2025, 9, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 1, "Rehabilitación post operación" },
-                    { 4, new DateTime(2025, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), true, 2, "Alquiler viejo ya cerrado" },
-                    { 5, new DateTime(2026, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 3, "Alquiler Activo para Test" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "ItemALquiler",
-                columns: new[] { "Id", "AlquilerId", "ArticuloId", "Cantidad" },
-                values: new object[,]
-                {
-                    { 1, 1, 1, 1 },
-                    { 2, 1, 4, 2 },
-                    { 3, 2, 2, 1 },
-                    { 4, 3, 3, 2 },
-                    { 5, 3, 4, 1 },
-                    { 6, 4, 1, 1 },
-                    { 7, 5, 1, 1 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "PagosAlquilerDeArticulos",
-                columns: new[] { "Id", "Anio", "IdAlquiler", "Mes", "Monto" },
-                values: new object[,]
-                {
-                    { 1, 2025, 1, 1, 10500 },
-                    { 2, 2025, 1, 2, 10500 },
-                    { 3, 2025, 1, 3, 10500 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "pagoReservaSalon",
-                columns: new[] { "Id", "FechaPago", "ReservaSalonId", "monto" },
-                values: new object[,]
-                {
-                    { 1, new DateTime(2026, 3, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, 2000.00m },
-                    { 2, new DateTime(2026, 4, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, 2000.00m },
-                    { 3, new DateTime(2026, 4, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, 3000.00m },
-                    { 4, new DateTime(2026, 5, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, 2000.00m },
-                    { 5, new DateTime(2026, 5, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, 2000.00m },
-                    { 6, new DateTime(2026, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 4, 3000.00m }
-                });
+                values: new object[] { 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "admin", "$2a$11$LN2Ic4tu/F7gSHuHq/PGFeBgmk73ieJk9h8bPDHtLojtcKZNAUF6W", 1, null });
 
             migrationBuilder.CreateIndex(
                 name: "IX_alquileresArticulos_IdSocio",

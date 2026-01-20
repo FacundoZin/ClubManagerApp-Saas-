@@ -3,7 +3,6 @@ using APIClub.Application.Dtos.Auth;
 using APIClub.Domain.Auth;
 using APIClub.Domain.Auth.Models;
 using APIClub.Domain.Auth.Repositories;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -36,8 +35,7 @@ namespace APIClub.Application.Services
                 return Result<LoginResponseDto>.Error("Credenciales inválidas", 401);
 
             // Actualizar último acceso
-            usuario.UltimoAcceso = DateTime.UtcNow;
-            // Nota: Deberías guardar esto en el repositorio, pero por simplicidad lo omitimos aquí
+            await _usuariosRepository.ActualizarUltimoAcceso(usuario.Id);
 
             // Generar JWT token
             var token = GenerarJwtToken(usuario);
