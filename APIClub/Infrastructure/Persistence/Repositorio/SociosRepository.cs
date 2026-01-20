@@ -65,9 +65,9 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
             return await _Dbcontext.Socios.IgnoreQueryFilters().FirstOrDefaultAsync(s => s.Id == id);
         }
 
-        public Task<Socio?> GetSocioByIdWithCuotas(int id)
+        public Task<Socio?> GetSocioByIdWithFullInfo(int id)
         {
-            return _Dbcontext.Socios.Include(s => s.HistorialCuotas).FirstOrDefaultAsync(s => s.Id == id);
+            return _Dbcontext.Socios.Include(s => s.HistorialCuotas).Include(s => s.Lote).FirstOrDefaultAsync(s => s.Id == id);
         }
 
         public async Task<List<Socio>> GetSociosDeudores(int anioActual, int semestreActual)

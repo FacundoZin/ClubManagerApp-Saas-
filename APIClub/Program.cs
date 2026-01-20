@@ -6,9 +6,7 @@ using APIClub.Domain.GestionSocios.Repositories;
 using APIClub.Domain.ReservasSalones;
 using APIClub.Domain.ReservasSalones.Repositories;
 using APIClub.Domain.Notificaciones;
-using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Headers;
-using Microsoft.Extensions.Options;
 using APIClub.Domain.PaymentsOnline;
 using APIClub.Domain.PaymentsOnline.Repository;
 using APIClub.Domain.GestionSocios.Validations;
@@ -18,6 +16,7 @@ using APIClub.Infrastructure.Persistence.Data;
 using APIClub.Application.Services;
 using APIClub.Application.Common;
 using APIClub.Application.Validators;
+using Microsoft.EntityFrameworkCore;
 
 using APIClub.Domain.Auth;
 using APIClub.Domain.Auth.Repositories;
@@ -27,11 +26,13 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Hardcoded for safety against environment variables override
-var connectionString = "Data Source=club.db";
+// Configuración para PostgreSQL: permitir DateTime sin especificar UTC explícitamente
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.AddDbContext<AppDbcontext>(options =>
-    options.UseSqlite(connectionString));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Configurar WhatsApp
 builder.Services.Configure<WhatsAppConfig>(
@@ -150,6 +151,26 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+// Aplicar migraciones automáticamente
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<AppDbcontext>();
+        if (context.Database.GetPendingMigrations().Any())
+        {
+            context.Database.Migrate();
+        }
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Ocurrió un error al aplicar las migraciones.");
+    }
+}
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -276,7 +276,7 @@ export default {
         await nextTick()
 
         // 🔹 SDK MP
-        const mp = new window.MercadoPago('TEST-423365d5-3d72-4d03-82c8-f85403327ce4', {
+        const mp = new window.MercadoPago(import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY, {
           locale: 'es-AR',
         })
 
