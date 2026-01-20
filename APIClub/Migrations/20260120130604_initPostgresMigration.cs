@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace APIClub.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialPostgresMigration : Migration
+    public partial class initPostgresMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -95,6 +95,23 @@ namespace APIClub.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Usuarios",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    NombreUsuario = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    PasswordHash = table.Column<string>(type: "text", nullable: false),
+                    Rol = table.Column<int>(type: "integer", nullable: false),
+                    FechaCreacion = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    UltimoAcceso = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Usuarios", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Socios",
                 columns: table => new
                 {
@@ -107,10 +124,10 @@ namespace APIClub.Migrations
                     Direcccion = table.Column<string>(type: "text", nullable: true),
                     Localidad = table.Column<string>(type: "text", nullable: true),
                     PreferenciaDePago = table.Column<int>(type: "integer", nullable: false),
-                    LoteId = table.Column<int>(type: "integer", nullable: true),
                     FechaAsociacion = table.Column<DateOnly>(type: "date", nullable: false),
                     IsActivo = table.Column<bool>(type: "boolean", nullable: false),
-                    FechaDeBaja = table.Column<DateOnly>(type: "date", nullable: true)
+                    FechaDeBaja = table.Column<DateOnly>(type: "date", nullable: true),
+                    LoteId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -301,10 +318,10 @@ namespace APIClub.Migrations
                 columns: new[] { "Id", "FechaExpiracion", "IdSocio", "PaymentStatus", "Preference_Id", "StatusDetail", "anio", "monto", "nombreSocio", "semestre", "usado" },
                 values: new object[,]
                 {
-                    { new Guid("11111111-1111-1111-1111-111111111111"), new DateOnly(2026, 2, 16), 1, null, null, null, 2025, 2500.00m, "Juan Pérez", 1, false },
-                    { new Guid("22222222-2222-2222-2222-222222222222"), new DateOnly(2026, 2, 16), 1, null, null, null, 2025, 2500.00m, "Juan Pérez", 2, false },
-                    { new Guid("33333333-3333-3333-3333-333333333333"), new DateOnly(2026, 2, 16), 2, null, null, null, 2025, 2500.00m, "María Gómez", 1, false },
-                    { new Guid("44444444-4444-4444-4444-444444444444"), new DateOnly(2026, 2, 16), 2, null, null, null, 2025, 2500.00m, "María Gómez", 2, false }
+                    { new Guid("11111111-1111-1111-1111-111111111111"), new DateOnly(2026, 2, 19), 1, null, null, null, 2025, 2500.00m, "Juan Pérez", 1, false },
+                    { new Guid("22222222-2222-2222-2222-222222222222"), new DateOnly(2026, 2, 19), 1, null, null, null, 2025, 2500.00m, "Juan Pérez", 2, false },
+                    { new Guid("33333333-3333-3333-3333-333333333333"), new DateOnly(2026, 2, 19), 2, null, null, null, 2025, 2500.00m, "María Gómez", 1, false },
+                    { new Guid("44444444-4444-4444-4444-444444444444"), new DateOnly(2026, 2, 19), 2, null, null, null, 2025, 2500.00m, "María Gómez", 2, false }
                 });
 
             migrationBuilder.InsertData(
@@ -315,6 +332,11 @@ namespace APIClub.Migrations
                     { 1, "Calle Falsa 123", "Salón Central" },
                     { 2, "Av. Siempre Viva 742", "Salón Norte" }
                 });
+
+            migrationBuilder.InsertData(
+                table: "Usuarios",
+                columns: new[] { "Id", "FechaCreacion", "NombreUsuario", "PasswordHash", "Rol", "UltimoAcceso" },
+                values: new object[] { 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "admin", "$2a$11$M2Fjq3K7LEm/QZJJRaywi.1nwsRdDQKM1jvtyzKiRjZCqLT6Ti0dW", 1, null });
 
             migrationBuilder.InsertData(
                 table: "Socios",
@@ -355,7 +377,7 @@ namespace APIClub.Migrations
                     { 2, new DateTime(2025, 10, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), true, 2, "Préstamo semanal" },
                     { 3, new DateTime(2025, 9, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 1, "Rehabilitación post operación" },
                     { 4, new DateTime(2025, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), true, 2, "Alquiler viejo ya cerrado" },
-                    { 5, new DateTime(2026, 1, 12, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 3, "Alquiler Activo para Test" }
+                    { 5, new DateTime(2026, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 3, "Alquiler Activo para Test" }
                 });
 
             migrationBuilder.InsertData(
@@ -440,6 +462,12 @@ namespace APIClub.Migrations
                 name: "IX_Socios_LoteId",
                 table: "Socios",
                 column: "LoteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Usuarios_NombreUsuario",
+                table: "Usuarios",
+                column: "NombreUsuario",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -462,6 +490,9 @@ namespace APIClub.Migrations
 
             migrationBuilder.DropTable(
                 name: "PaymentTokens");
+
+            migrationBuilder.DropTable(
+                name: "Usuarios");
 
             migrationBuilder.DropTable(
                 name: "Articulos");

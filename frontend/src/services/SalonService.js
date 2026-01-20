@@ -22,7 +22,7 @@ const handleError = async (response, defaultMessage) => {
 
 export default {
     async getAllSalons() {
-        const response = await fetch(`${API_URL}/all`);
+        const response = await fetch(`${API_URL}/all`, { credentials: 'include' });
         if (!response.ok) {
             const msg = await handleError(response, 'Error al obtener salones');
             throw new Error(msg);
@@ -31,7 +31,7 @@ export default {
     },
 
     async getReservasBySalon(idSalon, page = 1, pageSize = 10) {
-        const response = await fetch(`${API_URL}/${idSalon}/reservas?pageNumber=${page}&pageSize=${pageSize}`);
+        const response = await fetch(`${API_URL}/${idSalon}/reservas?pageNumber=${page}&pageSize=${pageSize}`, { credentials: 'include' });
         if (!response.ok) {
             const msg = await handleError(response, 'Error al obtener reservas');
             throw new Error(msg);
@@ -40,7 +40,7 @@ export default {
     },
 
     async checkAvailability(fecha, salonId) {
-        const response = await fetch(`${API_URL}/${salonId}/disponibilidad?fecha=${fecha}`);
+        const response = await fetch(`${API_URL}/${salonId}/disponibilidad?fecha=${fecha}`, { credentials: 'include' });
         if (!response.ok) {
             const msg = await handleError(response, 'Error verificando disponibilidad');
             throw new Error(msg);
@@ -49,7 +49,7 @@ export default {
     },
 
     async getReservaByFecha(fecha, salonId) {
-        const response = await fetch(`${API_URL}/${salonId}/reserva?fecha=${fecha}`);
+        const response = await fetch(`${API_URL}/${salonId}/reserva?fecha=${fecha}`, { credentials: 'include' });
         if (response.status === 404 || response.status === 204) return null;
         if (!response.ok) {
             const msg = await handleError(response, 'Error buscando reserva');
@@ -60,7 +60,7 @@ export default {
     },
 
     async getReservaById(reservaId) {
-        const response = await fetch(`${API_URL}/reservas/${reservaId}`);
+        const response = await fetch(`${API_URL}/reservas/${reservaId}`, { credentials: 'include' });
         if (response.status === 404 || response.status === 204) return null;
         if (!response.ok) {
             const msg = await handleError(response, 'Error al obtener la reserva');
@@ -76,6 +76,7 @@ export default {
             headers: {
                 'Content-Type': 'application/json'
             },
+            credentials: 'include',
             body: JSON.stringify(dto)
         });
         if (!response.ok) {
@@ -87,7 +88,8 @@ export default {
 
     async cancelReserva(reservaId) {
         const response = await fetch(`${API_URL}/reserva/${reservaId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            credentials: 'include'
         });
         if (!response.ok) {
             const msg = await handleError(response, 'Error al cancelar la reserva');
@@ -98,7 +100,8 @@ export default {
 
     async actualizarPago(reservaId, montoAbonado) {
         const response = await fetch(`${API_URL}/reservas/${reservaId}/pago?montoAbonado=${montoAbonado}`, {
-            method: 'PATCH'
+            method: 'PATCH',
+            credentials: 'include'
         });
         if (!response.ok) {
             const msg = await handleError(response, 'Error al registrar el pago');

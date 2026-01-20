@@ -1,8 +1,32 @@
 <script setup>
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import AuthService from '../../services/AuthService'
 
 const route = useRoute()
+const router = useRouter()
+const currentUser = AuthService.currentUser
+
+// Calcular iniciales del usuario
+const userInitials = computed(() => {
+  if (!currentUser.value || !currentUser.value.nombreUsuario) return '??'
+  const name = currentUser.value.nombreUsuario.trim()
+  if (name.length === 0) return '??'
+
+  // Si tiene espacios, tomamos la primera letra de las dos primeras palabras
+  const parts = name.split(/\s+/)
+  if (parts.length > 1) {
+    return (parts[0][0] + parts[1][0]).toUpperCase()
+  }
+
+  // Si es una sola palabra, tomamos las dos primeras letras si existen
+  return name.substring(0, Math.min(2, name.length)).toUpperCase()
+})
+
+const logout = async () => {
+  await AuthService.logout()
+  router.push('/login')
+}
 
 // Configuración de módulos (Íconos y Colores coincidiendo con HomeView)
 const modulesConfig = {
@@ -36,10 +60,15 @@ const modulesConfig = {
     colorClass: 'bg-emerald-600',
     defaultTitle: 'Registrar Pago',
   },
+  usuarios: {
+    icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0z',
+    colorClass: 'bg-purple-600',
+    defaultTitle: 'Gestión de Usuarios',
+  },
   default: {
-    icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',
-    colorClass: 'bg-slate-700',
-    defaultTitle: 'Sistema Club Abuelos',
+    icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
+    colorClass: 'bg-blue-700',
+    defaultTitle: 'Panel de Administración',
   },
 }
 
@@ -49,22 +78,69 @@ const currentModule = computed(() => {
   return modulesConfig[moduleKey] || modulesConfig.default
 })
 
-// Title is now the module name (dynamic)
 const moduleName = computed(() => route.meta.headerTitle || currentModule.value.defaultTitle)
 </script>
 
 <template>
-  <!-- Renderizado condicional basado en meta.hideHeader -->
-  <!-- Envolvemos en un div w-full para evitar conflictos con estilos globales de 'header' en App.vue -->
-  <div v-if="!route.meta.hideHeader" class="w-full font-sans h-16">
-    <header class="bg-white border-b border-slate-200 fixed top-0 w-full z-30 shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16 items-center w-full">
-          <!-- Logo / Título -->
-          <div class="flex items-center gap-3">
+  <header class="bg-white border-b border-slate-200 fixed top-0 w-full z-30 shadow-sm font-sans">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16 items-center">
+        <!-- Logo / Título -->
+        <router-link to="/" class="flex items-center gap-3 group">
+          <div
+            class="w-9 h-9 rounded-lg flex items-center justify-center shadow-md text-white transition-all duration-300 group-hover:scale-105"
+            :class="currentModule.colorClass"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                :d="currentModule.icon"
+              />
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-lg font-bold text-slate-900 tracking-tight leading-none">
+              Sistema Club Abuelos
+            </h1>
+            <span class="text-xs text-slate-500 font-medium transition-all duration-300">{{
+              moduleName
+            }}</span>
+          </div>
+        </router-link>
+
+        <!-- User / Actions -->
+        <div class="flex items-center gap-4">
+          <template v-if="currentUser">
+            <div class="hidden sm:flex flex-col items-end">
+              <span class="text-xs font-semibold text-slate-700 leading-tight">
+                {{ currentUser.nombreUsuario }}
+              </span>
+              <span class="text-[10px] text-slate-400 uppercase tracking-wider font-medium">
+                {{ currentUser.rol === 1 ? 'Administrador' : 'Usuario' }}
+              </span>
+            </div>
+
             <div
-              class="w-9 h-9 rounded-lg flex items-center justify-center shadow-md text-white transition-colors duration-300"
-              :class="currentModule.colorClass"
+              class="h-9 w-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 text-xs font-bold shadow-sm ring-2 ring-white"
+              :title="currentUser.rol === 1 ? 'SuperAdmin' : 'Usuario'"
+            >
+              {{ userInitials }}
+            </div>
+
+            <div class="h-6 w-px bg-slate-200 mx-1"></div>
+
+            <button
+              @click="logout"
+              class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200 group"
+              title="Cerrar Sesión"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -77,40 +153,13 @@ const moduleName = computed(() => route.meta.headerTitle || currentModule.value.
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"
-                  :d="currentModule.icon"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                 />
               </svg>
-            </div>
-            <div>
-              <h1 class="text-lg font-bold text-slate-900 tracking-tight leading-none">
-                Sistema Club Abuelos
-              </h1>
-              <span class="text-xs text-slate-500 font-medium">{{ moduleName }}</span>
-            </div>
-          </div>
-
-          <!-- User / Date Info (Igual que HomeView) -->
-          <div class="flex items-center gap-6">
-            <div class="hidden md:flex flex-col items-end">
-              <span class="text-xs font-semibold text-slate-700">Administrador</span>
-              <span class="text-[10px] text-slate-400 uppercase tracking-wider">
-                {{
-                  new Date().toLocaleDateString('es-AR', {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'short',
-                  })
-                }}
-              </span>
-            </div>
-            <div
-              class="h-9 w-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 text-xs font-bold shadow-sm ring-2 ring-white"
-            >
-              AD
-            </div>
-          </div>
+            </button>
+          </template>
         </div>
       </div>
-    </header>
-  </div>
+    </div>
+  </header>
 </template>

@@ -85,7 +85,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = 5,
-                            FechaAlquiler = new DateTime(2026, 1, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FechaAlquiler = new DateTime(2026, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Finalizado = false,
                             IdSocio = 3,
                             Observaciones = "Alquiler Activo para Test"
@@ -267,6 +267,50 @@ namespace APIClub.Migrations
                             IdAlquiler = 1,
                             Mes = 3,
                             Monto = 10500
+                        });
+                });
+
+            modelBuilder.Entity("APIClub.Domain.Auth.Models.Usuario", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("NombreUsuario")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Rol")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UltimoAcceso")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NombreUsuario")
+                        .IsUnique();
+
+                    b.ToTable("Usuarios");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            FechaCreacion = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            NombreUsuario = "admin",
+                            PasswordHash = "$2a$11$M2Fjq3K7LEm/QZJJRaywi.1nwsRdDQKM1jvtyzKiRjZCqLT6Ti0dW",
+                            Rol = 1
                         });
                 });
 
@@ -561,7 +605,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111111"),
-                            FechaExpiracion = new DateOnly(2026, 2, 16),
+                            FechaExpiracion = new DateOnly(2026, 2, 19),
                             IdSocio = 1,
                             anio = 2025,
                             monto = 2500.00m,
@@ -572,7 +616,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("22222222-2222-2222-2222-222222222222"),
-                            FechaExpiracion = new DateOnly(2026, 2, 16),
+                            FechaExpiracion = new DateOnly(2026, 2, 19),
                             IdSocio = 1,
                             anio = 2025,
                             monto = 2500.00m,
@@ -583,7 +627,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("33333333-3333-3333-3333-333333333333"),
-                            FechaExpiracion = new DateOnly(2026, 2, 16),
+                            FechaExpiracion = new DateOnly(2026, 2, 19),
                             IdSocio = 2,
                             anio = 2025,
                             monto = 2500.00m,
@@ -594,7 +638,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("44444444-4444-4444-4444-444444444444"),
-                            FechaExpiracion = new DateOnly(2026, 2, 16),
+                            FechaExpiracion = new DateOnly(2026, 2, 19),
                             IdSocio = 2,
                             anio = 2025,
                             monto = 2500.00m,

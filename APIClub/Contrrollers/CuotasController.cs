@@ -1,11 +1,13 @@
 ﻿using APIClub.Application.Dtos.Cuota;
 using APIClub.Domain.GestionSocios;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace APIClub.Contrrollers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CuotasController : ControllerBase
     {
         private readonly ICuotasService _CuotasService;

@@ -1,7 +1,9 @@
 <script setup>
 import { useRouter } from 'vue-router'
+import AuthService from '@/services/AuthService'
 
 const router = useRouter()
+const isSuperAdmin = AuthService.isSuperAdmin
 
 const navigateTo = (route) => {
   router.push(route)
@@ -66,65 +68,9 @@ const modules = [
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-50 font-sans text-slate-800">
-    <!-- Header Institucional -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16 items-center">
-          <!-- Logo / Título -->
-          <div class="flex items-center gap-3">
-            <div
-              class="w-9 h-9 bg-blue-700 rounded-lg flex items-center justify-center shadow-md text-white"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                />
-              </svg>
-            </div>
-            <div>
-              <h1 class="text-lg font-bold text-slate-900 tracking-tight leading-none">
-                Sistema Club Abuelos
-              </h1>
-              <span class="text-xs text-slate-500 font-medium">Panel de Administración</span>
-            </div>
-          </div>
-
-          <!-- User / Date Info -->
-          <div class="flex items-center gap-6">
-            <div class="hidden md:flex flex-col items-end">
-              <span class="text-xs font-semibold text-slate-700">Administrador</span>
-              <span class="text-[10px] text-slate-400 uppercase tracking-wider">
-                {{
-                  new Date().toLocaleDateString('es-AR', {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'short',
-                  })
-                }}
-              </span>
-            </div>
-            <div
-              class="h-9 w-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 text-xs font-bold shadow-sm ring-2 ring-white"
-            >
-              AD
-            </div>
-          </div>
-        </div>
-      </div>
-    </header>
-
+  <div class="min-h-[calc(100-4rem)] bg-slate-50 font-sans text-slate-800 flex flex-col">
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
       <!-- Breadcrumb & Page Title -->
       <div class="mb-8">
         <nav class="flex mb-2" aria-label="Breadcrumb">
@@ -251,7 +197,18 @@ const modules = [
           <p class="text-slate-500 text-sm font-medium">
             &copy; {{ new Date().getFullYear() }} Sistema Club Abuelos.
           </p>
-          <p class="text-slate-400 text-xs mt-1">Versión 2.0.0 - Enterprise Edition</p>
+          <div class="flex items-center gap-2 mt-1">
+            <p class="text-slate-400 text-xs">Versión 2.0.0 - Enterprise Edition</p>
+            <template v-if="isSuperAdmin">
+              <span class="text-slate-300 text-xs">•</span>
+              <router-link
+                to="/usuarios"
+                class="text-slate-400 text-xs hover:text-blue-600 transition-colors"
+              >
+                Gestión de Usuarios
+              </router-link>
+            </template>
+          </div>
         </div>
         <div class="flex gap-6 text-sm font-medium text-slate-500">
           <a href="#" class="hover:text-blue-600 transition-colors">Soporte</a>

@@ -3,7 +3,7 @@ const API_URL = `${import.meta.env.VITE_API_URL}/Articulos`;
 export default {
     async getAll() {
         // GET /api/Articulos
-        const response = await fetch(API_URL);
+        const response = await fetch(API_URL, { credentials: 'include' });
         if (!response.ok) {
             const error = await response.text();
             throw new Error(error || 'Error al obtener artículos');
@@ -17,6 +17,7 @@ export default {
         const response = await fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify(dto)
         });
         if (!response.ok) {
@@ -31,6 +32,7 @@ export default {
         const response = await fetch(`${API_URL}/${id}/precio`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify(nuevoPrecio)
         });
         if (!response.ok) {
