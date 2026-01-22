@@ -27,7 +27,9 @@
             <h1 class="text-lg font-bold text-slate-900 tracking-tight leading-none">
               Pago de Cuota
             </h1>
-            <span class="text-xs text-slate-500 font-medium">Club de Abuelos</span>
+            <span class="text-xs text-slate-500 font-medium"
+              >Asociación civil casa del jubilado</span
+            >
           </div>
         </div>
 

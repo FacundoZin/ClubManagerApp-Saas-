@@ -16,7 +16,8 @@
             ¡Hola, {{ paymentData?.nombreSocio || 'Socio' }}!
           </h2>
           <p class="text-blue-100 text-base md:text-lg leading-relaxed">
-            Aquí podrá realizar el pago de su cuota al Club de Abuelos correspondiente al
+            Aquí podrá realizar el pago de su cuota de socio de la Asociación civil casa del
+            jubilado correspondiente al
             <span class="font-semibold text-white">{{ paymentData?.semestrePago }}</span>
             del año <span class="font-semibold text-white">{{ paymentData?.anioPago }}</span
             >.
