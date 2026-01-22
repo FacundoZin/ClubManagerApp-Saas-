@@ -1,4 +1,7 @@
 using APIClub.Application.Common;
+using APIClub.Application.Dtos.Socios;
+using APIClub.Domain.Enums;
+using APIClub.Domain.GestionSocios.Models;
 using APIClub.Domain.GestionSocios.Validations;
 
 namespace APIClub.Application.Validators
@@ -10,6 +13,33 @@ namespace APIClub.Application.Validators
         public SocioIntegrityValidator(UnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
+        }
+
+        public async Task<Result<object?>> ValidateCargaSocio(CreateSocioDto dto)
+        {
+            var existingSocio = await _unitOfWork._SocioRepository.GetSocioByDniIgnoreFilter(dto.Dni);
+
+            if (existingSocio != null)
+            {
+                if (existingSocio.IsActivo)
+                {
+                    return Result<object?>.Error("El socio que quiere cargar ya está activo.", 400);
+                }
+                else
+                {
+                    var data = new ExistingSocio
+                    {
+                        Id = existingSocio.Id,
+                        Nombre = existingSocio.Nombre + " " + existingSocio.Apellido
+                    };
+                    return Result<object?>.Conflict("El socio ya existe pero está dado de baja.", 409, data);
+                }
+            }
+
+            if (dto.PreferenciaDePago == FormasDePago.LinkDePago && string.IsNullOrEmpty(dto.Telefono))
+                return Result<object?>.Error("si el socio va a pagar a traves del link de pago debe ingresar un numero de telefono.", 400);
+
+            return Result<object?>.Exito(null);
         }
 
         public async Task<Result<bool>> ValidateSocioDeletion(int socioId)
@@ -31,6 +61,36 @@ namespace APIClub.Application.Validators
 
             // Si pasa todas las validaciones
             return Result<bool>.Exito(true);
+        }
+
+        public async Task<Result<Socio>> ValidateUpdateSocio(int id, UpdateSocio dto)
+        {
+            if (id <= 0)
+            {
+                return Result<Socio>.Error("El ID proporcionado no es válido.", 400);
+            }
+
+            var socio = await _unitOfWork._SocioRepository.GetSocioById(id);
+
+            if (socio is null)
+            {
+                return Result<Socio>.Error("No se encontró un socio con ese ID.", 404);
+            }
+
+            if (dto.PreferenciaDePago == FormasDePago.LinkDePago && string.IsNullOrEmpty(dto.Telefono))
+                return Result<Socio>.Error("si el socio va a pagar a traves del link de pago debe ingresar un numero de telefono.", 400);
+
+            // Validar que el nuevo DNI no esté asignado a otro socio
+            if (socio.Dni != dto.Dni)
+            {
+                var dniExists = await _unitOfWork._SocioRepository.SocioExists(dto.Dni);
+                if (dniExists)
+                {
+                    return Result<Socio>.Error("Ya existe un socio con ese DNI.", 400);
+                }
+            }
+
+            return Result<Socio>.Exito(socio);
         }
     }
 }

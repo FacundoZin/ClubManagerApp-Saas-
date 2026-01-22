@@ -1,4 +1,4 @@
-namespace APIClub.Domain.Notificaciones
+namespace APIClub.Domain.Notificaciones.Models
 {
     public class WhatsAppConfig
     {

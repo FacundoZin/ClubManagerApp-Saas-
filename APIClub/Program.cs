@@ -1,14 +1,11 @@
 using APIClub.Domain.AlquilerArticulos;
 using APIClub.Domain.AlquilerArticulos.Repositories;
-using APIClub.Domain.Background;
 using APIClub.Domain.GestionSocios;
 using APIClub.Domain.GestionSocios.Repositories;
 using APIClub.Domain.ReservasSalones;
 using APIClub.Domain.ReservasSalones.Repositories;
-using APIClub.Domain.Notificaciones;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Headers;
-using Microsoft.Extensions.Options;
 using APIClub.Domain.PaymentsOnline;
 using APIClub.Domain.PaymentsOnline.Repository;
 using APIClub.Domain.GestionSocios.Validations;
@@ -24,6 +21,9 @@ using APIClub.Domain.Auth.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using APIClub.Domain.Notificaciones.Infra;
+using APIClub.Domain.Notificaciones.Models;
+using APIClub.Domain.Notificaciones.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +38,7 @@ builder.Services.Configure<WhatsAppConfig>(
     builder.Configuration.GetSection("WhatsApp"));
 
 // Registrar HttpClients
-builder.Services.AddHttpClient<INotifyService,WhatsapService>((sp,client) =>
+builder.Services.AddHttpClient<IWhatsappService,WhatsapService>((sp,client) =>
 {
     var config = sp.GetRequiredService<IConfiguration>();
 
@@ -71,6 +71,7 @@ builder.Services.AddScoped<IAlquilerArticulosService ,AlquilerArticulosService>(
 builder.Services.AddScoped<IPaymentService,PaymentService>();
 builder.Services.AddScoped<IPaymentTokenService,PaymentTokenService>();
 builder.Services.AddScoped<IMercadoPagoService,MPService>();
+builder.Services.AddScoped<INotificationsService, NotificacionsService>();
 
 // AUTENTICACIÓN
 builder.Services.AddScoped<IAuthService, AuthService>();

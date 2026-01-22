@@ -24,24 +24,9 @@ namespace APIClub.Application.Services
 
         public async Task<Result<ExistingSocio>> cargarSocio(CreateSocioDto _dto)
         {
-            var existingSocio = await _SocioRepository.GetSocioByDniIgnoreFilter(_dto.Dni);
+            var result = await _validator.ValidateCargaSocio(_dto);
 
-            if (existingSocio != null)
-            {
-                if (existingSocio.IsActivo)
-                {
-                    return Result<ExistingSocio>.Error("El socio que quiere cargar ya está activo.", 400);
-                }
-                else
-                {
-                    var data = new ExistingSocio 
-                    { 
-                        Id = existingSocio.Id, 
-                        Nombre = existingSocio.Nombre + " " + existingSocio.Apellido 
-                    };
-                    return Result<ExistingSocio>.Conflict("El socio ya existe pero está dado de baja.", 409, data);
-                }
-            }
+            if(!result.Exit) return Result<ExistingSocio>.Error(result.Errormessage, result.Errorcode);
 
             string telefonoFormateado = null;
 
@@ -169,27 +154,11 @@ namespace APIClub.Application.Services
 
         public async Task<Result<object>> UpdateSocio(int id, UpdateSocio dto)
         {
-            if (id <= 0)
-            {
-                return Result<object>.Error("El ID proporcionado no es válido.", 400);
-            }
+            var result = await _validator.ValidateUpdateSocio(id, dto);
 
-            var socio = await _SocioRepository.GetSocioById(id);
+            if (!result.Exit) return Result<object>.Error(result.Errormessage, result.Errorcode);
 
-            if (socio is null)
-            {
-                return Result<object>.Error("No se encontró un socio con ese ID.", 404);
-            }
-
-            // Validar que el nuevo DNI no esté asignado a otro socio
-            if (socio.Dni != dto.Dni)
-            {
-                var dniExists = await _SocioRepository.SocioExists(dto.Dni);
-                if (dniExists)
-                {
-                    return Result<object>.Error("Ya existe un socio con ese DNI.", 400);
-                }
-            }
+            var socio = result.Data;
 
             string telefonoFormateado = null;
 
