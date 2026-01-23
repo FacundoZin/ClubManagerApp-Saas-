@@ -24,6 +24,8 @@ using System.Text;
 using APIClub.Domain.Notificaciones.Infra;
 using APIClub.Domain.Notificaciones.Models;
 using APIClub.Domain.Notificaciones.Services;
+using Quartz;
+using APIClub.Infrastructure.JobsProgramados;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -90,6 +92,62 @@ builder.Services.AddScoped<IArticuloRepository,ArticuloRepository>();
 builder.Services.AddScoped<IAlquilerRepository,AlquilerRepository>();
 builder.Services.AddScoped<IitemAlquilerRepository, ItemsAlquilerRepository>();
 builder.Services.AddScoped<IPaymentTokenRepository,PaymentTokenRepository>();
+
+builder.Services.AddQuartz(q =>
+{
+    // JOB 1: Crear tokens
+    var createTokensJobKey = new JobKey(
+        "CreatePaymentTokensJob",
+        "Payments"
+    );
+
+    q.AddJob<CreatePaymentTokensJob>(opts =>
+        opts.WithIdentity(createTokensJobKey)
+    );
+
+    q.AddTrigger(opts => opts
+        .ForJob(createTokensJobKey)
+        .WithIdentity("CreateTokens_Jan_Jul")
+        .WithCronSchedule("0 0 0 1 1,7 ?")
+    );
+
+    // JOB 2: Enviar notificaciones
+    var notifyJobKey = new JobKey(
+        "SendWhatsappPaymentNotificacionJob",
+        "Notifications"
+    );
+
+    q.AddJob<SendWhatsappPaymentNotificacionJob>(opts =>
+        opts.WithIdentity(notifyJobKey)
+    );
+
+    q.AddTrigger(opts => opts
+        .ForJob(notifyJobKey)
+        .WithIdentity("NotifyPayment_Jan_Jul")
+        .WithCronSchedule("0 0 7 2 1,7 ?")
+    );
+
+    // hello world job de prueba
+    //var helloJobKey = new JobKey("HelloWorldJob", "Test");
+
+    //q.AddJob<HelloWorldJob>(opts =>
+    //    opts.WithIdentity(helloJobKey)
+    //);
+
+    //q.AddTrigger(opts => opts
+    //    .ForJob(helloJobKey)
+    //    .WithIdentity("HelloWorld_Every20Seconds")
+    //    .WithSimpleSchedule(x => x
+    //        .WithIntervalInSeconds(20)
+    //        .RepeatForever()
+    //    )
+    //);
+});
+
+builder.Services.AddQuartzHostedService(q =>
+{
+    q.WaitForJobsToComplete = true;
+});
 
 
 // Configuración de JWT

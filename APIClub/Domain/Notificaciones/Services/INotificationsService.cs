@@ -2,7 +2,6 @@
 {
     public interface INotificationsService
     {
-        Task NotificarPagoCuotaTestJob();
         Task NotificarPagoCuotaTestWsp();
         Task NotificarPagodeCuota();
 

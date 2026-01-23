@@ -134,5 +134,20 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
 
             return (items, totalCount);
         }
+
+        public async Task<List<Socio>> GetSociosDeudoresWithPreferenceLinkDePagoPaginado(int anioActual, int semestreActual, int pageNumber, int pageSize)
+        {
+            var items = await _Dbcontext.Socios
+                .Where(s => s.PreferenciaDePago == FormasDePago.LinkDePago && 
+                            !s.HistorialCuotas.Any(c => c.Anio == anioActual && c.Semestre == semestreActual))
+                .AsNoTracking()
+                .OrderBy(s => s.Apellido)
+                .ThenBy(s => s.Nombre)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return items;
+        }
     }
 }

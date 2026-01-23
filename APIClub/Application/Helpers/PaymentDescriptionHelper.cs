@@ -2,7 +2,7 @@ namespace APIClub.Application.Helpers
 {
     public static class PaymentDescriptionHelper
     {
-        public static string GetSemestreText(int semestre)
+        public static string GetSemestreText(this int semestre)
         {
             return semestre == 1 ? "primer semestre" : "segundo semestre";
         }

@@ -187,7 +187,6 @@ namespace APIClub.Infrastructure
                 }
             };
 
-            // Console.WriteLine(JsonSerializer.Serialize(messageRequest));
 
             var response = await _httpClient.PostAsJsonAsync(requestUrl, messageRequest);
 

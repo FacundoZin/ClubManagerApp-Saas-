@@ -4,7 +4,7 @@ namespace APIClub.Domain.PaymentsOnline.Repository
 {
     public interface IPaymentTokenRepository
     {
-        Task<bool> CreateToken(PaymentToken token);
+        Task CreateTokens(List<PaymentToken> token);
         Task<PaymentToken?> GetToken(Guid tokenId);
         Task<bool> confirmPaymentIfNotWereUsed(Guid tokenId);
     }

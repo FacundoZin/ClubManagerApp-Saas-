@@ -12,9 +12,9 @@ namespace APIClub.Infrastructure.JobsProgramados
             _paymentTokenService = paymentTokenService;
         }
 
-        public Task Execute(IJobExecutionContext context)
+        public async Task Execute(IJobExecutionContext context)
         {
-            throw new NotImplementedException();
+            await _paymentTokenService.CreatePaymentTokens();
         }
     }
 }
