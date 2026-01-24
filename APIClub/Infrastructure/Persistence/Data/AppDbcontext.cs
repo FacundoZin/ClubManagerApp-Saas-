@@ -28,6 +28,7 @@ namespace APIClub.Infrastructure.Persistence.Data
         public DbSet<PaymentToken> PaymentTokens { get; set; }
         public DbSet<Lote> Lotes { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<RegistroCobrador> RegistroCobradores { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

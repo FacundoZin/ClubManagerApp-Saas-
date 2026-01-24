@@ -1,4 +1,5 @@
 ﻿using APIClub.Domain.AlquilerArticulos.Repositories;
+using APIClub.Domain.Auth.Repositories;
 using APIClub.Domain.GestionSocios.Repositories;
 using APIClub.Domain.PaymentsOnline.Repository;
 using APIClub.Domain.ReservasSalones.Repositories;
@@ -16,10 +17,12 @@ namespace APIClub.Application.Common
         public IReservasRepository _ReservasRepository { get; }
         public ISocioRepository _SocioRepository { get; }
         public IPaymentTokenRepository _PaymentTokenRepository { get; }
+        public IUsuariosRepository _UsuariosRepository { get; } 
 
         public UnitOfWork(IAlquilerRepository alquilerRepository, IArticuloRepository articuloRepository, ICuotaRepository cuotaRepository,
             IitemAlquilerRepository iitemAlquilerRepository, IReservasRepository reservasRepository, ISocioRepository socioRepository,
-            IPaymentTokenRepository paymentTokenRepository, AppDbcontext context)
+            IPaymentTokenRepository paymentTokenRepository, AppDbcontext context,
+            IUsuariosRepository usuariosRepository)
         {
             _AlquilerRepository = alquilerRepository;
             _ArticuloRepository = articuloRepository;
@@ -28,6 +31,7 @@ namespace APIClub.Application.Common
             _ReservasRepository = reservasRepository;
             _SocioRepository = socioRepository;
             _PaymentTokenRepository = paymentTokenRepository;
+            _UsuariosRepository = usuariosRepository;   
             _context = context;
         }
 

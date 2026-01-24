@@ -2,6 +2,7 @@
 using APIClub.Domain.PaymentsOnline.Repository;
 using APIClub.Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 
 namespace APIClub.Infrastructure.Persistence.Repositorio
 {
@@ -14,12 +15,10 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
             _DBcontext = dbcontext;
         }
 
-        public async Task<bool> CreateToken(PaymentToken token)
+        public async Task CreateTokens(List<PaymentToken> token)
         {
-            _DBcontext.PaymentTokens.Add(token);
-            int rowsAffected = await _DBcontext.SaveChangesAsync();
-
-            return rowsAffected > 0;
+            _DBcontext.PaymentTokens.AddRange(token);
+            await _DBcontext.SaveChangesAsync();
         }
 
         public async Task<PaymentToken?> GetToken(Guid tokenId)

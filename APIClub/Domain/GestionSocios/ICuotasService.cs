@@ -9,6 +9,7 @@ namespace APIClub.Domain.GestionSocios
         Task<Result<object>> RegistrarPagoCuoata(int idSocio, FormasDePago formaPago);
         Task<Result<object>> RegistrarPagoCuoataOnline(PaymentToken token);
         Task<Result<object>> ActualizarValorCuota(decimal nuevoValor);
-       
+        Task<Result<object?>> RegistrarPagoCuoataCobrador(int idSocio, int idCobrador);
+
     }
 }

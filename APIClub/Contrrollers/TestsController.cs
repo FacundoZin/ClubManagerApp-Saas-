@@ -1,6 +1,6 @@
 ﻿using APIClub.Application.Dtos.Whatsapp;
-using APIClub.Domain.Background;
-using APIClub.Domain.Notificaciones;
+using APIClub.Domain.Notificaciones.Infra;
+using APIClub.Domain.Notificaciones.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -12,10 +12,10 @@ namespace APIClub.Contrrollers
     [ApiController]
     public class TestsController : ControllerBase
     {
-        private readonly INotifyService _notifyService;
+        private readonly IWhatsappService _notifyService;
         private readonly WhatsAppConfig _whatsAppConfig;
 
-        public TestsController(INotifyService notifyService, IOptions<WhatsAppConfig> whatsAppConfig)
+        public TestsController(IWhatsappService notifyService, IOptions<WhatsAppConfig> whatsAppConfig)
         {
             _notifyService = notifyService;
             _whatsAppConfig = whatsAppConfig.Value;

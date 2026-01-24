@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace APIClub.Migrations
 {
     [DbContext(typeof(AppDbcontext))]
-    [Migration("20260120140014_firstMigrationWithPostgres")]
-    partial class firstMigrationWithPostgres
+    [Migration("20260124191200_initMigration")]
+    partial class initMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -167,7 +167,7 @@ namespace APIClub.Migrations
                             Id = 1,
                             FechaCreacion = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             NombreUsuario = "admin",
-                            PasswordHash = "$2a$11$LN2Ic4tu/F7gSHuHq/PGFeBgmk73ieJk9h8bPDHtLojtcKZNAUF6W",
+                            PasswordHash = "$2a$11$RdIo0BrWR4W6n6VXOYcXX.JpHUiW68uCQfiu3R9KW6gPPUAlEXOSe",
                             Rol = 1
                         });
                 });
@@ -269,6 +269,32 @@ namespace APIClub.Migrations
                         });
                 });
 
+            modelBuilder.Entity("APIClub.Domain.GestionSocios.Models.RegistroCobrador", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateOnly>("FechaCobro")
+                        .HasColumnType("date");
+
+                    b.Property<int>("IdCobrador")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("MontoCobrado")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("NombreSocio")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RegistroCobradores");
+                });
+
             modelBuilder.Entity("APIClub.Domain.GestionSocios.Models.Socio", b =>
                 {
                     b.Property<int>("Id")
@@ -368,7 +394,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111111"),
-                            FechaExpiracion = new DateOnly(2026, 2, 19),
+                            FechaExpiracion = new DateOnly(2026, 2, 23),
                             IdSocio = 1,
                             anio = 2025,
                             monto = 2500.00m,
@@ -379,7 +405,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("22222222-2222-2222-2222-222222222222"),
-                            FechaExpiracion = new DateOnly(2026, 2, 19),
+                            FechaExpiracion = new DateOnly(2026, 2, 23),
                             IdSocio = 1,
                             anio = 2025,
                             monto = 2500.00m,
@@ -390,7 +416,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("33333333-3333-3333-3333-333333333333"),
-                            FechaExpiracion = new DateOnly(2026, 2, 19),
+                            FechaExpiracion = new DateOnly(2026, 2, 23),
                             IdSocio = 2,
                             anio = 2025,
                             monto = 2500.00m,
@@ -401,7 +427,7 @@ namespace APIClub.Migrations
                         new
                         {
                             Id = new Guid("44444444-4444-4444-4444-444444444444"),
-                            FechaExpiracion = new DateOnly(2026, 2, 19),
+                            FechaExpiracion = new DateOnly(2026, 2, 23),
                             IdSocio = 2,
                             anio = 2025,
                             monto = 2500.00m,

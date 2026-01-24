@@ -8,6 +8,6 @@ namespace APIClub.Domain.PaymentsOnline
     {
         Task<Result<PaymentToken>> ValidateToken(Guid idToken);
         Task<Result<object?>> ExpireToken(Guid idToken);
-        Task<string> CreateToken(CreateTokenRequestDto dto);
+        Task CreatePaymentTokens();
     }
 }

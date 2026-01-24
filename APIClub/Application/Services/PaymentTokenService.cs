@@ -1,5 +1,4 @@
 ﻿using APIClub.Application.Common;
-using APIClub.Application.Dtos.Payment;
 using APIClub.Domain.PaymentsOnline;
 using APIClub.Domain.PaymentsOnline.Modelos;
 
@@ -14,25 +13,40 @@ namespace APIClub.Application.Services
             _UnitOfWork = unitOfWork;
         }
 
-        public async Task<string> CreateToken(CreateTokenRequestDto dto)
+        public async Task CreatePaymentTokens()
         {
-            var fechaExpiracion = DateOnly.FromDateTime(DateTime.Now).AddDays(30);
+            decimal montoCuotaActualizado = await _UnitOfWork._CuotaRepository.ObtenerValorCuota();
+            var now = DateTime.Now;
+            var anioActual = now.Year;
+            var semestreActual = now.Month <= 6 ? 1 : 2;
+            int pageNumber = 1;
+            int pageSize = 50;
 
-            PaymentToken paymentToken = new PaymentToken
+            while (true)
             {
-                Id = Guid.NewGuid(),
-                IdSocio = dto.IdSocio,
-                nombreSocio = dto.nombreSocio,
-                anio = dto.anio,
-                semestre = dto.semestre,
-                FechaExpiracion = fechaExpiracion,
-                monto = dto.monto,
-                usado = false,
-            };
+                var socios = await _UnitOfWork._SocioRepository.GetSociosDeudoresWithPreferenceLinkDePagoPaginado(anioActual, semestreActual, pageNumber, pageSize);
 
-            await _UnitOfWork._PaymentTokenRepository.CreateToken(paymentToken);
+                if (socios.Count == 0)
+                    break;
 
-            return paymentToken.Id.ToString(); 
+                var tokens = socios.Select(socio => new PaymentToken
+                {
+                    Id = Guid.NewGuid(),
+                    IdSocio = socio.Id,
+                    nombreSocio = $"{socio.Nombre} {socio.Apellido}",
+                    anio = anioActual,
+                    semestre = semestreActual,
+                    FechaExpiracion = DateOnly
+                        .FromDateTime(DateTime.Now)
+                        .AddDays(30),
+                    monto = montoCuotaActualizado,
+                    usado = false
+                }).ToList();
+
+                await _UnitOfWork._PaymentTokenRepository.CreateTokens(tokens);
+
+                pageNumber++;
+            }
         }
 
         public async Task<Result<object?>> ExpireToken(Guid idToken)

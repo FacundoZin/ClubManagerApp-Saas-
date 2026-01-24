@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace APIClub.Application.Dtos.Cuota
 {
-    public class RegistCuotaRequest
+    public class RegistCuotaInRequestDto
     {
         [Required]
         public int IdSocio { get; set; }

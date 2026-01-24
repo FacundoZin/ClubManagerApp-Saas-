@@ -3,6 +3,7 @@ using APIClub.Domain.Enums;
 using APIClub.Domain.GestionSocios;
 using APIClub.Domain.GestionSocios.Models;
 using APIClub.Domain.GestionSocios.Repositories;
+using APIClub.Domain.GestionSocios.Validations;
 using APIClub.Domain.PaymentsOnline.Modelos;
 
 namespace APIClub.Application.Services
@@ -11,10 +12,18 @@ namespace APIClub.Application.Services
     {
         private readonly ISocioRepository _SocioRepository;
         private readonly ICuotaRepository _CuotaRepository;
-        public CuotasService(ISocioRepository socioRepository, ICuotaRepository cuotaRepository) 
+        private readonly IHistorialCobradoresRepository _HistorialCobradoresRepository;
+        private readonly IPagoCuotaValidator _Validator;
+        private readonly UnitOfWork _UnitOfWork;
+
+        public CuotasService(ISocioRepository socioRepository, ICuotaRepository cuotaRepository, IPagoCuotaValidator validator, IHistorialCobradoresRepository historialCobradoresRepository,
+            UnitOfWork unitOfWork)
         {
-            _SocioRepository = socioRepository; 
+            _SocioRepository = socioRepository;
             _CuotaRepository = cuotaRepository;
+            _Validator = validator;
+            _HistorialCobradoresRepository = historialCobradoresRepository;
+            _UnitOfWork = unitOfWork;
         }
 
         public async Task<Result<object>> ActualizarValorCuota(decimal nuevoValor)
@@ -26,29 +35,21 @@ namespace APIClub.Application.Services
 
         public async Task<Result<object>> RegistrarPagoCuoata(int idSocio, FormasDePago formaPago)
         {
-            var socio = await _SocioRepository.GetSocioById(idSocio);
-            if (socio == null)
-                return Result<object>.Error("Socio no encontrado.", 404);
+            var result = await _Validator.ValidarPagoEnEstablecimeinto(idSocio);
 
-            var fechaPago = DateOnly.FromDateTime(DateTime.Now);
-            int anio = fechaPago.Year;
-            int semestre = fechaPago.Month <= 6 ? 1 : 2;
-
-            bool cuotaExistente = socio.HistorialCuotas.Any(c =>
-                c.Anio == anio && c.Semestre == semestre);
-
-            if (cuotaExistente)
-                return Result<object>.Error("Ya existe una cuota registrada para este semestre y año.", 409);
-
+            if (!result.Exit) return Result<object>.Error(result.Errormessage, result.Errorcode);
+            
+            var socio = result.Data;
+            var now = DateOnly.FromDateTime(DateTime.Now);
             var valorCuotaActual = await _CuotaRepository.ObtenerValorCuota();
 
             var nuevaCuota = new Cuota
             {
-                FechaPago = fechaPago,
+                FechaPago = now,
                 Monto = valorCuotaActual,
                 FormaDePago = formaPago,
-                Anio = anio,
-                Semestre = semestre,
+                Anio = now.Year,
+                Semestre = now.Month < 7 ? 1 : 2,
                 SocioId = socio.Id,
                 Socio = socio
             };
@@ -61,7 +62,50 @@ namespace APIClub.Application.Services
                 Mensaje = "Pago de cuota registrado exitosamente.",
                 Cuota = nuevaCuota
             });
+        }
 
+        public async Task<Result<object?>> RegistrarPagoCuoataCobrador(int idSocio, int idUsuario)
+        {
+            var validationResult = await _Validator.ValidarPagoConCobrador(idSocio,idUsuario);
+
+            if (!validationResult.Exit) return Result<object?>.Error(validationResult.Errormessage, validationResult.Errorcode);
+
+            var socio = validationResult.Data;
+            var now = DateOnly.FromDateTime(DateTime.Now);
+            var valorCuotaActual = await _CuotaRepository.ObtenerValorCuota();
+
+            var cobro = new RegistroCobrador { 
+                FechaCobro = now, 
+                IdCobrador = idUsuario, 
+                MontoCobrado = valorCuotaActual, 
+                NombreSocio = socio.Nombre 
+            };
+
+            var nuevaCuota = new Cuota
+            {
+                FechaPago = now,
+                Monto = valorCuotaActual,
+                FormaDePago = FormasDePago.Cobrador,
+                Anio = now.Year,
+                Semestre = now.Month < 7 ? 1 : 2,
+                SocioId = socio.Id,
+                Socio = socio
+            };
+
+            socio.HistorialCuotas.Add(nuevaCuota);
+
+            _HistorialCobradoresRepository.AddCobroToHistorial(cobro);
+            _SocioRepository.UpdateSocioWhitoutSave(socio);
+
+            var exit = await _UnitOfWork.SaveChangesAsync();
+
+            if (exit == false) return Result<object?>.Error("algo salio mal al registrar el pago", 500);
+
+            return Result<object?>.Exito(new
+            {
+                Mensaje = "Pago de cuota registrado exitosamente.",
+                Cuota = nuevaCuota
+            });
         }
 
         public async Task<Result<object>> RegistrarPagoCuoataOnline(PaymentToken token)
@@ -71,7 +115,7 @@ namespace APIClub.Application.Services
                 return Result<object>.Error("Socio no encontrado.", 404);
 
             var fechaPago = DateOnly.FromDateTime(DateTime.Now);
-            
+
 
             bool cuotaExistente = socio.HistorialCuotas.Any(c =>
                 c.Anio == token.anio && c.Semestre == token.semestre);

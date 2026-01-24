@@ -11,5 +11,6 @@ namespace APIClub.Domain.Auth.Repositories
         Task<Usuario> Create(Usuario usuario);
         Task<bool> ExisteNombreUsuario(string nombreUsuario);
         Task ActualizarUltimoAcceso(int id);
+        Task<List<Usuario>> GetUsuariosCobradores();  
     }
 }

@@ -1,14 +1,13 @@
 ﻿using APIClub.Application.Common;
-using APIClub.Domain.Background;
 using APIClub.Domain.GestionSocios.Repositories;
-using APIClub.Domain.Notificaciones;
+using APIClub.Domain.Notificaciones.Infra;
 using APIClub.Domain.Notificaciones.Models;
 using Microsoft.Extensions.Options;
 using System.Net;
 
 namespace APIClub.Infrastructure
 {
-    public class WhatsapService : INotifyService
+    public class WhatsapService : IWhatsappService
     {
         private readonly ISocioRepository _SocioRepository;
         private readonly WhatsAppConfig _whatsAppConfig;
@@ -61,7 +60,7 @@ namespace APIClub.Infrastructure
                         {
                             intento++;
 
-                            var response = await EnviarMensajeWhatsApp(
+                            var response = await SendWhatsAppPaymentMessage(
                                 socio.Telefono!,
                                 socio.Nombre,
                                 semestreTexto,
@@ -128,7 +127,7 @@ namespace APIClub.Infrastructure
                 var anio = hoy.Year.ToString();
                 var semestreTexto = hoy.Month > 6 ? "segundo semestre" : "primer semestre";
 
-                var response = await EnviarMensajeWhatsApp(
+                var response = await SendWhatsAppPaymentMessage(
                     telefono,
                     nombre,
                     semestreTexto,
@@ -158,7 +157,7 @@ namespace APIClub.Infrastructure
         }
 
 
-        private async Task<HttpResponseMessage> EnviarMensajeWhatsApp(string telefono, string nombreSocio, string semestreTexto, string anio)
+        public async Task<HttpResponseMessage> SendWhatsAppPaymentMessage(string telefono, string nombreSocio, string semestreTexto, string anio)
         {
 
             var requestUrl =
@@ -188,7 +187,6 @@ namespace APIClub.Infrastructure
                 }
             };
 
-            // Console.WriteLine(JsonSerializer.Serialize(messageRequest));
 
             var response = await _httpClient.PostAsJsonAsync(requestUrl, messageRequest);
 

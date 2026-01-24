@@ -1,11 +1,9 @@
 using APIClub.Domain.AlquilerArticulos;
 using APIClub.Domain.AlquilerArticulos.Repositories;
-using APIClub.Domain.Background;
 using APIClub.Domain.GestionSocios;
 using APIClub.Domain.GestionSocios.Repositories;
 using APIClub.Domain.ReservasSalones;
 using APIClub.Domain.ReservasSalones.Repositories;
-using APIClub.Domain.Notificaciones;
 using System.Net.Http.Headers;
 using APIClub.Domain.PaymentsOnline;
 using APIClub.Domain.PaymentsOnline.Repository;
@@ -23,6 +21,11 @@ using APIClub.Domain.Auth.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using APIClub.Domain.Notificaciones.Infra;
+using APIClub.Domain.Notificaciones.Models;
+using APIClub.Domain.Notificaciones.Services;
+using Quartz;
+using APIClub.Infrastructure.JobsProgramados;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,7 +42,7 @@ builder.Services.Configure<WhatsAppConfig>(
     builder.Configuration.GetSection("WhatsApp"));
 
 // Registrar HttpClients
-builder.Services.AddHttpClient<INotifyService,WhatsapService>((sp,client) =>
+builder.Services.AddHttpClient<IWhatsappService, WhatsapService>((sp, client) =>
 {
     var config = sp.GetRequiredService<IConfiguration>();
 
@@ -63,38 +66,98 @@ builder.Services.AddHttpClient<IMercadoPagoService, MPService>((sp, client) =>
 });
 
 // registrar servicios
-builder.Services.AddScoped<ISociosManagmentService,SociosManagmentService>();
-builder.Services.AddScoped<ICuotasService,CuotasService>();
-builder.Services.AddScoped<IReservasServices,ReservasServices>();
-builder.Services.AddScoped<ICobranzasServices,CobranzasService>();
-builder.Services.AddScoped<IManagmentArticulosService,ManagmentArticulosService>();
-builder.Services.AddScoped<IAlquilerArticulosService ,AlquilerArticulosService>();
-builder.Services.AddScoped<IPaymentService,PaymentService>();
-builder.Services.AddScoped<IPaymentTokenService,PaymentTokenService>();
-builder.Services.AddScoped<IMercadoPagoService,MPService>();
+builder.Services.AddScoped<ISociosManagmentService, SociosManagmentService>();
+builder.Services.AddScoped<ICuotasService, CuotasService>();
+builder.Services.AddScoped<IReservasServices, ReservasServices>();
+builder.Services.AddScoped<ICobranzasServices, CobranzasService>();
+builder.Services.AddScoped<IManagmentArticulosService, ManagmentArticulosService>();
+builder.Services.AddScoped<IAlquilerArticulosService, AlquilerArticulosService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IPaymentTokenService, PaymentTokenService>();
+builder.Services.AddScoped<IMercadoPagoService, MPService>();
+builder.Services.AddScoped<INotificationsService, NotificacionsService>();
 
 // AUTENTICACIÓN
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUsuariosService, UsuariosService>();
-builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>();
+
 
 //OTROS
 builder.Services.AddScoped<UnitOfWork>();
 builder.Services.AddScoped<ISocioIntegrityValidator, SocioIntegrityValidator>();
+builder.Services.AddScoped<IPagoCuotaValidator, PagoCuotaValidator>();
 
 // registrar repositorios
-builder.Services.AddScoped<ISocioRepository,SociosRepository>();
-builder.Services.AddScoped<ICuotaRepository,CuotaRepository>();
-builder.Services.AddScoped<IReservasRepository,ReservasRepository>();
-builder.Services.AddScoped<IArticuloRepository,ArticuloRepository>();
-builder.Services.AddScoped<IAlquilerRepository,AlquilerRepository>();
+builder.Services.AddScoped<ISocioRepository, SociosRepository>();
+builder.Services.AddScoped<ICuotaRepository, CuotaRepository>();
+builder.Services.AddScoped<IReservasRepository, ReservasRepository>();
+builder.Services.AddScoped<IArticuloRepository, ArticuloRepository>();
+builder.Services.AddScoped<IAlquilerRepository, AlquilerRepository>();
 builder.Services.AddScoped<IitemAlquilerRepository, ItemsAlquilerRepository>();
-builder.Services.AddScoped<IPaymentTokenRepository,PaymentTokenRepository>();
+builder.Services.AddScoped<IPaymentTokenRepository, PaymentTokenRepository>();
+builder.Services.AddScoped<IHistorialCobradoresRepository, HistorialCobradoresRepository>();
+builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>();
+
+builder.Services.AddQuartz(q =>
+{
+    // JOB 1: Crear tokens
+    var createTokensJobKey = new JobKey(
+        "CreatePaymentTokensJob",
+        "Payments"
+    );
+
+    q.AddJob<CreatePaymentTokensJob>(opts =>
+        opts.WithIdentity(createTokensJobKey)
+    );
+
+    q.AddTrigger(opts => opts
+        .ForJob(createTokensJobKey)
+        .WithIdentity("CreateTokens_Jan_Jul")
+        .WithCronSchedule("0 0 0 1 1,7 ?")
+    );
+
+    // JOB 2: Enviar notificaciones
+    var notifyJobKey = new JobKey(
+        "SendWhatsappPaymentNotificacionJob",
+        "Notifications"
+    );
+
+    q.AddJob<SendWhatsappPaymentNotificacionJob>(opts =>
+        opts.WithIdentity(notifyJobKey)
+    );
+
+    q.AddTrigger(opts => opts
+        .ForJob(notifyJobKey)
+        .WithIdentity("NotifyPayment_Jan_Jul")
+        .WithCronSchedule("0 0 7 2 1,7 ?")
+    );
+
+    // hello world job de prueba
+    //var helloJobKey = new JobKey("HelloWorldJob", "Test");
+
+    //q.AddJob<HelloWorldJob>(opts =>
+    //    opts.WithIdentity(helloJobKey)
+    //);
+
+    //q.AddTrigger(opts => opts
+    //    .ForJob(helloJobKey)
+    //    .WithIdentity("HelloWorld_Every20Seconds")
+    //    .WithSimpleSchedule(x => x
+    //        .WithIntervalInSeconds(20)
+    //        .RepeatForever()
+    //    )
+    //);
+});
+
+builder.Services.AddQuartzHostedService(q =>
+{
+    q.WaitForJobsToComplete = true;
+});
 
 
 // Configuración de JWT
 var jwtSettings = builder.Configuration.GetSection("Jwt");
-var secretKey = jwtSettings["SecretKey"]; 
+var secretKey = jwtSettings["SecretKey"];
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -109,7 +172,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = jwtSettings["Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
         };
-        
+
         // Evento para leer el token desde la cookie
         options.Events = new JwtBearerEvents
         {
@@ -128,7 +191,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 // confiugracion cors.
 builder.Services.AddCors(options =>
-{        
+{
     options.AddPolicy("AllowFrontend",
         policy =>
         {

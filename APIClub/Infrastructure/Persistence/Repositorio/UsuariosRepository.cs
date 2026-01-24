@@ -52,5 +52,10 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
                     DateTime.UtcNow
                 ));
         }
+
+        public async Task<List<Usuario>> GetUsuariosCobradores()
+        {
+            return await _context.Usuarios.AsNoTracking().Where(u => u.Rol == RolUsuario.Cobrador).ToListAsync();
+        }
     }
 }

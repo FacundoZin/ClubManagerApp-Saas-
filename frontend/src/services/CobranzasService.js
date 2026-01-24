@@ -43,4 +43,29 @@ export default {
 
     return await response.json()
   },
+
+  async verListadoDeCobradores() {
+    const response = await fetch(`${API_URL}/cobradores`, { credentials: 'include' })
+
+    if (!response.ok) {
+      const error = await response.text()
+      throw new Error(error || 'Error al obtener el listado de cobradores')
+    }
+
+    return await response.json()
+  },
+
+  async verHistorialDeCobradorByMes(idCobrador, mes, anio) {
+    const response = await fetch(
+      `${API_URL}/cobrador/historial?idCobrador=${idCobrador}&mes=${mes}&anio=${anio}`,
+      { credentials: 'include' },
+    )
+
+    if (!response.ok) {
+      const error = await response.text()
+      throw new Error(error || 'Error al obtener el historial del cobrador')
+    }
+
+    return await response.json()
+  },
 }
