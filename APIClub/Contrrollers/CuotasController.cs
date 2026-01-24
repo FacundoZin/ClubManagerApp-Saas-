@@ -2,6 +2,7 @@
 using APIClub.Domain.GestionSocios;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace APIClub.Contrrollers
 {
@@ -24,12 +25,9 @@ namespace APIClub.Contrrollers
         }
 
         [HttpPost("pagarCuota")]
-        public async Task<IActionResult> RegistrarCuota([FromBody] RegistCuotaRequest request)
+        public async Task<IActionResult> RegistrarCuota([FromBody] RegistCuotaInRequestDto request)
         {
-            if(!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var result = await _CuotasService.RegistrarPagoCuoata(request.IdSocio, request.FormaPago);
 
@@ -39,6 +37,18 @@ namespace APIClub.Contrrollers
             return Ok(new { data = result.Data });
         }
 
-       
+        [HttpPost("RegistrarPagoConCobrador")]
+        public async Task<IActionResult> RegistrarPagoDeCuotaConCobrador([FromBody] RegistCuotaInRequestDto request)
+        {
+            if(!ModelState.IsValid) return BadRequest(ModelState);
+
+            var idCobrador = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+            var result = await _CuotasService.RegistrarPagoCuoataCobrador(request.IdSocio, idCobrador);
+
+            if(!result.Exit) return StatusCode(result.Errorcode,result.Errormessage);
+
+            return Ok(new { data = result.Data });  
+        }   
     }
 }

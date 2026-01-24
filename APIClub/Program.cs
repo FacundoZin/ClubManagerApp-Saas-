@@ -78,11 +78,12 @@ builder.Services.AddScoped<INotificationsService, NotificacionsService>();
 // AUTENTICACIÓN
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUsuariosService, UsuariosService>();
-builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>();
+
 
 //OTROS
 builder.Services.AddScoped<UnitOfWork>();
 builder.Services.AddScoped<ISocioIntegrityValidator, SocioIntegrityValidator>();
+builder.Services.AddScoped<IPagoCuotaValidator, PagoCuotaValidator>();
 
 // registrar repositorios
 builder.Services.AddScoped<ISocioRepository,SociosRepository>();
@@ -92,6 +93,8 @@ builder.Services.AddScoped<IArticuloRepository,ArticuloRepository>();
 builder.Services.AddScoped<IAlquilerRepository,AlquilerRepository>();
 builder.Services.AddScoped<IitemAlquilerRepository, ItemsAlquilerRepository>();
 builder.Services.AddScoped<IPaymentTokenRepository,PaymentTokenRepository>();
+builder.Services.AddScoped<IHistorialCobradoresRepository, HistorialCobradoresRepository>();
+builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>();
 
 builder.Services.AddQuartz(q =>
 {

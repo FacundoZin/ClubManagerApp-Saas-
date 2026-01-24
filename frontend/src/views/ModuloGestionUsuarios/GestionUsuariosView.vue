@@ -80,11 +80,9 @@
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
                   class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
-                  :class="
-                    user.rol === 1 ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800'
-                  "
+                  :class="getRoleClass(user.rol)"
                 >
-                  {{ user.rol === 1 ? 'SuperAdmin' : 'Usuario' }}
+                  {{ getRoleLabel(user.rol) }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -164,6 +162,28 @@ const onUserCreated = () => {
 const formatDate = (dateString) => {
   if (!dateString) return ''
   return format(new Date(dateString), 'dd MMM yyyy HH:mm', { locale: es })
+}
+
+const getRoleLabel = (role) => {
+  switch (role) {
+    case 1:
+      return 'SuperAdmin'
+    case 2:
+      return 'Cobrador'
+    default:
+      return 'Usuario'
+  }
+}
+
+const getRoleClass = (role) => {
+  switch (role) {
+    case 1:
+      return 'bg-purple-100 text-purple-800'
+    case 2:
+      return 'bg-blue-100 text-blue-800'
+    default:
+      return 'bg-green-100 text-green-800'
+  }
 }
 
 onMounted(() => {

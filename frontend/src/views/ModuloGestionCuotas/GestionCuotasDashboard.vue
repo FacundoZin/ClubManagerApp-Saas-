@@ -95,10 +95,16 @@ const handleRegisterPayment = async () => {
 
   isProcessing.value = true
   try {
-    await CuotasService.registrarCuota({
+    const paymentData = {
       socioId: searchResult.value.id,
       formaPago: parseInt(formaPagoSelected.value),
-    })
+    }
+
+    if (formaPagoSelected.value === '0') {
+      await CuotasService.registrarPagoCobrador(paymentData)
+    } else {
+      await CuotasService.registrarCuota(paymentData)
+    }
 
     showToast('El pago se registró correctamente')
     searchResult.value = null

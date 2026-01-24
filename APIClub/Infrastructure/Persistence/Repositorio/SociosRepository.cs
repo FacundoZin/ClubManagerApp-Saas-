@@ -60,6 +60,11 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
             await _Dbcontext.SaveChangesAsync();
         }
 
+        public void UpdateSocioWhitoutSave(Socio socio)
+        {
+            _Dbcontext.Socios.Update(socio);
+        }
+
         public async Task<Socio?> GetSocioByIdIgnoreFilter(int id)
         {
             return await _Dbcontext.Socios.IgnoreQueryFilters().FirstOrDefaultAsync(s => s.Id == id);

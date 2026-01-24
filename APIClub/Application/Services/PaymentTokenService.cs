@@ -18,7 +18,7 @@ namespace APIClub.Application.Services
             decimal montoCuotaActualizado = await _UnitOfWork._CuotaRepository.ObtenerValorCuota();
             var now = DateTime.Now;
             var anioActual = now.Year;
-            var semestreActual = now.Month <= 6 ? 1 : 2; ;
+            var semestreActual = now.Month <= 6 ? 1 : 2;
             int pageNumber = 1;
             int pageSize = 50;
 
@@ -33,11 +33,11 @@ namespace APIClub.Application.Services
                 {
                     Id = Guid.NewGuid(),
                     IdSocio = socio.Id,
-                    nombreSocio = socio.Nombre,
+                    nombreSocio = $"{socio.Nombre} {socio.Apellido}",
                     anio = anioActual,
                     semestre = semestreActual,
                     FechaExpiracion = DateOnly
-                        .FromDateTime(DateTime.UtcNow)
+                        .FromDateTime(DateTime.Now)
                         .AddDays(30),
                     monto = montoCuotaActualizado,
                     usado = false

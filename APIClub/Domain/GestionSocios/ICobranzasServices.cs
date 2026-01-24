@@ -1,7 +1,7 @@
 ﻿using APIClub.Application.Common;
+using APIClub.Application.Dtos.Cobrador;
 using APIClub.Application.Dtos.Lote;
 using APIClub.Application.Dtos.Socios;
-using APIClub.Domain.GestionSocios.Models;
 
 namespace APIClub.Domain.GestionSocios
 {
@@ -10,5 +10,7 @@ namespace APIClub.Domain.GestionSocios
         Task<Result<PagedResult<PreviewSocioForCobranzaDto>>> ListarSociosDedudoresPorLote(int Idlote, int pageNumber = 1, int pageSize = 10);
         Task<List<PreviewLote>> GetLotesPreview();
         Task<Result<bool>> CrearLote(CreateLoteDto dto);
+        Task<List<CobradorDto>> GetListaCobradores();
+        Task<HistorialCobradorDto> GetHistorialCobradorByMes(int idCobrador, int mes, int anio);
     }
 }

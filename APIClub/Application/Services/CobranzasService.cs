@@ -1,6 +1,8 @@
 ﻿using APIClub.Application.Common;
+using APIClub.Application.Dtos.Cobrador;
 using APIClub.Application.Dtos.Lote;
 using APIClub.Application.Dtos.Socios;
+using APIClub.Domain.Auth.Repositories;
 using APIClub.Domain.GestionSocios;
 using APIClub.Domain.GestionSocios.Models;
 using APIClub.Domain.GestionSocios.Repositories;
@@ -12,12 +14,16 @@ namespace APIClub.Application.Services
     public class CobranzasService : ICobranzasServices
     {
         private readonly ISocioRepository _SociosRepository;
+        private readonly IUsuariosRepository _UsuariosRepository;
         private readonly AppDbcontext _context;
-
-        public CobranzasService(ISocioRepository sociosRepository, AppDbcontext context)
+        private readonly IHistorialCobradoresRepository _historialCobradoresRepository;
+        public CobranzasService(ISocioRepository sociosRepository, AppDbcontext context, IUsuariosRepository usuariosRepository,
+            IHistorialCobradoresRepository historialCobradoresRepository)
         {
             _SociosRepository = sociosRepository;
             _context = context;
+            _UsuariosRepository = usuariosRepository;   
+            _historialCobradoresRepository = historialCobradoresRepository; 
         }
 
         public async Task<List<PreviewLote>> GetLotesPreview()
@@ -48,7 +54,7 @@ namespace APIClub.Application.Services
                 var dto = paginatedSocios.Select(s => new PreviewSocioForCobranzaDto
                 {
                     Id = s.Id,
-                    Nombre = s.Nombre,
+                    Nombre = s.Nombre,  
                     Apellido = s.Apellido,
                     Dni = s.Dni,
                     Telefono = s.Telefono,
@@ -90,6 +96,34 @@ namespace APIClub.Application.Services
             {
                 return Result<bool>.Error("Error al crear el lote: " + ex.Message, 500);
             }
+        }
+
+        public async Task<List<CobradorDto>> GetListaCobradores()
+        {
+            var cobradores = await _UsuariosRepository.GetUsuariosCobradores();
+
+            var dto = cobradores.Select(c => new CobradorDto
+            {
+                idCobrador = c.Id,
+                NombreCompleto = c.NombreUsuario,
+            }).ToList();
+
+            return dto;
+        }
+
+        public async Task<HistorialCobradorDto> GetHistorialCobradorByMes(int idCobrador, int mes, int anio)
+        {
+            var historial = await _historialCobradoresRepository.GetHistorialCobradorByMes(idCobrador, mes, anio);
+
+            var cobrosRealizados = historial.Select(c => new CobroDto { 
+                FechaCobro = c.FechaCobro, 
+                MontoCobrado = c.MontoCobrado, 
+                NombreSocio = c.NombreSocio })
+                .ToList();
+
+            var montoTotalCobrado = cobrosRealizados.Sum(c => c.MontoCobrado);
+
+            return new HistorialCobradorDto { Anio = anio, Mes = mes, CobrosRealizados = cobrosRealizados, MontoTotalCobrado = montoTotalCobrado };
         }
     }
 }
