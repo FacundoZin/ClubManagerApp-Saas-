@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -8,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace APIClub.Migrations
 {
     /// <inheritdoc />
-    public partial class newMigration : Migration
+    public partial class initMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,10 +18,10 @@ namespace APIClub.Migrations
                 name: "Articulos",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Nombre = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
-                    PrecioAlquiler = table.Column<int>(type: "decimal(18,2)", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Nombre = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    PrecioAlquiler = table.Column<decimal>(type: "numeric(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -31,13 +32,13 @@ namespace APIClub.Migrations
                 name: "Lotes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    NombreLote = table.Column<string>(type: "TEXT", nullable: false),
-                    CalleNorte = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    CalleSur = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    CalleEste = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    CalleOeste = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    NombreLote = table.Column<string>(type: "text", nullable: false),
+                    CalleNorte = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    CalleSur = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    CalleEste = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    CalleOeste = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -48,10 +49,10 @@ namespace APIClub.Migrations
                 name: "MontoCuota",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    MontoCuotaFija = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    FechaActualizacion = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    MontoCuotaFija = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    FechaActualizacion = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -62,17 +63,17 @@ namespace APIClub.Migrations
                 name: "PaymentTokens",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    nombreSocio = table.Column<string>(type: "TEXT", nullable: false),
-                    IdSocio = table.Column<int>(type: "INTEGER", nullable: false),
-                    anio = table.Column<int>(type: "INTEGER", nullable: false),
-                    semestre = table.Column<int>(type: "INTEGER", nullable: false),
-                    FechaExpiracion = table.Column<DateOnly>(type: "TEXT", nullable: false),
-                    monto = table.Column<decimal>(type: "TEXT", nullable: false),
-                    usado = table.Column<bool>(type: "INTEGER", nullable: false),
-                    Preference_Id = table.Column<string>(type: "TEXT", nullable: true),
-                    PaymentStatus = table.Column<string>(type: "TEXT", nullable: true),
-                    StatusDetail = table.Column<string>(type: "TEXT", nullable: true)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    nombreSocio = table.Column<string>(type: "text", nullable: false),
+                    IdSocio = table.Column<int>(type: "integer", nullable: false),
+                    anio = table.Column<int>(type: "integer", nullable: false),
+                    semestre = table.Column<int>(type: "integer", nullable: false),
+                    FechaExpiracion = table.Column<DateOnly>(type: "date", nullable: false),
+                    monto = table.Column<decimal>(type: "numeric", nullable: false),
+                    usado = table.Column<bool>(type: "boolean", nullable: false),
+                    Preference_Id = table.Column<string>(type: "text", nullable: true),
+                    PaymentStatus = table.Column<string>(type: "text", nullable: true),
+                    StatusDetail = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -83,12 +84,12 @@ namespace APIClub.Migrations
                 name: "RegistroCobradores",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    FechaCobro = table.Column<DateOnly>(type: "TEXT", nullable: false),
-                    NombreSocio = table.Column<string>(type: "TEXT", nullable: false),
-                    MontoCobrado = table.Column<decimal>(type: "TEXT", nullable: false),
-                    IdCobrador = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    FechaCobro = table.Column<DateOnly>(type: "date", nullable: false),
+                    NombreSocio = table.Column<string>(type: "text", nullable: false),
+                    MontoCobrado = table.Column<decimal>(type: "numeric", nullable: false),
+                    IdCobrador = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -99,10 +100,10 @@ namespace APIClub.Migrations
                 name: "Salones",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 150, nullable: false),
-                    Direccion = table.Column<string>(type: "TEXT", maxLength: 250, nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    Direccion = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -113,13 +114,13 @@ namespace APIClub.Migrations
                 name: "Usuarios",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    NombreUsuario = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
-                    PasswordHash = table.Column<string>(type: "TEXT", nullable: false),
-                    Rol = table.Column<int>(type: "INTEGER", nullable: false),
-                    FechaCreacion = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    UltimoAcceso = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    NombreUsuario = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    PasswordHash = table.Column<string>(type: "text", nullable: false),
+                    Rol = table.Column<int>(type: "integer", nullable: false),
+                    FechaCreacion = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    UltimoAcceso = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -130,19 +131,19 @@ namespace APIClub.Migrations
                 name: "Socios",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Nombre = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    Apellido = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    Dni = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
-                    Telefono = table.Column<string>(type: "TEXT", nullable: true),
-                    Direcccion = table.Column<string>(type: "TEXT", nullable: true),
-                    Localidad = table.Column<string>(type: "TEXT", nullable: true),
-                    PreferenciaDePago = table.Column<int>(type: "INTEGER", nullable: false),
-                    LoteId = table.Column<int>(type: "INTEGER", nullable: true),
-                    FechaAsociacion = table.Column<DateOnly>(type: "TEXT", nullable: false),
-                    IsActivo = table.Column<bool>(type: "INTEGER", nullable: false),
-                    FechaDeBaja = table.Column<DateOnly>(type: "TEXT", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Nombre = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Apellido = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Dni = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    Telefono = table.Column<string>(type: "text", nullable: true),
+                    Direcccion = table.Column<string>(type: "text", nullable: true),
+                    Localidad = table.Column<string>(type: "text", nullable: true),
+                    PreferenciaDePago = table.Column<int>(type: "integer", nullable: false),
+                    FechaAsociacion = table.Column<DateOnly>(type: "date", nullable: false),
+                    IsActivo = table.Column<bool>(type: "boolean", nullable: false),
+                    FechaDeBaja = table.Column<DateOnly>(type: "date", nullable: true),
+                    LoteId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -159,12 +160,12 @@ namespace APIClub.Migrations
                 name: "alquileresArticulos",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    FechaAlquiler = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Observaciones = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: true),
-                    IdSocio = table.Column<int>(type: "INTEGER", nullable: false),
-                    Finalizado = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    FechaAlquiler = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Observaciones = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
+                    IdSocio = table.Column<int>(type: "integer", nullable: false),
+                    Finalizado = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -181,14 +182,14 @@ namespace APIClub.Migrations
                 name: "Cuotas",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    FechaPago = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Monto = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    FormaDePago = table.Column<int>(type: "INTEGER", nullable: false),
-                    Anio = table.Column<int>(type: "INTEGER", nullable: false),
-                    Semestre = table.Column<int>(type: "INTEGER", nullable: false),
-                    SocioId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    FechaPago = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Monto = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    FormaDePago = table.Column<int>(type: "integer", nullable: false),
+                    Anio = table.Column<int>(type: "integer", nullable: false),
+                    Semestre = table.Column<int>(type: "integer", nullable: false),
+                    SocioId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -205,15 +206,15 @@ namespace APIClub.Migrations
                 name: "ReservasSalones",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Titulo = table.Column<string>(type: "TEXT", nullable: false),
-                    FechaAlquiler = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Importe = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    TotalPagado = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    IsCancelled = table.Column<bool>(type: "INTEGER", nullable: false),
-                    SocioId = table.Column<int>(type: "INTEGER", nullable: false),
-                    SalonId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Titulo = table.Column<string>(type: "text", nullable: false),
+                    FechaAlquiler = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Importe = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    TotalPagado = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    IsCancelled = table.Column<bool>(type: "boolean", nullable: false),
+                    SocioId = table.Column<int>(type: "integer", nullable: false),
+                    SalonId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -236,11 +237,11 @@ namespace APIClub.Migrations
                 name: "ItemALquiler",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    ArticuloId = table.Column<int>(type: "INTEGER", nullable: false),
-                    AlquilerId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Cantidad = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ArticuloId = table.Column<int>(type: "integer", nullable: false),
+                    AlquilerId = table.Column<int>(type: "integer", nullable: false),
+                    Cantidad = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -263,12 +264,12 @@ namespace APIClub.Migrations
                 name: "PagosAlquilerDeArticulos",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Anio = table.Column<int>(type: "INTEGER", nullable: false),
-                    Mes = table.Column<int>(type: "INTEGER", nullable: false),
-                    Monto = table.Column<int>(type: "INTEGER", nullable: false),
-                    IdAlquiler = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Anio = table.Column<int>(type: "integer", nullable: false),
+                    Mes = table.Column<int>(type: "integer", nullable: false),
+                    Monto = table.Column<int>(type: "integer", nullable: false),
+                    IdAlquiler = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -285,11 +286,11 @@ namespace APIClub.Migrations
                 name: "pagoReservaSalon",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    FechaPago = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    monto = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ReservaSalonId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    FechaPago = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    monto = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    ReservaSalonId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -330,7 +331,7 @@ namespace APIClub.Migrations
             migrationBuilder.InsertData(
                 table: "Usuarios",
                 columns: new[] { "Id", "FechaCreacion", "NombreUsuario", "PasswordHash", "Rol", "UltimoAcceso" },
-                values: new object[] { 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "admin", "$2a$11$eiq0ojKVi/ogGtQ33UFfUOOlJrD2TATNOxzQ7xQkpFZZLwqTU.hZa", 1, null });
+                values: new object[] { 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "admin", "$2a$11$RdIo0BrWR4W6n6VXOYcXX.JpHUiW68uCQfiu3R9KW6gPPUAlEXOSe", 1, null });
 
             migrationBuilder.CreateIndex(
                 name: "IX_alquileresArticulos_IdSocio",

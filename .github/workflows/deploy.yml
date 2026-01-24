@@ -1,0 +1,61 @@
+name: Deploy to Hostinger VPS
+
+on:
+  push:
+    branches:
+      - deployConfigs # O la rama que uses para producción
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          passphrase: ${{ secrets.VPS_SSH_PASSPHRASE }} # Solo si tu llave tiene contraseña
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            # Ir al directorio del proyecto (crearlo si no existe)
+            mkdir -p ~/sistema-club-abuelos
+            cd ~/sistema-club-abuelos
+
+            # Clonar o actualizar el repositorio
+            if [ ! -d ".git" ]; then
+              git clone https://github.com/${{ github.repository }}.git .
+            else
+              git pull origin main
+            fi
+
+            # Crear el archivo .env a partir de las variables secretas de GitHub
+            echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" > .env
+            echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
+            echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
+            echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >> .env
+            echo "ASPNETCORE_ENVIRONMENT=Production" >> .env
+            echo "API_PORT=${{ secrets.API_PORT }}" >> .env
+            echo "API_URL=${{ secrets.API_URL }}" >> .env
+            echo "CONNECTIONSTRINGS__DEFAULTCONNECTION=${{ secrets.CONNECTIONSTRINGS__DEFAULTCONNECTION }}" >> .env
+            echo "WHATSAPP__ACCESSTOKEN=${{ secrets.WHATSAPP__ACCESSTOKEN }}" >> .env
+            echo "WHATSAPP__PHONENUMBERID=${{ secrets.WHATSAPP__PHONENUMBERID }}" >> .env
+            echo "WHATSAPP__APIVERSION=${{ secrets.WHATSAPP__APIVERSION }}" >> .env
+            echo "WHATSAPP__VERIFYTOKEN=${{ secrets.WHATSAPP__VERIFYTOKEN }}" >> .env
+            echo "MERCADOPAGO__ACCESSTOKEN=${{ secrets.MERCADOPAGO__ACCESSTOKEN }}" >> .env
+            echo "MERCADOPAGO__APIURL=${{ secrets.MERCADOPAGO__APIURL }}" >> .env
+            echo "MERCADOPAGO__SUCCESSURL=${{ secrets.MERCADOPAGO__SUCCESSURL }}" >> .env
+            echo "MERCADOPAGO__FAILUREURL=${{ secrets.MERCADOPAGO__FAILUREURL }}" >> .env
+            echo "MERCADOPAGO__PENDINGURL=${{ secrets.MERCADOPAGO__PENDINGURL }}" >> .env
+            echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" >> .env
+            echo "VITE_MERCADOPAGO_PUBLIC_KEY=${{ secrets.VITE_MERCADOPAGO_PUBLIC_KEY }}" >> .env
+            echo "FRONTEND_URL=${{ secrets.FRONTEND_URL }}" >> .env
+
+            # Levantar los contenedores (esto reconstruirá si hubo cambios en el código)
+            docker-compose up --build -d
+
+            # Limpiar imágenes antiguas para no llenar el disco
+            docker image prune -f

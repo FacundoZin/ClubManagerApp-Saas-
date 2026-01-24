@@ -4,7 +4,6 @@ using APIClub.Domain.GestionSocios;
 using APIClub.Domain.GestionSocios.Repositories;
 using APIClub.Domain.ReservasSalones;
 using APIClub.Domain.ReservasSalones.Repositories;
-using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Headers;
 using APIClub.Domain.PaymentsOnline;
 using APIClub.Domain.PaymentsOnline.Repository;
@@ -15,6 +14,7 @@ using APIClub.Infrastructure.Persistence.Data;
 using APIClub.Application.Services;
 using APIClub.Application.Common;
 using APIClub.Application.Validators;
+using Microsoft.EntityFrameworkCore;
 
 using APIClub.Domain.Auth;
 using APIClub.Domain.Auth.Repositories;
@@ -29,18 +29,20 @@ using APIClub.Infrastructure.JobsProgramados;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Hardcoded for safety against environment variables override
-var connectionString = "Data Source=club.db";
+// Configuración para PostgreSQL: permitir DateTime sin especificar UTC explícitamente
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.AddDbContext<AppDbcontext>(options =>
-    options.UseSqlite(connectionString));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Configurar WhatsApp
 builder.Services.Configure<WhatsAppConfig>(
     builder.Configuration.GetSection("WhatsApp"));
 
 // Registrar HttpClients
-builder.Services.AddHttpClient<IWhatsappService,WhatsapService>((sp,client) =>
+builder.Services.AddHttpClient<IWhatsappService, WhatsapService>((sp, client) =>
 {
     var config = sp.GetRequiredService<IConfiguration>();
 
@@ -64,15 +66,15 @@ builder.Services.AddHttpClient<IMercadoPagoService, MPService>((sp, client) =>
 });
 
 // registrar servicios
-builder.Services.AddScoped<ISociosManagmentService,SociosManagmentService>();
-builder.Services.AddScoped<ICuotasService,CuotasService>();
-builder.Services.AddScoped<IReservasServices,ReservasServices>();
-builder.Services.AddScoped<ICobranzasServices,CobranzasService>();
-builder.Services.AddScoped<IManagmentArticulosService,ManagmentArticulosService>();
-builder.Services.AddScoped<IAlquilerArticulosService ,AlquilerArticulosService>();
-builder.Services.AddScoped<IPaymentService,PaymentService>();
-builder.Services.AddScoped<IPaymentTokenService,PaymentTokenService>();
-builder.Services.AddScoped<IMercadoPagoService,MPService>();
+builder.Services.AddScoped<ISociosManagmentService, SociosManagmentService>();
+builder.Services.AddScoped<ICuotasService, CuotasService>();
+builder.Services.AddScoped<IReservasServices, ReservasServices>();
+builder.Services.AddScoped<ICobranzasServices, CobranzasService>();
+builder.Services.AddScoped<IManagmentArticulosService, ManagmentArticulosService>();
+builder.Services.AddScoped<IAlquilerArticulosService, AlquilerArticulosService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IPaymentTokenService, PaymentTokenService>();
+builder.Services.AddScoped<IMercadoPagoService, MPService>();
 builder.Services.AddScoped<INotificationsService, NotificacionsService>();
 
 // AUTENTICACIÓN
@@ -86,13 +88,13 @@ builder.Services.AddScoped<ISocioIntegrityValidator, SocioIntegrityValidator>();
 builder.Services.AddScoped<IPagoCuotaValidator, PagoCuotaValidator>();
 
 // registrar repositorios
-builder.Services.AddScoped<ISocioRepository,SociosRepository>();
-builder.Services.AddScoped<ICuotaRepository,CuotaRepository>();
-builder.Services.AddScoped<IReservasRepository,ReservasRepository>();
-builder.Services.AddScoped<IArticuloRepository,ArticuloRepository>();
-builder.Services.AddScoped<IAlquilerRepository,AlquilerRepository>();
+builder.Services.AddScoped<ISocioRepository, SociosRepository>();
+builder.Services.AddScoped<ICuotaRepository, CuotaRepository>();
+builder.Services.AddScoped<IReservasRepository, ReservasRepository>();
+builder.Services.AddScoped<IArticuloRepository, ArticuloRepository>();
+builder.Services.AddScoped<IAlquilerRepository, AlquilerRepository>();
 builder.Services.AddScoped<IitemAlquilerRepository, ItemsAlquilerRepository>();
-builder.Services.AddScoped<IPaymentTokenRepository,PaymentTokenRepository>();
+builder.Services.AddScoped<IPaymentTokenRepository, PaymentTokenRepository>();
 builder.Services.AddScoped<IHistorialCobradoresRepository, HistorialCobradoresRepository>();
 builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>();
 
@@ -155,7 +157,7 @@ builder.Services.AddQuartzHostedService(q =>
 
 // Configuración de JWT
 var jwtSettings = builder.Configuration.GetSection("Jwt");
-var secretKey = jwtSettings["SecretKey"]; 
+var secretKey = jwtSettings["SecretKey"];
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -170,7 +172,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = jwtSettings["Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
         };
-        
+
         // Evento para leer el token desde la cookie
         options.Events = new JwtBearerEvents
         {
@@ -189,7 +191,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 // confiugracion cors.
 builder.Services.AddCors(options =>
-{        
+{
     options.AddPolicy("AllowFrontend",
         policy =>
         {
@@ -212,6 +214,26 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+// Aplicar migraciones automáticamente
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<AppDbcontext>();
+        if (context.Database.GetPendingMigrations().Any())
+        {
+            context.Database.Migrate();
+        }
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Ocurrió un error al aplicar las migraciones.");
+    }
+}
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

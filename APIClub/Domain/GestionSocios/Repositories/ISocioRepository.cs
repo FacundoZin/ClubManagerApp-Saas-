@@ -12,7 +12,7 @@ namespace APIClub.Domain.GestionSocios.Repositories
         Task UpdateSocio(Socio socio);
         void UpdateSocioWhitoutSave(Socio socio);
         Task<bool> SocioExistsForUpdate(string dni, int id);
-        Task<Socio?> GetSocioByIdWithCuotas(int id);
+        Task<Socio?> GetSocioByIdWithFullInfo(int id);
         Task<Socio?> GetSocioByIdIgnoreFilter(int id);
         Task<List<Socio>> GetSociosDeudores(int anioActual, int semestreActual);
         Task<(List<Socio> Items, int TotalCount)> GetSociosDeudoresPaginado(int anioActual, int semestreActual, int pageNumber, int pageSize);

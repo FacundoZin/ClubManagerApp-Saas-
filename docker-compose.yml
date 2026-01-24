@@ -1,0 +1,62 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: db_casadeljubilado
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+  api:
+    build:
+      context: ./APIClub
+      dockerfile: Dockerfile
+    container_name: api_casadeljubilado
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5000
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      - MercadoPago__AccessToken=${MERCADOPAGO__ACCESSTOKEN}
+      - MercadoPago__ApiUrl=${MERCADOPAGO__APIURL}
+      - MercadoPago__SuccessUrl=${MERCADOPAGO__SUCCESSURL}
+      - MercadoPago__FailureUrl=${MERCADOPAGO__FAILUREURL}
+      - MercadoPago__PendingUrl=${MERCADOPAGO__PENDINGURL}
+      - WhatsApp__AccessToken=${WHATSAPP__ACCESSTOKEN}
+      - WhatsApp__PhoneNumberId=${WHATSAPP__PHONENUMBERID}
+      - WhatsApp__ApiVersion=${WHATSAPP__APIVERSION}
+      - WhatsApp__VerifyToken=${WHATSAPP__VERIFYTOKEN}
+    ports:
+      - "5194:5000"
+    networks:
+      - app_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL}
+        - VITE_MERCADOPAGO_PUBLIC_KEY=${VITE_MERCADOPAGO_PUBLIC_KEY}
+    container_name: web_casadeljubilado
+    restart: always
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  postgres_data:

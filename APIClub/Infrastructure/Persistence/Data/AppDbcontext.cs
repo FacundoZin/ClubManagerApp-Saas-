@@ -239,8 +239,6 @@ namespace APIClub.Infrastructure.Persistence.Data
                 }
             );
 
-
-            // 3) PaymentTokens de prueba
             modelBuilder.Entity<PaymentToken>().HasData(
                 new PaymentToken
                 {
@@ -250,7 +248,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                     anio = 2025,
                     semestre = 1,
                     monto = 2500.00m,
-                    FechaExpiracion = DateOnly.FromDateTime(DateTime.Now.AddDays(30)),
+                    FechaExpiracion = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30)),
                     usado = false,
                     Preference_Id = null
                 },
@@ -262,7 +260,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                     anio = 2025,
                     semestre = 2,
                     monto = 2500.00m,
-                    FechaExpiracion = DateOnly.FromDateTime(DateTime.Now.AddDays(30)),
+                    FechaExpiracion = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30)),
                     usado = false,
                     Preference_Id = null
                 },
@@ -274,7 +272,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                     anio = 2025,
                     semestre = 1,
                     monto = 2500.00m,
-                    FechaExpiracion = DateOnly.FromDateTime(DateTime.Now.AddDays(30)),
+                    FechaExpiracion = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30)),
                     usado = false,
                     Preference_Id = null
                 },
@@ -286,7 +284,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                     anio = 2025,
                     semestre = 2,
                     monto = 2500.00m,
-                    FechaExpiracion = DateOnly.FromDateTime(DateTime.Now.AddDays(30)),
+                    FechaExpiracion = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30)),
                     usado = false,
                     Preference_Id = null
                 }
