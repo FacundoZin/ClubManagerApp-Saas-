@@ -29,7 +29,7 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
                 .AsNoTracking()
                 .FirstOrDefaultAsync(s => s.Dni == dni);
         }
-        
+
         public async Task<Socio?> GetSocioByDniIgnoreFilter(string dni)
         {
             return await _Dbcontext.Socios
@@ -70,9 +70,18 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
             return await _Dbcontext.Socios.IgnoreQueryFilters().FirstOrDefaultAsync(s => s.Id == id);
         }
 
-        public Task<Socio?> GetSocioByIdWithCuotas(int id)
+        public async Task<Socio?> GetSocioByIdWithCuotas(int id)
         {
-            return _Dbcontext.Socios.Include(s => s.HistorialCuotas).FirstOrDefaultAsync(s => s.Id == id);
+            var FechaAsociacionSocio = await _Dbcontext.Socios
+                .Select(s => new { s.Id, s.FechaAsociacion })
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            int anioIngreso = FechaAsociacionSocio!.FechaAsociacion.Year;
+            int semestreIngreso = FechaAsociacionSocio.FechaAsociacion.Month <= 6 ? 1 : 2;
+
+            return await _Dbcontext.Socios
+                .Include(s => s.HistorialCuotas.Where(c => c.Anio > anioIngreso || (c.Anio == anioIngreso && c.Semestre >= semestreIngreso)))
+                .FirstOrDefaultAsync(s => s.Id == id);
         }
 
         public async Task<List<Socio>> GetSociosDeudores(int anioActual, int semestreActual)
@@ -143,7 +152,7 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
         public async Task<List<Socio>> GetSociosDeudoresWithPreferenceLinkDePagoPaginado(int anioActual, int semestreActual, int pageNumber, int pageSize)
         {
             var items = await _Dbcontext.Socios
-                .Where(s => s.PreferenciaDePago == FormasDePago.LinkDePago && 
+                .Where(s => s.PreferenciaDePago == FormasDePago.LinkDePago &&
                             !s.HistorialCuotas.Any(c => c.Anio == anioActual && c.Semestre == semestreActual))
                 .AsNoTracking()
                 .OrderBy(s => s.Apellido)

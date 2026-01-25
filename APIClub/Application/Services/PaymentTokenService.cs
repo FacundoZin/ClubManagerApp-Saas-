@@ -53,8 +53,8 @@ namespace APIClub.Application.Services
         {
             var token = await _UnitOfWork._PaymentTokenRepository.GetToken(idToken);
 
-            if(token == null) return Result<object?>.Error("el token a expirar no existe", 404);
-            if(token.usado) return Result<object?>.Error("EL TOKEN YA FUE USADO",422 );
+            if (token == null) return Result<object?>.Error("el token a expirar no existe", 404);
+            if (token.usado) return Result<object?>.Error("EL TOKEN YA FUE USADO", 422);
 
             token.usado = true;
 
@@ -72,22 +72,46 @@ namespace APIClub.Application.Services
 
             var token = await _UnitOfWork._PaymentTokenRepository.GetToken(idToken);
 
-            if (token == null) return Result<PaymentToken>.Error("el token no existe", 404);
+            if (token == null) return Result<PaymentToken>.Error("no pudimos identificar su token de pago", 404);
 
-            if(!token.usado && !string.IsNullOrEmpty(token.PaymentStatus))
+            if (!token.usado && !string.IsNullOrEmpty(token.PaymentStatus))
             {
                 token.StatusDetail = null;
                 token.PaymentStatus = null;
                 await _UnitOfWork.SaveChangesAsync();
             }
 
-            if (token.usado) return  Result<PaymentToken>.Error("el token ya fue utilizado", 422);
+            if (token.usado) return Result<PaymentToken>.Error("usted ya pago la cuota", 422);
             if (hoy > token.FechaExpiracion) return Result<PaymentToken>.Error("el plazo para pagar la cuota ya finalizo", 492);
 
-            var cuotasSocio = await _UnitOfWork._SocioRepository.GetCuotasSocioById(token.IdSocio);
+            var socio = await _UnitOfWork._SocioRepository.GetSocioByIdWithCuotas(token.IdSocio);
 
-            if (cuotasSocio.Any(c => c.Anio == token.anio && c.Semestre == token.semestre)) 
+            if (socio == null) return Result<PaymentToken>.Error("no se encuntra registrado el socio en el sistema", 404);
+
+            var cuotasSocio = socio.HistorialCuotas;
+
+            if (cuotasSocio.Any(c => c.Anio == token.anio && c.Semestre == token.semestre))
                 return Result<PaymentToken>.Error("la cuota que se esta intenando pagar ya fue abonada", 422);
+
+            // Validar cuotas adeudadas anteriores
+            int AnioAsociacion = socio.FechaAsociacion.Year;
+            int SemestreAsociacion = socio.FechaAsociacion.Month <= 6 ? 1 : 2;
+
+            // Calculamos cuántos semestres deberían estar pagos antes de la cuota del token
+            int CantidadCuotasQueDeberianHabersePagado = ((token.anio - AnioAsociacion) * 2) + (token.semestre - SemestreAsociacion);
+
+            if (CantidadCuotasQueDeberianHabersePagado > 0)
+            {
+                // Contamos cuántas cuotas tiene pagas en su etapa actual anteriores a la creacion del token
+                int CantidadCuotasPagadas = cuotasSocio.Count(c =>
+                    c.Anio < token.anio || (c.Anio == token.anio && c.Semestre < token.semestre)
+                );
+
+                if (CantidadCuotasPagadas < CantidadCuotasQueDeberianHabersePagado)
+                {
+                    return Result<PaymentToken>.Error("lo sentimos, usted no puede realizar el pago de esta cuota porque adeuda cuotas anteriores", 403);
+                }
+            }
 
             return Result<PaymentToken>.Exito(token);
         }

@@ -26,7 +26,7 @@ namespace APIClub.Application.Services
         {
             var result = await _validator.ValidateCargaSocio(_dto);
 
-            if(!result.Exit) return Result<ExistingSocio>.Error(result.Errormessage, result.Errorcode);
+            if (!result.Exit) return Result<ExistingSocio>.Error(result.Errormessage, result.Errorcode);
 
             string telefonoFormateado = null;
 
@@ -38,7 +38,8 @@ namespace APIClub.Application.Services
                     return Result<ExistingSocio>.Error(FormatResult.Errormessage, FormatResult.Errorcode);
 
                 telefonoFormateado = FormatResult.Data;
-            };
+            }
+            ;
 
             var socio = new Socio
             {
@@ -79,6 +80,7 @@ namespace APIClub.Application.Services
 
             socio.IsActivo = true;
             socio.FechaDeBaja = null;
+            socio.FechaAsociacion = DateOnly.FromDateTime(DateTime.Now);
 
             await _SocioRepository.UpdateSocio(socio);
 
@@ -133,7 +135,7 @@ namespace APIClub.Application.Services
             int semestreActual = fechaPagoActual.Month <= 6 ? 1 : 2;
 
             var (socios, totalCount) = await _SocioRepository.GetSociosDeudoresPaginado(anioActual, semestreActual, pageNumber, pageSize);
-            
+
             var items = socios.Select(s => new SocioCardDto
             {
                 Id = s.Id,
@@ -170,7 +172,8 @@ namespace APIClub.Application.Services
                     return Result<object>.Error(FormatResult.Errormessage, FormatResult.Errorcode);
 
                 telefonoFormateado = FormatResult.Data;
-            };
+            }
+            ;
 
             // Actualizar propiedades
             socio.Nombre = dto.Nombre;
@@ -191,7 +194,7 @@ namespace APIClub.Application.Services
                 Message = "Socio actualizado correctamente.",
                 SocioId = socio.Id
             });
-        
+
 
         }
         public async Task<Result<PreviewSocioDto>> GetSocioById(int id)
@@ -300,7 +303,7 @@ namespace APIClub.Application.Services
                 SocioId = id
             });
         }
-        
+
         public async Task<Result<List<PreviewCuotaDto>>> GetHistorialCuotas(int socioId)
         {
             // Validar ID

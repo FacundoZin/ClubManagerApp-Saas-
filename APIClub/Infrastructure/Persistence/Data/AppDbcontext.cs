@@ -16,14 +16,14 @@ namespace APIClub.Infrastructure.Persistence.Data
         }
 
         public DbSet<ReservaSalon> ReservasSalones { get; set; }
-        public DbSet<PagoReservaSalon> pagoReservaSalon { get; set; }  
+        public DbSet<PagoReservaSalon> pagoReservaSalon { get; set; }
         public DbSet<Cuota> Cuotas { get; set; }
         public DbSet<Salon> Salones { get; set; }
         public DbSet<Socio> Socios { get; set; }
         public DbSet<MontoCuota> MontoCuota { get; set; }
         public DbSet<Articulo> Articulos { get; set; }
-        public DbSet<Alquiler> alquileresArticulos { get; set; }  
-        public DbSet<ItemAlquiler> ItemALquiler {  get; set; }
+        public DbSet<Alquiler> alquileresArticulos { get; set; }
+        public DbSet<ItemAlquiler> ItemALquiler { get; set; }
         public DbSet<PagoAlquilerDeArticulos> PagosAlquilerDeArticulos { get; set; }
         public DbSet<PaymentToken> PaymentTokens { get; set; }
         public DbSet<Lote> Lotes { get; set; }
@@ -47,7 +47,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                       .WithOne(c => c.Socio)
                       .HasForeignKey(c => c.SocioId)
                       .OnDelete(DeleteBehavior.Cascade);
-                
+
                 entity.HasQueryFilter(s => s.IsActivo);
 
                 entity.HasOne(s => s.Lote)
@@ -88,7 +88,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                 entity.Property(r => r.TotalPagado).HasColumnType("decimal(18,2)");
 
                 entity.HasOne(r => r.Socio)
-                      .WithMany() 
+                      .WithMany()
                       .HasForeignKey(r => r.SocioId)
                       .OnDelete(DeleteBehavior.Restrict);
 
@@ -114,7 +114,7 @@ namespace APIClub.Infrastructure.Persistence.Data
             modelBuilder.Entity<PagoReservaSalon>(entity =>
             {
                 entity.Property(p => p.monto).HasColumnType("decimal(18,2)");
-                
+
                 entity.Property(p => p.FechaPago)
                       .HasConversion(
                           v => v.ToDateTime(new TimeOnly(0, 0)),
@@ -190,7 +190,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                 entity.Property(u => u.NombreUsuario).IsRequired().HasMaxLength(50);
                 entity.Property(u => u.PasswordHash).IsRequired();
                 entity.Property(u => u.Rol).IsRequired();
-                
+
                 entity.HasIndex(u => u.NombreUsuario).IsUnique();
             });
 
@@ -239,17 +239,55 @@ namespace APIClub.Infrastructure.Persistence.Data
                 }
             );
 
+            // 3) Socios de prueba
+            modelBuilder.Entity<Socio>().HasData(
+                new Socio { Id = 1, Nombre = "Juan", Apellido = "Pérez", Dni = "111", FechaAsociacion = new DateOnly(2024, 1, 1), IsActivo = true, PreferenciaDePago = FormasDePago.LinkDePago },
+                new Socio { Id = 2, Nombre = "María", Apellido = "Gómez", Dni = "222", FechaAsociacion = new DateOnly(2025, 1, 1), IsActivo = true, PreferenciaDePago = FormasDePago.LinkDePago },
+                new Socio { Id = 3, Nombre = "Carlos", Apellido = "Deudor", Dni = "333", FechaAsociacion = new DateOnly(2024, 1, 1), IsActivo = true, PreferenciaDePago = FormasDePago.LinkDePago }
+            );
 
-            // 3) PaymentTokens de prueba
+            // 4) Cuotas de prueba
+            modelBuilder.Entity<Cuota>().HasData(
+                // Juan Pérez (Al día para 2026-S1: tiene 2024-S1, 2024-S2, 2025-S1, 2025-S2)
+                new Cuota { Id = 1, SocioId = 1, Anio = 2024, Semestre = 1, Monto = 2500, FechaPago = new DateOnly(2024, 3, 1), FormaDePago = FormasDePago.Cobrador },
+                new Cuota { Id = 2, SocioId = 1, Anio = 2024, Semestre = 2, Monto = 2500, FechaPago = new DateOnly(2024, 9, 1), FormaDePago = FormasDePago.Cobrador },
+                new Cuota { Id = 3, SocioId = 1, Anio = 2025, Semestre = 1, Monto = 2500, FechaPago = new DateOnly(2025, 3, 1), FormaDePago = FormasDePago.Cobrador },
+                new Cuota { Id = 4, SocioId = 1, Anio = 2025, Semestre = 2, Monto = 2500, FechaPago = new DateOnly(2025, 9, 1), FormaDePago = FormasDePago.Cobrador },
+
+                // María Gómez (Al día para 2025-S2: tiene 2025-S1)
+                new Cuota { Id = 5, SocioId = 2, Anio = 2025, Semestre = 1, Monto = 2500, FechaPago = new DateOnly(2025, 3, 1), FormaDePago = FormasDePago.LinkDePago },
+
+                // Carlos Deudor (Debe cuotas para 2026-S1: le falta 2025-S2)
+                new Cuota { Id = 6, SocioId = 3, Anio = 2024, Semestre = 1, Monto = 2500, FechaPago = new DateOnly(2024, 3, 1), FormaDePago = FormasDePago.LinkDePago },
+                new Cuota { Id = 7, SocioId = 3, Anio = 2024, Semestre = 2, Monto = 2500, FechaPago = new DateOnly(2024, 9, 1), FormaDePago = FormasDePago.LinkDePago },
+                new Cuota { Id = 8, SocioId = 3, Anio = 2025, Semestre = 1, Monto = 2500, FechaPago = new DateOnly(2025, 3, 1), FormaDePago = FormasDePago.LinkDePago }
+                // FALTA 2025-S2
+            );
+
+            // 5) PaymentTokens de prueba
             modelBuilder.Entity<PaymentToken>().HasData(
+                // Juan Pérez - Token para 2026-S1 (Debería ser VÁLIDO)
                 new PaymentToken
                 {
                     Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
                     nombreSocio = "Juan Pérez",
                     IdSocio = 1,
-                    anio = 2025,
+                    anio = 2026,
                     semestre = 1,
-                    monto = 2500.00m,
+                    monto = 5000.00m,
+                    FechaExpiracion = DateOnly.FromDateTime(DateTime.Now.AddDays(30)),
+                    usado = false,
+                    Preference_Id = null
+                },
+                // Carlos Deudor - Token para 2026-S1 (Debería dar ERROR de deuda anterior)
+                new PaymentToken
+                {
+                    Id = Guid.Parse("55555555-5555-5555-5555-555555555555"),
+                    nombreSocio = "Carlos Deudor",
+                    IdSocio = 3,
+                    anio = 2026,
+                    semestre = 1,
+                    monto = 5000.00m,
                     FechaExpiracion = DateOnly.FromDateTime(DateTime.Now.AddDays(30)),
                     usado = false,
                     Preference_Id = null
