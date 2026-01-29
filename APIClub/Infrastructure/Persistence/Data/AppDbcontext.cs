@@ -102,7 +102,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                       .HasForeignKey("ReservaSalonId")
                       .OnDelete(DeleteBehavior.Cascade);
 
-                entity.HasQueryFilter(r => !r.IsCancelled);
+                entity.HasQueryFilter(r => !r.IsCancelled && r.FechaAlquiler >= DateOnly.FromDateTime(DateTime.Today));
             });
 
             modelBuilder.Entity<ReservaSalon>()
@@ -156,6 +156,8 @@ namespace APIClub.Infrastructure.Persistence.Data
                 entity.Property(a => a.FechaAlquiler)
                 .HasConversion(v => v.ToDateTime(new TimeOnly(0, 0)),
                 v => DateOnly.FromDateTime(v));
+
+                entity.HasQueryFilter(a => !a.Finalizado);
             });
 
             modelBuilder.Entity<ItemAlquiler>(entity =>

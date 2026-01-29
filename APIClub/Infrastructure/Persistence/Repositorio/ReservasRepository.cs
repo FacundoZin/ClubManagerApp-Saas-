@@ -17,8 +17,8 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
         public async Task<bool> CrearReserva(ReservaSalon reserva)
         {
             _Context.ReservasSalones.Add(reserva);
-            
-            if(await _Context.SaveChangesAsync() == 0)
+
+            if (await _Context.SaveChangesAsync() == 0)
             {
                 return false;
             }
@@ -28,9 +28,8 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
 
         public async Task<(List<ReservaSalon> Items, int TotalCount)> GetAlquileresBySalon(int IdSalon, int pageNumber, int pageSize)
         {
-            var now = DateOnly.FromDateTime(DateTime.Now);
             var query = _Context.ReservasSalones
-                .Where(a => a.SalonId == IdSalon && a.FechaAlquiler > now);
+                .Where(a => a.SalonId == IdSalon);
 
             var totalCount = await query.CountAsync();
 
@@ -49,7 +48,7 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
         {
             return await _Context.ReservasSalones
                 .Include(r => r.Salon)
-                .Include (s => s.Socio)
+                .Include(s => s.Socio)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(r => r.SalonId == IdSalon && r.FechaAlquiler == fehca);
         }
@@ -69,7 +68,7 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
             bool existeReserva = await _Context.ReservasSalones
                 .AnyAsync(r => r.SalonId == IdSalon && r.FechaAlquiler == fecha);
 
-            
+
             return !existeReserva;
         }
 
@@ -77,7 +76,7 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
         {
             var fechaHoy = DateOnly.FromDateTime(DateTime.Now);
             return await _Context.ReservasSalones
-                .AnyAsync(r => r.SocioId == socioId && r.FechaAlquiler >= fechaHoy);
+                .AnyAsync(r => r.SocioId == socioId);
         }
 
         public async Task<ReservaSalon?> SearchReservaByIdWithTracking(int idReserva)
