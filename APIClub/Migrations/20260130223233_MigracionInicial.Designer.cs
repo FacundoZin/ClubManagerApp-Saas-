@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace APIClub.Migrations
 {
     [DbContext(typeof(AppDbcontext))]
-    [Migration("20260124191200_initMigration")]
-    partial class initMigration
+    [Migration("20260130223233_MigracionInicial")]
+    partial class MigracionInicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -167,7 +167,7 @@ namespace APIClub.Migrations
                             Id = 1,
                             FechaCreacion = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             NombreUsuario = "admin",
-                            PasswordHash = "$2a$11$RdIo0BrWR4W6n6VXOYcXX.JpHUiW68uCQfiu3R9KW6gPPUAlEXOSe",
+                            PasswordHash = "$2a$11$.LHdrgabAcZ61XkEINzaIukiTuBaA94SHzAJo7d8rD8VjwkXDIovW",
                             Rol = 1
                         });
                 });
@@ -259,14 +259,6 @@ namespace APIClub.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("MontoCuota");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            FechaActualizacion = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MontoCuotaFija = 5000.00m
-                        });
                 });
 
             modelBuilder.Entity("APIClub.Domain.GestionSocios.Models.RegistroCobrador", b =>
@@ -389,52 +381,6 @@ namespace APIClub.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PaymentTokens");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
-                            FechaExpiracion = new DateOnly(2026, 2, 23),
-                            IdSocio = 1,
-                            anio = 2025,
-                            monto = 2500.00m,
-                            nombreSocio = "Juan Pérez",
-                            semestre = 1,
-                            usado = false
-                        },
-                        new
-                        {
-                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
-                            FechaExpiracion = new DateOnly(2026, 2, 23),
-                            IdSocio = 1,
-                            anio = 2025,
-                            monto = 2500.00m,
-                            nombreSocio = "Juan Pérez",
-                            semestre = 2,
-                            usado = false
-                        },
-                        new
-                        {
-                            Id = new Guid("33333333-3333-3333-3333-333333333333"),
-                            FechaExpiracion = new DateOnly(2026, 2, 23),
-                            IdSocio = 2,
-                            anio = 2025,
-                            monto = 2500.00m,
-                            nombreSocio = "María Gómez",
-                            semestre = 1,
-                            usado = false
-                        },
-                        new
-                        {
-                            Id = new Guid("44444444-4444-4444-4444-444444444444"),
-                            FechaExpiracion = new DateOnly(2026, 2, 23),
-                            IdSocio = 2,
-                            anio = 2025,
-                            monto = 2500.00m,
-                            nombreSocio = "María Gómez",
-                            semestre = 2,
-                            usado = false
-                        });
                 });
 
             modelBuilder.Entity("APIClub.Domain.ReservasSalones.Models.PagoReservaSalon", b =>

@@ -164,7 +164,7 @@ namespace APIClub.Migrations
                             Id = 1,
                             FechaCreacion = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             NombreUsuario = "admin",
-                            PasswordHash = "$2a$11$n/Sb6ubBTUbVzQTBGqlxe.lt3nRiakVq3W2fHGv3LK6vmXgpY2sfC",
+                            PasswordHash = "$2a$11$.LHdrgabAcZ61XkEINzaIukiTuBaA94SHzAJo7d8rD8VjwkXDIovW",
                             Rol = 1
                         });
                 });
@@ -256,32 +256,6 @@ namespace APIClub.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("MontoCuota");
-                });
-
-            modelBuilder.Entity("APIClub.Domain.GestionSocios.Models.RegistroCobrador", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateOnly>("FechaCobro")
-                        .HasColumnType("date");
-
-                    b.Property<int>("IdCobrador")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("MontoCobrado")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("NombreSocio")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RegistroCobradores");
                 });
 
             modelBuilder.Entity("APIClub.Domain.GestionSocios.Models.RegistroCobrador", b =>
@@ -404,7 +378,7 @@ namespace APIClub.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PaymentTokens");
-
+                });
 
             modelBuilder.Entity("APIClub.Domain.ReservasSalones.Models.PagoReservaSalon", b =>
                 {

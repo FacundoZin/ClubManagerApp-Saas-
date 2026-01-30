@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace APIClub.Migrations
 {
     /// <inheritdoc />
-    public partial class InitMigration : Migration
+    public partial class MigracionInicial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -315,7 +315,7 @@ namespace APIClub.Migrations
             migrationBuilder.InsertData(
                 table: "Usuarios",
                 columns: new[] { "Id", "FechaCreacion", "NombreUsuario", "PasswordHash", "Rol", "UltimoAcceso" },
-                values: new object[] { 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "admin", "$2a$11$n/Sb6ubBTUbVzQTBGqlxe.lt3nRiakVq3W2fHGv3LK6vmXgpY2sfC", 1, null });
+                values: new object[] { 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "admin", "$2a$11$.LHdrgabAcZ61XkEINzaIukiTuBaA94SHzAJo7d8rD8VjwkXDIovW", 1, null });
 
             migrationBuilder.CreateIndex(
                 name: "IX_alquileresArticulos_IdSocio",
