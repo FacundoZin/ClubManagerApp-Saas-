@@ -153,7 +153,7 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
         {
             var items = await _Dbcontext.Socios
                 .Where(s => s.PreferenciaDePago == FormasDePago.LinkDePago &&
-                            !s.HistorialCuotas.Any(c => c.Anio == anioActual && c.Semestre == semestreActual))
+                !s.HistorialCuotas.Any(c => c.Anio == anioActual && c.Semestre == semestreActual))
                 .AsNoTracking()
                 .OrderBy(s => s.Apellido)
                 .ThenBy(s => s.Nombre)

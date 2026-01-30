@@ -5,6 +5,7 @@ using APIClub.Domain.GestionSocios.Repositories;
 using APIClub.Domain.ReservasSalones;
 using APIClub.Domain.ReservasSalones.Repositories;
 using Microsoft.EntityFrameworkCore;
+
 using System.Net.Http.Headers;
 using APIClub.Domain.PaymentsOnline;
 using APIClub.Domain.PaymentsOnline.Repository;
@@ -81,6 +82,7 @@ builder.Services.AddScoped<INotificationsService, NotificacionsService>();
 builder.Services.AddScoped<IAnaliticasService, AnaliticasService>();
 
 
+
 // AUTENTICACIÓN
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUsuariosService, UsuariosService>();
@@ -91,6 +93,7 @@ builder.Services.AddScoped<UnitOfWork>();
 builder.Services.AddScoped<ISocioIntegrityValidator, SocioIntegrityValidator>();
 builder.Services.AddScoped<IPagoCuotaValidator, PagoCuotaValidator>();
 builder.Services.AddScoped<IDataSeeder, DatabaseSeeder>();
+
 
 // registrar repositorios
 builder.Services.AddScoped<ISocioRepository, SociosRepository>();
@@ -103,6 +106,7 @@ builder.Services.AddScoped<IPaymentTokenRepository, PaymentTokenRepository>();
 builder.Services.AddScoped<IHistorialCobradoresRepository, HistorialCobradoresRepository>();
 builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>();
 builder.Services.AddScoped<IAnaliticasRepository, AnaliticasRepository>();
+
 
 builder.Services.AddQuartz(q =>
 {

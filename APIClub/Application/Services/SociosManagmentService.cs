@@ -26,7 +26,8 @@ namespace APIClub.Application.Services
         {
             var result = await _validator.ValidateCargaSocio(_dto);
 
-            if (!result.Exit) return Result<ExistingSocio>.Error(result.Errormessage, result.Errorcode);
+
+            if(!result.Exit) return Result<ExistingSocio>.Error(result.Errormessage, result.Errorcode);
 
             string telefonoFormateado = null;
 
@@ -159,6 +160,7 @@ namespace APIClub.Application.Services
             var result = await _validator.ValidateUpdateSocio(id, dto);
 
             if (!result.Exit) return Result<object>.Error(result.Errormessage, result.Errorcode);
+
 
             var socio = result.Data;
 
