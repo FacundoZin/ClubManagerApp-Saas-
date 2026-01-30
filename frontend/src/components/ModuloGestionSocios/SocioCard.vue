@@ -66,7 +66,11 @@ defineEmits(['edit', 'delete', 'view'])
               d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
             />
           </svg>
-          {{ socio.direcccion + ' ' + '(' + socio.localidad + ')' || 'Sin dirección' }}
+          {{
+            socio.direcccion && socio.localidad
+              ? socio.direcccion + ' (' + socio.localidad + ')'
+              : 'Sin localidad registrada'
+          }}
         </div>
         <div v-if="socio.nombreLote" class="flex items-center text-sm text-slate-600">
           <svg

@@ -4,6 +4,8 @@ using APIClub.Domain.GestionSocios;
 using APIClub.Domain.GestionSocios.Repositories;
 using APIClub.Domain.ReservasSalones;
 using APIClub.Domain.ReservasSalones.Repositories;
+using Microsoft.EntityFrameworkCore;
+
 using System.Net.Http.Headers;
 using APIClub.Domain.PaymentsOnline;
 using APIClub.Domain.PaymentsOnline.Repository;
@@ -14,7 +16,6 @@ using APIClub.Infrastructure.Persistence.Data;
 using APIClub.Application.Services;
 using APIClub.Application.Common;
 using APIClub.Application.Validators;
-using Microsoft.EntityFrameworkCore;
 
 using APIClub.Domain.Auth;
 using APIClub.Domain.Auth.Repositories;
@@ -26,6 +27,8 @@ using APIClub.Domain.Notificaciones.Models;
 using APIClub.Domain.Notificaciones.Services;
 using Quartz;
 using APIClub.Infrastructure.JobsProgramados;
+using APIClub.Domain.Analiticas;
+using APIClub.Domain.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -76,6 +79,9 @@ builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IPaymentTokenService, PaymentTokenService>();
 builder.Services.AddScoped<IMercadoPagoService, MPService>();
 builder.Services.AddScoped<INotificationsService, NotificacionsService>();
+builder.Services.AddScoped<IAnaliticasService, AnaliticasService>();
+
+
 
 // AUTENTICACIÓN
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -86,6 +92,8 @@ builder.Services.AddScoped<IUsuariosService, UsuariosService>();
 builder.Services.AddScoped<UnitOfWork>();
 builder.Services.AddScoped<ISocioIntegrityValidator, SocioIntegrityValidator>();
 builder.Services.AddScoped<IPagoCuotaValidator, PagoCuotaValidator>();
+builder.Services.AddScoped<IDataSeeder, DatabaseSeeder>();
+
 
 // registrar repositorios
 builder.Services.AddScoped<ISocioRepository, SociosRepository>();
@@ -97,6 +105,8 @@ builder.Services.AddScoped<IitemAlquilerRepository, ItemsAlquilerRepository>();
 builder.Services.AddScoped<IPaymentTokenRepository, PaymentTokenRepository>();
 builder.Services.AddScoped<IHistorialCobradoresRepository, HistorialCobradoresRepository>();
 builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>();
+builder.Services.AddScoped<IAnaliticasRepository, AnaliticasRepository>();
+
 
 builder.Services.AddQuartz(q =>
 {
@@ -189,6 +199,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 
+
+
 // confiugracion cors.
 builder.Services.AddCors(options =>
 {
@@ -214,6 +226,33 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+
+//FLAG PARA CORRES SEEDER
+if (args.Contains("--ExecuteSeeder"))
+{
+    Console.WriteLine(">>> SEEDER FLAG DETECTED: --ExecuteSeeder");
+    using var scope = app.Services.CreateScope();
+
+    var seeder = scope.ServiceProvider.GetRequiredService<IDataSeeder>();
+    await seeder.seedTestDataAsync();
+
+    Console.WriteLine(">>> SEEDER PROCESS FINISHED.");
+    return;
+}
+
+//FLAG PARA CARGAR USARIOS EXISTENTES
+if (args.Contains("--ExecuteSeedSociosExisting"))
+{
+    Console.WriteLine(">>> SEEDER FLAG DETECTED: --ExecuteSeeder");
+    using var scope = app.Services.CreateScope();
+
+    var seeder = scope.ServiceProvider.GetRequiredService<IDataSeeder>();
+    await seeder.seedSociosExistentes();
+
+    Console.WriteLine(">>> SEEDER PROCESS FINISHED.");
+    return;
+}
 
 // Aplicar migraciones automáticamente
 using (var scope = app.Services.CreateScope())

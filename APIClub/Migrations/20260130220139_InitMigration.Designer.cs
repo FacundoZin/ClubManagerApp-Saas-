@@ -3,6 +3,7 @@ using System;
 using APIClub.Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace APIClub.Migrations
 {
     [DbContext(typeof(AppDbcontext))]
-    partial class AppDbcontextModelSnapshot : ModelSnapshot
+    [Migration("20260130220139_InitMigration")]
+    partial class InitMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -284,32 +287,6 @@ namespace APIClub.Migrations
                     b.ToTable("RegistroCobradores");
                 });
 
-            modelBuilder.Entity("APIClub.Domain.GestionSocios.Models.RegistroCobrador", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateOnly>("FechaCobro")
-                        .HasColumnType("date");
-
-                    b.Property<int>("IdCobrador")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("MontoCobrado")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("NombreSocio")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RegistroCobradores");
-                });
-
             modelBuilder.Entity("APIClub.Domain.GestionSocios.Models.Socio", b =>
                 {
                     b.Property<int>("Id")
@@ -404,7 +381,7 @@ namespace APIClub.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PaymentTokens");
-
+                });
 
             modelBuilder.Entity("APIClub.Domain.ReservasSalones.Models.PagoReservaSalon", b =>
                 {

@@ -1,6 +1,5 @@
 ﻿using APIClub.Domain.AlquilerArticulos.Models;
 using APIClub.Domain.Auth.Models;
-using APIClub.Domain.Enums;
 using APIClub.Domain.GestionSocios.Models;
 using APIClub.Domain.PaymentsOnline.Modelos;
 using APIClub.Domain.ReservasSalones.Models;
@@ -16,14 +15,14 @@ namespace APIClub.Infrastructure.Persistence.Data
         }
 
         public DbSet<ReservaSalon> ReservasSalones { get; set; }
-        public DbSet<PagoReservaSalon> pagoReservaSalon { get; set; }  
+        public DbSet<PagoReservaSalon> pagoReservaSalon { get; set; }
         public DbSet<Cuota> Cuotas { get; set; }
         public DbSet<Salon> Salones { get; set; }
         public DbSet<Socio> Socios { get; set; }
         public DbSet<MontoCuota> MontoCuota { get; set; }
         public DbSet<Articulo> Articulos { get; set; }
-        public DbSet<Alquiler> alquileresArticulos { get; set; }  
-        public DbSet<ItemAlquiler> ItemALquiler {  get; set; }
+        public DbSet<Alquiler> alquileresArticulos { get; set; }
+        public DbSet<ItemAlquiler> ItemALquiler { get; set; }
         public DbSet<PagoAlquilerDeArticulos> PagosAlquilerDeArticulos { get; set; }
         public DbSet<PaymentToken> PaymentTokens { get; set; }
         public DbSet<Lote> Lotes { get; set; }
@@ -47,7 +46,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                       .WithOne(c => c.Socio)
                       .HasForeignKey(c => c.SocioId)
                       .OnDelete(DeleteBehavior.Cascade);
-                
+
                 entity.HasQueryFilter(s => s.IsActivo);
 
                 entity.HasOne(s => s.Lote)
@@ -88,7 +87,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                 entity.Property(r => r.TotalPagado).HasColumnType("decimal(18,2)");
 
                 entity.HasOne(r => r.Socio)
-                      .WithMany() 
+                      .WithMany()
                       .HasForeignKey(r => r.SocioId)
                       .OnDelete(DeleteBehavior.Restrict);
 
@@ -102,7 +101,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                       .HasForeignKey("ReservaSalonId")
                       .OnDelete(DeleteBehavior.Cascade);
 
-                entity.HasQueryFilter(r => !r.IsCancelled);
+                entity.HasQueryFilter(r => !r.IsCancelled && r.FechaAlquiler >= DateOnly.FromDateTime(DateTime.Today));
             });
 
             modelBuilder.Entity<ReservaSalon>()
@@ -114,7 +113,7 @@ namespace APIClub.Infrastructure.Persistence.Data
             modelBuilder.Entity<PagoReservaSalon>(entity =>
             {
                 entity.Property(p => p.monto).HasColumnType("decimal(18,2)");
-                
+
                 entity.Property(p => p.FechaPago)
                       .HasConversion(
                           v => v.ToDateTime(new TimeOnly(0, 0)),
@@ -156,6 +155,8 @@ namespace APIClub.Infrastructure.Persistence.Data
                 entity.Property(a => a.FechaAlquiler)
                 .HasConversion(v => v.ToDateTime(new TimeOnly(0, 0)),
                 v => DateOnly.FromDateTime(v));
+
+                entity.HasQueryFilter(a => !a.Finalizado);
             });
 
             modelBuilder.Entity<ItemAlquiler>(entity =>
@@ -190,7 +191,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                 entity.Property(u => u.NombreUsuario).IsRequired().HasMaxLength(50);
                 entity.Property(u => u.PasswordHash).IsRequired();
                 entity.Property(u => u.Rol).IsRequired();
-                
+
                 entity.HasIndex(u => u.NombreUsuario).IsUnique();
             });
 
@@ -226,67 +227,6 @@ namespace APIClub.Infrastructure.Persistence.Data
                     Id = 2,
                     Name = "Salón grande",
                     Direccion = "Av. Siempre Viva 742"
-                }
-            );
-
-            // 2) MontoCuota (registro 2026)
-            modelBuilder.Entity<MontoCuota>().HasData(
-                new MontoCuota
-                {
-                    Id = 1,
-                    MontoCuotaFija = 5000.00m,
-                    FechaActualizacion = new DateTime(2026, 01, 01)
-                }
-            );
-
-            modelBuilder.Entity<PaymentToken>().HasData(
-                new PaymentToken
-                {
-                    Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
-                    nombreSocio = "Juan Pérez",
-                    IdSocio = 1,
-                    anio = 2025,
-                    semestre = 1,
-                    monto = 2500.00m,
-                    FechaExpiracion = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30)),
-                    usado = false,
-                    Preference_Id = null
-                },
-                new PaymentToken
-                {
-                    Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
-                    nombreSocio = "Juan Pérez",
-                    IdSocio = 1,
-                    anio = 2025,
-                    semestre = 2,
-                    monto = 2500.00m,
-                    FechaExpiracion = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30)),
-                    usado = false,
-                    Preference_Id = null
-                },
-                new PaymentToken
-                {
-                    Id = Guid.Parse("33333333-3333-3333-3333-333333333333"),
-                    nombreSocio = "María Gómez",
-                    IdSocio = 2,
-                    anio = 2025,
-                    semestre = 1,
-                    monto = 2500.00m,
-                    FechaExpiracion = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30)),
-                    usado = false,
-                    Preference_Id = null
-                },
-                new PaymentToken
-                {
-                    Id = Guid.Parse("44444444-4444-4444-4444-444444444444"),
-                    nombreSocio = "María Gómez",
-                    IdSocio = 2,
-                    anio = 2025,
-                    semestre = 2,
-                    monto = 2500.00m,
-                    FechaExpiracion = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30)),
-                    usado = false,
-                    Preference_Id = null
                 }
             );
         }

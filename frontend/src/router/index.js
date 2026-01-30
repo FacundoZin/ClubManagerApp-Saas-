@@ -13,6 +13,7 @@ import SociosDashboard from '../views/ModuloGestionSocios/SociosDashboard.vue'
 import CobradorDashboard from '@/views/ModuloCobradores/CobradorDashboard.vue'
 import OnlinePaymentView from '@/views/OnlinePaymentView.vue'
 import GestionUsuariosView from '@/views/ModuloGestionUsuarios/GestionUsuariosView.vue'
+import DashboardAnaliticas from '@/views/ModuloAnaliticas-Balances/DashboardAnaliticas.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -86,6 +87,12 @@ const router = createRouter({
       name: 'cobradores',
       component: CobradorDashboard,
       meta: { module: 'cobradores', headerTitle: 'Módulo de Cobradores', headerDescription: 'Gestión de rutas y cobros', requiresAuth: true }
+    },
+    {
+      path: '/analiticas',
+      name: 'analiticas',
+      component: DashboardAnaliticas,
+      meta: { module: 'analiticas', headerTitle: 'Estadísticas y Balances', headerDescription: 'Análisis de socios e ingresos', requiresAuth: true }
     },
   ],
 })

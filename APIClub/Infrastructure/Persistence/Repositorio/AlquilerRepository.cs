@@ -54,12 +54,9 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
         {
             var hoy = DateOnly.FromDateTime(DateTime.Today);
 
-            var query = _dbContext.alquileresArticulos
-                .Where(a => !a.Finalizado);
+            var totalCount = await _dbContext.alquileresArticulos.CountAsync();
 
-            var totalCount = await query.CountAsync();
-
-            var items = await query
+            var items = await _dbContext.alquileresArticulos
                 .AsNoTracking()
                 .OrderByDescending(a => a.FechaAlquiler)
                 .Skip((pageNumber - 1) * pageSize)
@@ -118,7 +115,7 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
         public async Task<bool> HasActiveAlquilerBySocio(int socioId)
         {
             return await _dbContext.alquileresArticulos
-                .AnyAsync(a => a.IdSocio == socioId && !a.Finalizado);
+                .AnyAsync(a => a.IdSocio == socioId);
         }
     }
 }
