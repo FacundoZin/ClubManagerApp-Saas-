@@ -64,6 +64,15 @@ const modules = [
     bg: 'bg-emerald-50',
     hoverBorder: 'group-hover:border-emerald-200',
   },
+  {
+    title: 'Estadísticas y Balances',
+    description: 'Análisis de socios, ingresos y métricas clave.',
+    icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
+    route: '/analiticas',
+    color: 'text-indigo-600',
+    bg: 'bg-indigo-50',
+    hoverBorder: 'group-hover:border-indigo-200',
+  },
 ]
 </script>
 
@@ -195,10 +204,10 @@ const modules = [
       >
         <div class="text-center md:text-left">
           <p class="text-slate-500 text-sm font-medium">
-            &copy; {{ new Date().getFullYear() }} Sistema Club Abuelos.
+            &copy; {{ new Date().getFullYear() }} Sistema Asociación Casa del Jubilado.
           </p>
           <div class="flex items-center gap-2 mt-1">
-            <p class="text-slate-400 text-xs">Versión 2.0.0 - Enterprise Edition</p>
+            <p class="text-slate-400 text-xs">Versión 1.0.0</p>
             <template v-if="isSuperAdmin">
               <span class="text-slate-300 text-xs">•</span>
               <router-link

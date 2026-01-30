@@ -26,6 +26,8 @@ using APIClub.Domain.Notificaciones.Models;
 using APIClub.Domain.Notificaciones.Services;
 using Quartz;
 using APIClub.Infrastructure.JobsProgramados;
+using APIClub.Domain.Analiticas;
+using APIClub.Domain.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,7 +42,7 @@ builder.Services.Configure<WhatsAppConfig>(
     builder.Configuration.GetSection("WhatsApp"));
 
 // Registrar HttpClients
-builder.Services.AddHttpClient<IWhatsappService,WhatsapService>((sp,client) =>
+builder.Services.AddHttpClient<IWhatsappService, WhatsapService>((sp, client) =>
 {
     var config = sp.GetRequiredService<IConfiguration>();
 
@@ -64,16 +66,18 @@ builder.Services.AddHttpClient<IMercadoPagoService, MPService>((sp, client) =>
 });
 
 // registrar servicios
-builder.Services.AddScoped<ISociosManagmentService,SociosManagmentService>();
-builder.Services.AddScoped<ICuotasService,CuotasService>();
-builder.Services.AddScoped<IReservasServices,ReservasServices>();
-builder.Services.AddScoped<ICobranzasServices,CobranzasService>();
-builder.Services.AddScoped<IManagmentArticulosService,ManagmentArticulosService>();
-builder.Services.AddScoped<IAlquilerArticulosService ,AlquilerArticulosService>();
-builder.Services.AddScoped<IPaymentService,PaymentService>();
-builder.Services.AddScoped<IPaymentTokenService,PaymentTokenService>();
-builder.Services.AddScoped<IMercadoPagoService,MPService>();
+builder.Services.AddScoped<ISociosManagmentService, SociosManagmentService>();
+builder.Services.AddScoped<ICuotasService, CuotasService>();
+builder.Services.AddScoped<IReservasServices, ReservasServices>();
+builder.Services.AddScoped<ICobranzasServices, CobranzasService>();
+builder.Services.AddScoped<IManagmentArticulosService, ManagmentArticulosService>();
+builder.Services.AddScoped<IAlquilerArticulosService, AlquilerArticulosService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IPaymentTokenService, PaymentTokenService>();
+builder.Services.AddScoped<IMercadoPagoService, MPService>();
 builder.Services.AddScoped<INotificationsService, NotificacionsService>();
+builder.Services.AddScoped<IAnaliticasService, AnaliticasService>();
+
 
 // AUTENTICACIÓN
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -84,17 +88,19 @@ builder.Services.AddScoped<IUsuariosService, UsuariosService>();
 builder.Services.AddScoped<UnitOfWork>();
 builder.Services.AddScoped<ISocioIntegrityValidator, SocioIntegrityValidator>();
 builder.Services.AddScoped<IPagoCuotaValidator, PagoCuotaValidator>();
+builder.Services.AddScoped<IDataSeeder, DatabaseSeeder>();
 
 // registrar repositorios
-builder.Services.AddScoped<ISocioRepository,SociosRepository>();
-builder.Services.AddScoped<ICuotaRepository,CuotaRepository>();
-builder.Services.AddScoped<IReservasRepository,ReservasRepository>();
-builder.Services.AddScoped<IArticuloRepository,ArticuloRepository>();
-builder.Services.AddScoped<IAlquilerRepository,AlquilerRepository>();
+builder.Services.AddScoped<ISocioRepository, SociosRepository>();
+builder.Services.AddScoped<ICuotaRepository, CuotaRepository>();
+builder.Services.AddScoped<IReservasRepository, ReservasRepository>();
+builder.Services.AddScoped<IArticuloRepository, ArticuloRepository>();
+builder.Services.AddScoped<IAlquilerRepository, AlquilerRepository>();
 builder.Services.AddScoped<IitemAlquilerRepository, ItemsAlquilerRepository>();
-builder.Services.AddScoped<IPaymentTokenRepository,PaymentTokenRepository>();
+builder.Services.AddScoped<IPaymentTokenRepository, PaymentTokenRepository>();
 builder.Services.AddScoped<IHistorialCobradoresRepository, HistorialCobradoresRepository>();
 builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>();
+builder.Services.AddScoped<IAnaliticasRepository, AnaliticasRepository>();
 
 builder.Services.AddQuartz(q =>
 {
@@ -155,7 +161,7 @@ builder.Services.AddQuartzHostedService(q =>
 
 // Configuración de JWT
 var jwtSettings = builder.Configuration.GetSection("Jwt");
-var secretKey = jwtSettings["SecretKey"]; 
+var secretKey = jwtSettings["SecretKey"];
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -170,7 +176,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = jwtSettings["Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
         };
-        
+
         // Evento para leer el token desde la cookie
         options.Events = new JwtBearerEvents
         {
@@ -187,9 +193,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 
+
+
 // confiugracion cors.
 builder.Services.AddCors(options =>
-{        
+{
     options.AddPolicy("AllowFrontend",
         policy =>
         {
@@ -212,6 +220,19 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+//FLAG PARA CORRES SEEDER
+if (args.Contains("--ExecuteSeeder"))
+{
+    Console.WriteLine(">>> SEEDER FLAG DETECTED: --ExecuteSeeder");
+    using var scope = app.Services.CreateScope();
+
+    var seeder = scope.ServiceProvider.GetRequiredService<IDataSeeder>();
+    await seeder.seedAsync();
+
+    Console.WriteLine(">>> SEEDER PROCESS FINISHED.");
+    return;
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
