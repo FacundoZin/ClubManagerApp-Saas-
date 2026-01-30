@@ -2,6 +2,7 @@
 {
     public interface IDataSeeder
     {
-        Task seedAsync();
+        Task seedTestDataAsync();
+        Task seedSociosExistentes();
     }
 }

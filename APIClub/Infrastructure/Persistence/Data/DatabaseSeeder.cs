@@ -17,7 +17,7 @@ namespace APIClub.Infrastructure.Persistence.Data
             _appDbcontext = context;
         }
 
-        public async Task seedAsync()
+        public async Task seedTestDataAsync()
         {
             Console.WriteLine(">>> DatabaseSeeder starting...");
 
@@ -296,6 +296,11 @@ namespace APIClub.Infrastructure.Persistence.Data
 
             await _appDbcontext.SaveChangesAsync();
             Console.WriteLine(">>> DatabaseSeeder finished successfully!");
+        }
+
+        public Task seedSociosExistentes()
+        {
+            throw new NotImplementedException();
         }
     }
 }

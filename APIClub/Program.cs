@@ -228,7 +228,20 @@ if (args.Contains("--ExecuteSeeder"))
     using var scope = app.Services.CreateScope();
 
     var seeder = scope.ServiceProvider.GetRequiredService<IDataSeeder>();
-    await seeder.seedAsync();
+    await seeder.seedTestDataAsync();
+
+    Console.WriteLine(">>> SEEDER PROCESS FINISHED.");
+    return;
+}
+
+//FLAG PARA CARGAR USARIOS EXISTENTES
+if (args.Contains("--ExecuteSeedSociosExisting"))
+{
+    Console.WriteLine(">>> SEEDER FLAG DETECTED: --ExecuteSeeder");
+    using var scope = app.Services.CreateScope();
+
+    var seeder = scope.ServiceProvider.GetRequiredService<IDataSeeder>();
+    await seeder.seedSociosExistentes();
 
     Console.WriteLine(">>> SEEDER PROCESS FINISHED.");
     return;
