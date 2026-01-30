@@ -7,7 +7,7 @@ namespace APIClub.Domain.GestionSocios.Repositories
         Task cargarSocio(Socio socio);
         Task<bool> SocioExists(string dni);
         Task<Socio?> GetSocioByDni(string dni);
-        Task<Socio?> GetSocioByDniIgnoreFilter(string dni); 
+        Task<Socio?> GetSocioByDniIgnoreFilter(string dni);
         Task<Socio?> GetSocioById(int id);
         Task UpdateSocio(Socio socio);
         void UpdateSocioWhitoutSave(Socio socio);
@@ -20,6 +20,6 @@ namespace APIClub.Domain.GestionSocios.Repositories
         Task<List<Cuota>> GetCuotasSocioById(int socioId);
         Task<(List<Socio> Items, int TotalCount)> GetSociosDeudoresByLote(int IdLote, int anioActual, int semestreActual, int pageNumber, int pageSize);
         Task<List<Socio>> GetSociosDeudoresWithPreferenceLinkDePagoPaginado(int anioActual, int semestreActual, int pageNumber, int pageSize);
-        
+
     }
 }

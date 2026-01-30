@@ -31,9 +31,9 @@ wwwroot/lib/
 secrets.json
 
 # Environment variables
-.env.local
 .env.development
 .env.mobile
+.env
 
 # Publish output
 publish/

@@ -1,6 +1,5 @@
 ﻿using APIClub.Domain.AlquilerArticulos.Models;
 using APIClub.Domain.Auth.Models;
-using APIClub.Domain.Enums;
 using APIClub.Domain.GestionSocios.Models;
 using APIClub.Domain.PaymentsOnline.Modelos;
 using APIClub.Domain.ReservasSalones.Models;
@@ -228,107 +227,6 @@ namespace APIClub.Infrastructure.Persistence.Data
                     Id = 2,
                     Name = "Salón grande",
                     Direccion = "Av. Siempre Viva 742"
-                }
-            );
-
-            // 2) MontoCuota (registro 2026)
-            modelBuilder.Entity<MontoCuota>().HasData(
-                new MontoCuota
-                {
-                    Id = 1,
-                    MontoCuotaFija = 5000.00m,
-                    FechaActualizacion = new DateTime(2026, 01, 01)
-                }
-            );
-
-            // 3) Socios de prueba
-            modelBuilder.Entity<Socio>().HasData(
-                new Socio { Id = 1, Nombre = "Juan", Apellido = "Pérez", Dni = "111", FechaAsociacion = new DateOnly(2024, 1, 1), IsActivo = true, PreferenciaDePago = FormasDePago.LinkDePago },
-                new Socio { Id = 2, Nombre = "María", Apellido = "Gómez", Dni = "222", FechaAsociacion = new DateOnly(2025, 1, 1), IsActivo = true, PreferenciaDePago = FormasDePago.LinkDePago },
-                new Socio { Id = 3, Nombre = "Carlos", Apellido = "Deudor", Dni = "333", FechaAsociacion = new DateOnly(2024, 1, 1), IsActivo = true, PreferenciaDePago = FormasDePago.LinkDePago }
-            );
-
-            // 4) Cuotas de prueba
-            modelBuilder.Entity<Cuota>().HasData(
-                // Juan Pérez (Al día para 2026-S1: tiene 2024-S1, 2024-S2, 2025-S1, 2025-S2)
-                new Cuota { Id = 1, SocioId = 1, Anio = 2024, Semestre = 1, Monto = 2500, FechaPago = new DateOnly(2024, 3, 1), FormaDePago = FormasDePago.Cobrador },
-                new Cuota { Id = 2, SocioId = 1, Anio = 2024, Semestre = 2, Monto = 2500, FechaPago = new DateOnly(2024, 9, 1), FormaDePago = FormasDePago.Cobrador },
-                new Cuota { Id = 3, SocioId = 1, Anio = 2025, Semestre = 1, Monto = 2500, FechaPago = new DateOnly(2025, 3, 1), FormaDePago = FormasDePago.Cobrador },
-                new Cuota { Id = 4, SocioId = 1, Anio = 2025, Semestre = 2, Monto = 2500, FechaPago = new DateOnly(2025, 9, 1), FormaDePago = FormasDePago.Cobrador },
-
-                // María Gómez (Al día para 2025-S2: tiene 2025-S1)
-                new Cuota { Id = 5, SocioId = 2, Anio = 2025, Semestre = 1, Monto = 2500, FechaPago = new DateOnly(2025, 3, 1), FormaDePago = FormasDePago.LinkDePago },
-
-                // Carlos Deudor (Debe cuotas para 2026-S1: le falta 2025-S2)
-                new Cuota { Id = 6, SocioId = 3, Anio = 2024, Semestre = 1, Monto = 2500, FechaPago = new DateOnly(2024, 3, 1), FormaDePago = FormasDePago.LinkDePago },
-                new Cuota { Id = 7, SocioId = 3, Anio = 2024, Semestre = 2, Monto = 2500, FechaPago = new DateOnly(2024, 9, 1), FormaDePago = FormasDePago.LinkDePago },
-                new Cuota { Id = 8, SocioId = 3, Anio = 2025, Semestre = 1, Monto = 2500, FechaPago = new DateOnly(2025, 3, 1), FormaDePago = FormasDePago.LinkDePago }
-                // FALTA 2025-S2
-            );
-
-            // 5) PaymentTokens de prueba
-            modelBuilder.Entity<PaymentToken>().HasData(
-                // Juan Pérez - Token para 2026-S1 (Debería ser VÁLIDO)
-                new PaymentToken
-                {
-                    Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
-                    nombreSocio = "Juan Pérez",
-                    IdSocio = 1,
-                    anio = 2026,
-                    semestre = 1,
-                    monto = 5000.00m,
-                    FechaExpiracion = DateOnly.FromDateTime(DateTime.Now.AddDays(30)),
-                    usado = false,
-                    Preference_Id = null
-                },
-                // Carlos Deudor - Token para 2026-S1 (Debería dar ERROR de deuda anterior)
-                new PaymentToken
-                {
-                    Id = Guid.Parse("55555555-5555-5555-5555-555555555555"),
-                    nombreSocio = "Carlos Deudor",
-                    IdSocio = 3,
-                    anio = 2026,
-                    semestre = 1,
-                    monto = 5000.00m,
-                    FechaExpiracion = DateOnly.FromDateTime(DateTime.Now.AddDays(30)),
-                    usado = false,
-                    Preference_Id = null
-                },
-                new PaymentToken
-                {
-                    Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
-                    nombreSocio = "Juan Pérez",
-                    IdSocio = 1,
-                    anio = 2025,
-                    semestre = 2,
-                    monto = 2500.00m,
-                    FechaExpiracion = DateOnly.FromDateTime(DateTime.Now.AddDays(30)),
-                    usado = false,
-                    Preference_Id = null
-                },
-                new PaymentToken
-                {
-                    Id = Guid.Parse("33333333-3333-3333-3333-333333333333"),
-                    nombreSocio = "María Gómez",
-                    IdSocio = 2,
-                    anio = 2025,
-                    semestre = 1,
-                    monto = 2500.00m,
-                    FechaExpiracion = DateOnly.FromDateTime(DateTime.Now.AddDays(30)),
-                    usado = false,
-                    Preference_Id = null
-                },
-                new PaymentToken
-                {
-                    Id = Guid.Parse("44444444-4444-4444-4444-444444444444"),
-                    nombreSocio = "María Gómez",
-                    IdSocio = 2,
-                    anio = 2025,
-                    semestre = 2,
-                    monto = 2500.00m,
-                    FechaExpiracion = DateOnly.FromDateTime(DateTime.Now.AddDays(30)),
-                    usado = false,
-                    Preference_Id = null
                 }
             );
         }

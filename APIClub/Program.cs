@@ -31,11 +31,13 @@ using APIClub.Domain.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Hardcoded for safety against environment variables override
-var connectionString = "Data Source=club.db";
+// Configuración para PostgreSQL: permitir DateTime sin especificar UTC explícitamente
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.AddDbContext<AppDbcontext>(options =>
-    options.UseSqlite(connectionString));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Configurar WhatsApp
 builder.Services.Configure<WhatsAppConfig>(
@@ -221,6 +223,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+
 //FLAG PARA CORRES SEEDER
 if (args.Contains("--ExecuteSeeder"))
 {
@@ -246,6 +249,26 @@ if (args.Contains("--ExecuteSeedSociosExisting"))
     Console.WriteLine(">>> SEEDER PROCESS FINISHED.");
     return;
 }
+
+// Aplicar migraciones automáticamente
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<AppDbcontext>();
+        if (context.Database.GetPendingMigrations().Any())
+        {
+            context.Database.Migrate();
+        }
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Ocurrió un error al aplicar las migraciones.");
+    }
+}
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
