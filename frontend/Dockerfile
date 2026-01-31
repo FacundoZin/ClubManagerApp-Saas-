@@ -14,9 +14,8 @@ ENV VITE_MERCADOPAGO_PUBLIC_KEY=$VITE_MERCADOPAGO_PUBLIC_KEY
 
 RUN npm run build
 
-# Production stage
-FROM nginx:stable-alpine AS production-stage
+# Runtime stage
+FROM nginx:alpine
 COPY --from=build-stage /app/dist /usr/share/nginx/html
-# Copiamos una configuración personalizada de nginx para soportar SPA routing
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

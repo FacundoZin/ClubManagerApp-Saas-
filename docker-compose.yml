@@ -33,8 +33,8 @@ services:
       - WhatsApp__PhoneNumberId=${WHATSAPP__PHONENUMBERID}
       - WhatsApp__ApiVersion=${WHATSAPP__APIVERSION}
       - WhatsApp__VerifyToken=${WHATSAPP__VERIFYTOKEN}
-    ports:
-      - "5194:5000"
+    expose:
+      - "5000"
     networks:
       - app_network
 
@@ -45,12 +45,42 @@ services:
       args:
         - VITE_API_URL=${VITE_API_URL}
         - VITE_MERCADOPAGO_PUBLIC_KEY=${VITE_MERCADOPAGO_PUBLIC_KEY}
-    container_name: web_casadeljubilado
+    container_name: frontend_casadeljubilado
     restart: always
     depends_on:
       - api
+    expose:
+      - "80"
+    networks:
+      - app_network
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_casadeljubilado
+    restart: always
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/letsencrypt
+      - ./nginx/www:/var/www/certbot
+    depends_on:
+      - frontend
+      - api
+    networks:
+      - app_network
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot_casadeljubilado
+    restart: always
+    volumes:
+      - ./nginx/certs:/etc/letsencrypt
+      - ./nginx/www:/var/www/certbot
+    entrypoint: ""
+    command: >
+      sh -c "trap exit TERM; while :; do sleep 12h & wait $${!}; certbot renew --webroot -w /var/www/certbot; done"
     networks:
       - app_network
 
