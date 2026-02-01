@@ -29,6 +29,7 @@ using Quartz;
 using APIClub.Infrastructure.JobsProgramados;
 using APIClub.Domain.Analiticas;
 using APIClub.Domain.Common;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -198,16 +199,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-
-
-
 // confiugracion cors.
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173") // Ajustar según puerto frontend
+            policy.WithOrigins("https://admin.asociacioncivilcasadeljubilado.com.ar") // Ajustar según puerto frontend
                   .AllowAnyMethod()
                   .AllowAnyHeader()
                   .AllowCredentials(); // Permitir cookies
@@ -281,6 +279,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor |
+        ForwardedHeaders.XForwardedProto
+});
 // app.UseHttpsRedirection();
 
 // Usar la política CORS que permite credenciales

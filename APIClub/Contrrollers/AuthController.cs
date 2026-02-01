@@ -35,8 +35,8 @@ namespace APIClub.Contrrollers
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = false, // Set to true in production
-                SameSite = SameSiteMode.Strict,
+                Secure = true, // Set to true in production
+                SameSite = SameSiteMode.None,
                 Path = "/",
                 Expires = result.Data.Expiracion
             };
