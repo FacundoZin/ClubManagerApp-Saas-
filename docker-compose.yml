@@ -62,7 +62,6 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      volumes:
       - /root/MisSistemas/ClubManagerApp-Saas/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - /root/MisSistemas/ClubManagerApp-Saas/nginx/certs:/etc/letsencrypt
       - /root/MisSistemas/ClubManagerApp-Saas/nginx/www:/var/www/certbot
