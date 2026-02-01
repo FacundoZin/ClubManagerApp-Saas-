@@ -78,12 +78,8 @@ services:
     volumes:
       - ./nginx/certs:/etc/letsencrypt
       - ./nginx/www:/var/www/certbot
-    command: >
-      sh -c "
-      while true; do
-        certbot renew --webroot -w /var/www/certbot;
-        sleep 12h;
-      done"
+    # Usamos entrypoint para sobrescribir el comportamiento por defecto de la imagen
+    entrypoint: "/bin/sh -c 'while true; do certbot renew --webroot -w /var/www/certbot; sleep 12h; done'"
     networks:
       - app_network
 
