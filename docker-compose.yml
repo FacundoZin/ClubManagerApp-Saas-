@@ -74,13 +74,16 @@ services:
   certbot:
     image: certbot/certbot
     container_name: certbot_casadeljubilado
-    restart: always
+    restart: unless-stopped
     volumes:
       - ./nginx/certs:/etc/letsencrypt
       - ./nginx/www:/var/www/certbot
-    entrypoint: ""
     command: >
-      sh -c "trap exit TERM; while :; do sleep 12h & wait $${!}; certbot renew --webroot -w /var/www/certbot; done"
+      sh -c "
+      while true; do
+        certbot renew --webroot -w /var/www/certbot;
+        sleep 12h;
+      done"
     networks:
       - app_network
 
