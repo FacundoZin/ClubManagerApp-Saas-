@@ -205,7 +205,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("https://admin.asociacioncivilcasadeljubilado.com.ar") // Ajustar según puerto frontend
+            policy.WithOrigins("https://admin.asociacioncivilcasadeljubilado.com.ar", "http://localhost:5173") 
                   .AllowAnyMethod()
                   .AllowAnyHeader()
                   .AllowCredentials(); // Permitir cookies

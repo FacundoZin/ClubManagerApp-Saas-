@@ -26,23 +26,23 @@ namespace APIClub.Infrastructure.Persistence.Data
 
             try
             {
-                // En SQLite, desactivar las FKs por sesión es la forma más limpia de resetear todo
-                await _appDbcontext.Database.ExecuteSqlRawAsync("PRAGMA foreign_keys = OFF;");
+                // En PostgreSQL, desactivar triggers de FKs temporalmente o usar TRUNCATE CASCADE
+                await _appDbcontext.Database.ExecuteSqlRawAsync("SET session_replication_role = 'replica';");
 
-                await _appDbcontext.Database.ExecuteSqlRawAsync("DELETE FROM Cuotas;");
-                await _appDbcontext.Database.ExecuteSqlRawAsync("DELETE FROM RegistroCobradores;");
-                await _appDbcontext.Database.ExecuteSqlRawAsync("DELETE FROM PagosAlquilerDeArticulos;");
-                await _appDbcontext.Database.ExecuteSqlRawAsync("DELETE FROM ItemALquiler;");
-                await _appDbcontext.Database.ExecuteSqlRawAsync("DELETE FROM alquileresArticulos;");
-                await _appDbcontext.Database.ExecuteSqlRawAsync("DELETE FROM pagoReservaSalon;");
-                await _appDbcontext.Database.ExecuteSqlRawAsync("DELETE FROM ReservasSalones;");
-                await _appDbcontext.Database.ExecuteSqlRawAsync("DELETE FROM Socios;");
-                await _appDbcontext.Database.ExecuteSqlRawAsync("DELETE FROM Articulos;");
-                await _appDbcontext.Database.ExecuteSqlRawAsync("DELETE FROM Lotes;");
-                await _appDbcontext.Database.ExecuteSqlRawAsync("DELETE FROM Salones;");
-                await _appDbcontext.Database.ExecuteSqlRawAsync("DELETE FROM MontoCuota;");
+                await _appDbcontext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"Cuotas\" RESTART IDENTITY CASCADE;");
+                await _appDbcontext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"RegistroCobradores\" RESTART IDENTITY CASCADE;");
+                await _appDbcontext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"PagosAlquilerDeArticulos\" RESTART IDENTITY CASCADE;");
+                await _appDbcontext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"ItemALquiler\" RESTART IDENTITY CASCADE;");
+                await _appDbcontext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"alquileresArticulos\" RESTART IDENTITY CASCADE;");
+                await _appDbcontext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"pagoReservaSalon\" RESTART IDENTITY CASCADE;");
+                await _appDbcontext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"ReservasSalones\" RESTART IDENTITY CASCADE;");
+                await _appDbcontext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"Socios\" RESTART IDENTITY CASCADE;");
+                await _appDbcontext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"Articulos\" RESTART IDENTITY CASCADE;");
+                await _appDbcontext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"Lotes\" RESTART IDENTITY CASCADE;");
+                await _appDbcontext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"Salones\" RESTART IDENTITY CASCADE;");
+                await _appDbcontext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"MontoCuota\" RESTART IDENTITY CASCADE;");
 
-                await _appDbcontext.Database.ExecuteSqlRawAsync("PRAGMA foreign_keys = ON;");
+                await _appDbcontext.Database.ExecuteSqlRawAsync("SET session_replication_role = 'origin';");
             }
             catch (Exception ex)
             {
