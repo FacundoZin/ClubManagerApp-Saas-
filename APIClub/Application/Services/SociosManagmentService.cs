@@ -22,12 +22,15 @@ namespace APIClub.Application.Services
         }
 
 
-        public async Task<Result<ExistingSocio>> cargarSocio(CreateSocioDto _dto)
+        public async Task<Result<object?>> cargarSocio(CreateSocioDto _dto)
         {
             var result = await _validator.ValidateCargaSocio(_dto);
 
-
-            if(!result.Exit) return Result<ExistingSocio>.Error(result.Errormessage, result.Errorcode);
+            if (!result.Exit)
+            {
+                if(result.Errorcode == 409) return Result<object?>.Conflict(result.Errormessage, result.Errorcode, result.Data);
+                return Result<object?>.Error(result.Errormessage, result.Errorcode);
+            }
 
             string telefonoFormateado = null;
 
@@ -36,7 +39,7 @@ namespace APIClub.Application.Services
                 var FormatResult = _dto.Telefono.FormatearForWhatsapp();
 
                 if (!FormatResult.Exit)
-                    return Result<ExistingSocio>.Error(FormatResult.Errormessage, FormatResult.Errorcode);
+                    return Result<object?>.Error(FormatResult.Errormessage, FormatResult.Errorcode);
 
                 telefonoFormateado = FormatResult.Data;
             }
@@ -58,7 +61,7 @@ namespace APIClub.Application.Services
 
             await _SocioRepository.cargarSocio(socio);
 
-            return Result<ExistingSocio>.Exito(new ExistingSocio
+            return Result<object?>.Exito(new ExistingSocio
             {
                 Id = socio.Id,
                 Nombre = socio.Nombre,
