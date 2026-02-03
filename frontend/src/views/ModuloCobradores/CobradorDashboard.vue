@@ -252,7 +252,7 @@ onMounted(() => {
 
 <template>
   <div class="min-h-screen bg-slate-50 font-sans text-slate-800">
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
       <!-- Breadcrumb -->
       <div class="mb-6">
         <nav class="flex mb-2" aria-label="Breadcrumb">
@@ -280,22 +280,23 @@ onMounted(() => {
             </li>
           </ol>
         </nav>
-        <div class="flex justify-between items-end">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
           <div>
-            <h2 class="text-3xl font-bold text-slate-900 tracking-tight">Gestión de Cobranzas</h2>
-            <p class="text-slate-500 mt-1">Administre las cobranzas y lotes desde un solo lugar.</p>
+            <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Gestión de Cobranzas</h2>
+            <p class="text-slate-500 mt-1 text-sm sm:text-base">Administre las cobranzas y lotes desde un solo lugar.
+            </p>
           </div>
         </div>
       </div>
 
       <!-- Tabs -->
-      <div class="border-b border-slate-200 mb-6">
-        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+      <div class="border-b border-slate-200 mb-6 overflow-x-auto scrollbar-hide">
+        <nav class="-mb-px flex space-x-6 sm:space-x-8 min-w-max" aria-label="Tabs">
           <button @click="handleTabChange('buscar-socios')" :class="[
             activeTab === 'buscar-socios'
               ? 'border-teal-500 text-teal-600'
               : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300',
-            'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors',
+            'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex-shrink-0',
           ]">
             Buscar Socios por Lote
           </button>
@@ -303,7 +304,7 @@ onMounted(() => {
             activeTab === 'crear-lote'
               ? 'border-teal-500 text-teal-600'
               : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300',
-            'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors',
+            'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex-shrink-0',
           ]">
             Crear Nuevo Lote
           </button>
@@ -311,7 +312,7 @@ onMounted(() => {
             activeTab === 'historial-cobradores'
               ? 'border-teal-500 text-teal-600'
               : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300',
-            'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors',
+            'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex-shrink-0',
           ]">
             Historial de Cobradores
           </button>
@@ -321,7 +322,7 @@ onMounted(() => {
       <!-- Tab Content: BUSCAR SOCIOS POR LOTE -->
       <div v-if="activeTab === 'buscar-socios'">
         <!-- Selector de Lote -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6 mb-8">
           <div class="max-w-md">
             <label for="lote-select" class="block text-sm font-bold text-slate-700 mb-2">Seleccionar Lote</label>
             <select id="lote-select" v-model="selectedLote" @change="buscarSocios()"
@@ -424,10 +425,11 @@ onMounted(() => {
         <!-- Mostrar la tarjeta solo si hay cobradores o está cargando -->
         <div v-if="loadingCobradores || cobradores.length > 0"
           class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-          <div class="grid grid-cols-1 lg:grid-cols-4 min-h-[600px]">
+          <div class="grid grid-cols-1 lg:grid-cols-4 min-h-[400px] lg:min-h-[600px]">
             <!-- Lateral: Listado de Cobradores -->
-            <div class="lg:col-span-1 border-r border-slate-100 bg-slate-50/30 flex flex-col">
-              <div class="p-5 border-b border-slate-100 bg-white/50">
+            <div
+              class="lg:col-span-1 border-r border-slate-100 bg-slate-50/30 flex flex-col max-h-[300px] lg:max-h-none">
+              <div class="p-4 sm:p-5 border-b border-slate-100 bg-white/50">
                 <h3 class="font-bold text-slate-800 flex items-center gap-2">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-teal-600" viewBox="0 0 20 20"
                     fill="currentColor">
@@ -484,7 +486,7 @@ onMounted(() => {
               <div v-else class="flex flex-col h-full">
                 <!-- Header del Historial -->
                 <div
-                  class="p-6 border-b border-slate-100 bg-slate-50/50 flex flex-wrap items-center justify-between gap-4">
+                  class="p-4 sm:p-6 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div>
                     <h3 class="text-lg font-bold text-slate-900">
                       Historial: {{ selectedCobrador.nombreCompleto }}
@@ -494,7 +496,7 @@ onMounted(() => {
                         recaudado</span>
                       <span class="text-sm font-bold text-slate-700">${{
                         historialData?.montoTotalCobrado?.toLocaleString() || '0'
-                        }}</span>
+                      }}</span>
                     </div>
                   </div>
 
@@ -633,3 +635,24 @@ onMounted(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Ocultar scrollbar pero mantener funcionalidad */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Estilo para los botones de las tabs en mobile */
+@media (max-width: 640px) {
+  nav button {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    font-size: 0.8rem;
+  }
+}
+</style>

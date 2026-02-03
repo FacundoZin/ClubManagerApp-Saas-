@@ -42,15 +42,18 @@ const handlePay = () => {
   <div
     class="bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden flex flex-col h-full">
     <div class="p-5 flex-grow">
-      <div class="flex justify-between items-start">
-        <div>
-          <h3 class="text-lg font-bold text-slate-900">{{ socio.nombre }} {{ socio.apellido }}</h3>
-          <p class="text-sm text-slate-500 font-medium mt-1">Nº Socio: {{ socio.id }}</p>
-          <p class="text-sm text-slate-500 font-medium">DNI: {{ socio.dni }}</p>
+      <div class="flex flex-col sm:flex-row justify-between items-start gap-2">
+        <div class="w-full">
+          <div class="flex items-center justify-between gap-2">
+            <h3 class="text-lg font-bold text-slate-900 truncate">{{ socio.nombre }} {{ socio.apellido }}</h3>
+            <span
+              class="inline-flex shrink-0 items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-red-100 text-red-800">
+              Deudor
+            </span>
+          </div>
+          <p class="text-sm text-slate-500 font-medium mt-1">DNI: {{ socio.dni }}</p>
         </div>
-        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-red-100 text-red-800">
-          Deudor
-        </span>
+
       </div>
 
       <div class="mt-4 space-y-3">
@@ -59,9 +62,9 @@ const handlePay = () => {
         <!-- Selección de Periodos -->
         <div class="border-t border-slate-100 pt-3 mt-3">
           <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Periodos a cobrar:</p>
-          <div class="grid grid-cols-2 gap-2">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div v-for="(periodo, idx) in socio.periodosAdeudados" :key="idx" @click="togglePeriod(periodo)"
-              class="flex items-center p-2 rounded-md border cursor-pointer transition-all text-xs"
+              class="flex items-center p-2 rounded-md border cursor-pointer transition-all text-[11px] sm:text-xs"
               :class="isSelected(periodo) ? 'bg-green-50 border-green-200 text-green-700' : 'bg-slate-50 border-slate-200 text-slate-500'">
               <input type="checkbox" :checked="isSelected(periodo)"
                 class="h-3 w-3 rounded border-slate-300 text-green-600 focus:ring-green-500 mr-2" @click.stop
