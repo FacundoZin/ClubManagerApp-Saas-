@@ -4,8 +4,8 @@ import { useRoute, useRouter } from 'vue-router'
 import ConfirmModal from '../../components/Common/ConfirmModal.vue'
 import LoadingOverlay from '../../components/Common/LoadingOverlay.vue'
 import AddItemModal from '../../components/ModuloAlquilerArticulos/Alquileres/AddItemModal.vue'
-import ArticulosAlquiladosCard from '../../components/ModuloAlquilerArticulos/Articulos/ArticulosAlquiladosCard.vue'
 import RegisterPaymentModal from '../../components/ModuloAlquilerArticulos/Alquileres/RegisterPaymentModal.vue'
+import ArticulosAlquiladosCard from '../../components/ModuloAlquilerArticulos/Articulos/ArticulosAlquiladosCard.vue'
 import AlquilerService from '../../services/AlquilerService'
 
 const route = useRoute()
@@ -122,36 +122,20 @@ const allMonthsCombined = computed(() => {
   <div class="min-h-screen bg-slate-50 font-sans text-slate-800 pb-12">
     <!-- Header Simple -->
     <div class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-30">
-      <div class="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div class="flex items-center gap-3">
-          <button
-            @click="goBack"
-            class="p-2 -ml-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
+          <button @click="goBack"
+            class="p-2 -ml-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
           </button>
-          <h1 class="text-xl font-bold text-slate-900">Detalle de Alquiler</h1>
+          <h1 class="text-lg sm:text-xl font-bold text-slate-900 truncate">Detalle de Alquiler</h1>
         </div>
-        <div v-if="alquiler">
-          <span
-            class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
-            :class="
-              alquiler.estaAlDia ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
-            "
-          >
+        <div v-if="alquiler" class="flex justify-end">
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs sm:text-sm font-medium" :class="alquiler.estaAlDia ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
+            ">
             {{ alquiler.estaAlDia ? 'Al día' : 'Con Deuda' }}
           </span>
         </div>
@@ -160,10 +144,7 @@ const allMonthsCombined = computed(() => {
 
     <LoadingOverlay :show="loading" message="Cargando detalles del alquiler..." />
 
-    <div
-      v-if="!loading && error"
-      class="max-w-3xl mx-auto mt-12 p-6 bg-red-50 text-red-700 rounded-lg text-center"
-    >
+    <div v-if="!loading && error" class="max-w-3xl mx-auto mt-12 p-6 bg-red-50 text-red-700 rounded-lg text-center">
       {{ error }}
     </div>
 
@@ -172,42 +153,28 @@ const allMonthsCombined = computed(() => {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Socio Info -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-          <h2
-            class="text-sm font-medium text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2"
-          >
+          <h2 class="text-sm font-medium text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">
             Información del Socio
           </h2>
           <div class="space-y-4">
             <div class="flex justify-between items-center text-sm">
-              <span class="text-slate-400 font-medium uppercase text-[10px] tracking-wider"
-                >Nombre del Socio</span
-              >
-              <span class="font-bold text-slate-900"
-                >{{ alquiler.nombreSocio }} {{ alquiler.apellidoSocio }}</span
-              >
+              <span class="text-slate-400 font-medium uppercase text-[10px] tracking-wider">Nombre del Socio</span>
+              <span class="font-bold text-slate-900">{{ alquiler.nombreSocio }} {{ alquiler.apellidoSocio }}</span>
             </div>
             <div class="flex justify-between items-center text-sm">
-              <span class="text-slate-400 font-medium uppercase text-[10px] tracking-wider"
-                >Documento (DNI)</span
-              >
+              <span class="text-slate-400 font-medium uppercase text-[10px] tracking-wider">Documento (DNI)</span>
               <span class="font-semibold text-slate-700">{{ alquiler.dniSocio }}</span>
             </div>
             <div class="flex justify-between items-center text-sm" v-if="alquiler.telefonoSocio">
-              <span class="text-slate-400 font-medium uppercase text-[10px] tracking-wider"
-                >Teléfono</span
-              >
+              <span class="text-slate-400 font-medium uppercase text-[10px] tracking-wider">Teléfono</span>
               <span class="font-semibold text-slate-700">{{ alquiler.telefonoSocio }}</span>
             </div>
             <div class="flex justify-between items-center text-sm" v-if="alquiler.direccionSocio">
-              <span class="text-slate-400 font-medium uppercase text-[10px] tracking-wider"
-                >Dirección</span
-              >
+              <span class="text-slate-400 font-medium uppercase text-[10px] tracking-wider">Dirección</span>
               <span class="font-semibold text-slate-700">{{ alquiler.direccionSocio }}</span>
             </div>
             <div class="flex justify-between items-center text-sm" v-if="alquiler.localidadSocio">
-              <span class="text-slate-400 font-medium uppercase text-[10px] tracking-wider"
-                >Localidad</span
-              >
+              <span class="text-slate-400 font-medium uppercase text-[10px] tracking-wider">Localidad</span>
               <span class="font-semibold text-slate-700">{{ alquiler.localidadSocio }}</span>
             </div>
           </div>
@@ -215,9 +182,7 @@ const allMonthsCombined = computed(() => {
 
         <!-- Rental Info & Actions -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col">
-          <h2
-            class="text-sm font-medium text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2"
-          >
+          <h2 class="text-sm font-medium text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">
             Estado y Acciones
           </h2>
           <div class="flex-1 space-y-3">
@@ -225,72 +190,35 @@ const allMonthsCombined = computed(() => {
               <span class="text-slate-500">Fecha Inicio:</span>
               <span class="font-medium text-slate-900">{{ alquiler.fechaAlquiler }}</span>
             </div>
-            <div
-              v-if="alquiler.observaciones"
-              class="text-sm text-slate-600 italic bg-slate-50 p-2 rounded"
-            >
+            <div v-if="alquiler.observaciones" class="text-sm text-slate-600 italic bg-slate-50 p-2 rounded">
               "{{ alquiler.observaciones }}"
             </div>
           </div>
 
           <div class="mt-6 flex flex-col gap-3">
-            <button
-              @click="isRegisterPaymentModalOpen = true"
-              class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-teal-700 bg-teal-100 hover:bg-teal-200 transition-colors"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
+            <button @click="isRegisterPaymentModalOpen = true"
+              class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-teal-700 bg-teal-100 hover:bg-teal-200 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               Registrar Pago
             </button>
-            <button
-              @click="isConfirmFinalizeOpen = true"
-              class="w-full inline-flex justify-center items-center px-4 py-2 border border-slate-300 text-sm font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50 transition-colors"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2 text-slate-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M5 13l4 4L19 7"
-                />
+            <button @click="isConfirmFinalizeOpen = true"
+              class="w-full inline-flex justify-center items-center px-4 py-2 border border-slate-300 text-sm font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-slate-400" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
               </svg>
               Finalizar Alquiler
             </button>
-            <div
-              v-if="paymentError"
-              class="mt-2 p-2 bg-red-50 border border-red-100 rounded text-xs text-red-600 flex items-center gap-2"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 shrink-0"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
+            <div v-if="paymentError"
+              class="mt-2 p-2 bg-red-50 border border-red-100 rounded text-xs text-red-600 flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span>{{ paymentError }}</span>
             </div>
@@ -299,59 +227,37 @@ const allMonthsCombined = computed(() => {
       </div>
 
       <!-- Articulos (Items) -->
-      <ArticulosAlquiladosCard
-        v-if="alquiler"
-        :alquiler-id="alquilerId"
-        :items="alquiler.items"
-        @updated="handleItemUpdated"
-        @add-item="isAddItemModalOpen = true"
-      />
+      <ArticulosAlquiladosCard v-if="alquiler" :alquiler-id="alquilerId" :items="alquiler.items"
+        @updated="handleItemUpdated" @add-item="isAddItemModalOpen = true" />
 
       <!-- Estado de Pagos (Historial y Deuda combinados) -->
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-12">
-        <div
-          class="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between"
-        >
+        <div class="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
           <h2 class="text-base font-bold text-slate-900">Estado de Pagos</h2>
-          <div
-            v-if="alquiler.mesesAdeudados?.length > 0"
-            class="text-xs font-semibold text-rose-600 bg-rose-50 px-2 py-1 rounded-full border border-rose-100"
-          >
+          <div v-if="alquiler.mesesAdeudados?.length > 0"
+            class="text-xs font-semibold text-rose-600 bg-rose-50 px-2 py-1 rounded-full border border-rose-100">
             {{ alquiler.mesesAdeudados.length }} mes(es) pendiente(s)
           </div>
         </div>
 
-        <div class="p-6">
-          <div
-            v-if="allMonthsCombined.length > 0"
-            class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4"
-          >
-            <div
-              v-for="pago in allMonthsCombined"
-              :key="pago.id"
-              class="rounded-lg p-3 text-center transition-all hover:shadow-md border"
-              :class="
-                pago.tipo === 'pagado'
-                  ? 'bg-emerald-50 border-emerald-100'
-                  : 'bg-rose-50 border-rose-100'
-              "
-            >
-              <div
-                class="text-[10px] uppercase font-bold mb-1"
-                :class="pago.tipo === 'pagado' ? 'text-emerald-400' : 'text-rose-400'"
-              >
+        <div class="p-4 sm:p-6">
+          <div v-if="allMonthsCombined.length > 0"
+            class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3 sm:gap-4">
+            <div v-for="pago in allMonthsCombined" :key="pago.id"
+              class="rounded-lg p-3 text-center transition-all hover:shadow-md border" :class="pago.tipo === 'pagado'
+                ? 'bg-emerald-50 border-emerald-100'
+                : 'bg-rose-50 border-rose-100'
+                ">
+              <div class="text-[10px] uppercase font-bold mb-1"
+                :class="pago.tipo === 'pagado' ? 'text-emerald-400' : 'text-rose-400'">
                 {{ pago.tipo === 'pagado' ? 'Pagado' : 'Pendiente' }}
               </div>
-              <div
-                class="text-xs uppercase font-extrabold"
-                :class="pago.tipo === 'pagado' ? 'text-emerald-600' : 'text-rose-600'"
-              >
+              <div class="text-xs uppercase font-extrabold"
+                :class="pago.tipo === 'pagado' ? 'text-emerald-600' : 'text-rose-600'">
                 {{ getNombreMes(pago.mes) }} {{ pago.anio }}
               </div>
-              <div
-                class="text-lg font-bold mt-1"
-                :class="pago.tipo === 'pagado' ? 'text-emerald-700' : 'text-rose-700'"
-              >
+              <div class="text-lg font-bold mt-1"
+                :class="pago.tipo === 'pagado' ? 'text-emerald-700' : 'text-rose-700'">
                 ${{ pago.monto }}
               </div>
             </div>
@@ -364,84 +270,38 @@ const allMonthsCombined = computed(() => {
     </div>
 
     <!-- Modals -->
-    <AddItemModal
-      :is-open="isAddItemModalOpen"
-      :alquiler-id="parseInt(alquilerId)"
-      @close="isAddItemModalOpen = false"
-      @save="handleAddItem"
-    />
+    <AddItemModal :is-open="isAddItemModalOpen" :alquiler-id="parseInt(alquilerId)" @close="isAddItemModalOpen = false"
+      @save="handleAddItem" />
 
-    <RegisterPaymentModal
-      :is-open="isRegisterPaymentModalOpen"
-      :alquiler-id="parseInt(alquilerId)"
-      @close="isRegisterPaymentModalOpen = false"
-      @saved="handleRegisterPayment"
-    />
+    <RegisterPaymentModal :is-open="isRegisterPaymentModalOpen" :alquiler-id="parseInt(alquilerId)"
+      @close="isRegisterPaymentModalOpen = false" @saved="handleRegisterPayment" />
 
-    <ConfirmModal
-      :is-open="isConfirmFinalizeOpen"
-      title="Finalizar Alquiler"
+    <ConfirmModal :is-open="isConfirmFinalizeOpen" title="Finalizar Alquiler"
       message="¿Está seguro que desea finalizar este alquiler? Se registrará la devolución de todos los artículos."
-      confirm-text="Finalizar Alquiler"
-      type="info"
-      @close="isConfirmFinalizeOpen = false"
-      @confirm="handleFinalize"
-    />
+      confirm-text="Finalizar Alquiler" type="info" @close="isConfirmFinalizeOpen = false" @confirm="handleFinalize" />
 
     <!-- Toast -->
-    <Transition
-      enter-active-class="transform ease-out duration-300 transition"
+    <Transition enter-active-class="transform ease-out duration-300 transition"
       enter-from-class="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
-      enter-to-class="translate-y-0 opacity-100 sm:translate-x-0"
-      leave-active-class="transition ease-in duration-100"
-      leave-from-class="opacity-100"
-      leave-to-class="opacity-0"
-    >
-      <div
-        v-if="toast.show"
-        class="fixed bottom-5 right-5 z-50 flex w-full max-w-sm overflow-hidden bg-white rounded-lg shadow-2xl border border-slate-200 pointer-events-auto ring-1 ring-black ring-opacity-5"
-      >
-        <div
-          class="flex items-center justify-center w-12"
-          :class="{ 'bg-teal-500': toast.type === 'success', 'bg-red-500': toast.type === 'error' }"
-        >
-          <svg
-            v-if="toast.type === 'success'"
-            class="w-6 h-6 text-white"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M5 13l4 4L19 7"
-            />
+      enter-to-class="translate-y-0 opacity-100 sm:translate-x-0" leave-active-class="transition ease-in duration-100"
+      leave-from-class="opacity-100" leave-to-class="opacity-0">
+      <div v-if="toast.show"
+        class="fixed bottom-5 right-5 z-50 flex w-full max-w-sm overflow-hidden bg-white rounded-lg shadow-2xl border border-slate-200 pointer-events-auto ring-1 ring-black ring-opacity-5">
+        <div class="flex items-center justify-center w-12"
+          :class="{ 'bg-teal-500': toast.type === 'success', 'bg-red-500': toast.type === 'error' }">
+          <svg v-if="toast.type === 'success'" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
           </svg>
-          <svg
-            v-else
-            class="w-6 h-6 text-white"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
+          <svg v-else class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </div>
         <div class="px-4 py-3">
-          <span
-            class="font-semibold"
-            :class="{
-              'text-teal-500': toast.type === 'success',
-              'text-red-500': toast.type === 'error',
-            }"
-          >
+          <span class="font-semibold" :class="{
+            'text-teal-500': toast.type === 'success',
+            'text-red-500': toast.type === 'error',
+          }">
             {{ toast.type === 'success' ? 'Éxito' : 'Error' }}
           </span>
           <p class="text-sm text-slate-600">{{ toast.message }}</p>
