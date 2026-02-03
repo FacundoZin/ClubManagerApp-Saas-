@@ -4,6 +4,7 @@ using APIClub.Domain.GestionSocios.Models;
 using APIClub.Domain.GestionSocios.Repositories;
 using APIClub.Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
+using APIClub.Application.Helpers;
 
 namespace APIClub.Infrastructure.Persistence.Repositorio
 {
@@ -190,7 +191,7 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
                     Nombre = s.Nombre,
                     Apellido = s.Apellido,
                     Dni = s.Dni,
-                    Telefono = s.Telefono,
+                    Telefono = s.Telefono?.FormatearForUserVisibility(),
                     Direcccion = s.Direcccion,
                     PeriodosAdeudados = periodosAdeudados
                 };
