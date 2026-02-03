@@ -14,7 +14,15 @@ const error = ref('')
 const fetchSocioDetails = async () => {
   isLoading.value = true
   try {
-    socio.value = await SociosService.getFullDetail(socioId)
+    const data = await SociosService.getFullDetail(socioId)
+    // Ordenar historial por año y semestre descendente para ver lo más reciente primero
+    if (data.historialCuotas) {
+      data.historialCuotas.sort((a, b) => {
+        if (a.anio !== b.anio) return b.anio - a.anio
+        return b.semestre - a.semestre
+      })
+    }
+    socio.value = data
   } catch (err) {
     error.value = err.message
   } finally {
@@ -29,12 +37,22 @@ const goBack = () => {
 onMounted(fetchSocioDetails)
 
 const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
+  if (!dateString) return 'Pendiente de Pago'
   return new Date(dateString).toLocaleDateString('es-AR', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
   })
+}
+
+const getMetodoPagoLabel = (metodo) => {
+  if (metodo === null || metodo === undefined) return '-'
+  const labels = {
+    0: 'Cobrador',
+    1: 'Link de Pago',
+    2: 'Sede',
+  }
+  return labels[metodo] || 'Otro'
 }
 </script>
 
@@ -249,7 +267,7 @@ const formatDate = (dateString) => {
                 <p class="text-xs font-bold text-slate-400 uppercase">Ubicación</p>
                 <p class="text-slate-700 font-bold">{{ socio.direcccion || 'Sin dirección' }}</p>
                 <p class="text-slate-500 text-sm font-medium">
-                  {{ socio.lote ? 'Lote: ' + socio.lote : '' }} {{ socio.localidad }}
+                  {{ socio.nombreLote ? 'Lote: ' + socio.nombreLote : '' }} {{ socio.localidad }}
                 </p>
               </div>
             </div>
@@ -266,7 +284,7 @@ const formatDate = (dateString) => {
             >
               <h3 class="text-lg font-black text-slate-900">Historial de Cuotas</h3>
               <span class="px-3 py-1 bg-slate-100 text-slate-600 rounded-lg text-xs font-black"
-                >{{ socio.historialCuotas.length }} PAGOS</span
+                >{{ socio.historialCuotas.length }} PERÍODOS</span
               >
             </div>
 
@@ -274,6 +292,11 @@ const formatDate = (dateString) => {
               <table class="w-full text-left border-collapse">
                 <thead>
                   <tr class="bg-slate-50/50">
+                    <th
+                      class="px-8 py-4 text-xs font-black text-slate-400 uppercase tracking-widest"
+                    >
+                      Período
+                    </th>
                     <th
                       class="px-8 py-4 text-xs font-black text-slate-400 uppercase tracking-widest"
                     >
@@ -298,25 +321,35 @@ const formatDate = (dateString) => {
                 </thead>
                 <tbody class="divide-y divide-slate-50">
                   <tr
-                    v-for="cuota in socio.historialCuotas"
-                    :key="cuota.id"
+                    v-for="(cuota, index) in socio.historialCuotas"
+                    :key="index"
                     class="hover:bg-slate-50/80 transition-colors"
                   >
+                    <td class="px-8 py-5 text-sm font-bold text-slate-600">
+                      {{ cuota.anio }} - Sem. {{ cuota.semestre }}
+                    </td>
                     <td class="px-8 py-5 text-sm font-bold text-slate-700">
-                      {{ formatDate(cuota.fechaPago) }}
+                      {{ formatDate(cuota.fechaDePago) }}
                     </td>
                     <td class="px-8 py-5 text-sm font-black text-slate-900">
-                      ${{ cuota.importe.toLocaleString('es-AR') }}
+                      {{
+                        cuota.importePagado
+                          ? '$' + cuota.importePagado.toLocaleString('es-AR')
+                          : '-'
+                      }}
                     </td>
                     <td class="px-8 py-5 text-sm">
                       <span
                         class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 text-[10px] font-black uppercase"
                       >
-                        {{ cuota.metodoPago }}
+                        {{ getMetodoPagoLabel(cuota.metodoDePago) }}
                       </span>
                     </td>
                     <td class="px-8 py-5 text-right">
-                      <span class="inline-flex items-center text-emerald-600 font-black text-xs">
+                      <span
+                        class="inline-flex items-center font-black text-xs"
+                        :class="cuota.pagado ? 'text-emerald-600' : 'text-slate-400'"
+                      >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           class="h-4 w-4 mr-1"
@@ -324,21 +357,28 @@ const formatDate = (dateString) => {
                           fill="currentColor"
                         >
                           <path
+                            v-if="cuota.pagado"
                             fill-rule="evenodd"
                             d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                             clip-rule="evenodd"
                           />
+                          <path
+                            v-else
+                            fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z"
+                            clip-rule="evenodd"
+                          />
                         </svg>
-                        PAGADO
+                        {{ cuota.pagado ? 'PAGADO' : 'PENDIENTE' }}
                       </span>
                     </td>
                   </tr>
                   <tr v-if="socio.historialCuotas.length === 0">
                     <td
-                      colspan="4"
+                      colspan="5"
                       class="px-8 py-12 text-center text-slate-400 font-medium italic"
                     >
-                      No se registran pagos realizados hasta la fecha.
+                      No se registran periodos para este socio.
                     </td>
                   </tr>
                 </tbody>

@@ -1,5 +1,4 @@
 ﻿using APIClub.Application.Common;
-using APIClub.Application.Dtos.Cuota;
 using APIClub.Application.Dtos.Socios;
 using APIClub.Application.Helpers;
 using APIClub.Domain.GestionSocios;
@@ -271,7 +270,42 @@ namespace APIClub.Application.Services
             int anioActual = fechaPagoActual.Year;
             int semestreActual = fechaPagoActual.Month <= 6 ? 1 : 2;
 
-            bool debeCuota = !socio.HistorialCuotas.Any(c => c.Anio == anioActual && c.Semestre == semestreActual);
+            var periodosCuotas = new List<PeriodoCuotasDto>();
+            int anioAsociacion = socio.FechaAsociacion.Year;
+            int semestreInicio = socio.FechaAsociacion.Month <= 6 ? 1 : 2;
+
+            for (int anio = anioAsociacion; anio <= anioActual; anio++)
+            {
+                int semestreDesde = (anio == anioAsociacion) ? semestreInicio : 1;
+                int semestreHasta = (anio == anioActual) ? semestreActual : 2;
+
+                for (int sem = semestreDesde; sem <= semestreHasta; sem++)
+                {
+                    if (!socio.HistorialCuotas.Any(c => c.Anio == anio && c.Semestre == sem))
+                    {
+                        periodosCuotas.Add(new PeriodoCuotasDto
+                        {
+                            anio = anio,
+                            semestre = sem,
+                            pagado = false,
+                        });
+                    }
+                    else
+                    {
+                        var cuota = socio.HistorialCuotas.FirstOrDefault(c => c.Semestre == sem && c.Anio == anio);
+
+                        periodosCuotas.Add(new PeriodoCuotasDto
+                        {
+                            FechaDePago = cuota!.FechaPago,
+                            ImportePagado = cuota.Monto,
+                            MetodoDePago = cuota.FormaDePago,
+                            anio = anio,
+                            semestre = sem,
+                            pagado = true,
+                        });
+                    }
+                }
+            }
 
             var dto = new FullSocioDto
             {
@@ -285,14 +319,8 @@ namespace APIClub.Application.Services
                 IdLote = socio.LoteId,
                 Localidad = socio.Localidad,
                 FechaAsociacion = socio.FechaAsociacion,
-                AdeudaCuotas = debeCuota,
-                HistorialCuotas = socio.HistorialCuotas.Select(c => new PreviewCuotaDto
-                {
-                    Id = c.Id,
-                    FechaPago = c.FechaPago,
-                    Importe = c.Monto,
-                    MetodoPago = c.FormaDePago.ToString()
-                }).OrderByDescending(c => c.FechaPago).ToList()
+                AdeudaCuotas = periodosCuotas.Any(c => c.pagado == false),
+                HistorialCuotas = periodosCuotas.OrderBy(p => p.anio).ThenBy(p => p.semestre).ToList(),
             };
 
             return Result<FullSocioDto>.Exito(dto);
@@ -326,37 +354,6 @@ namespace APIClub.Application.Services
                 Message = "Socio eliminado correctamente.",
                 SocioId = id
             });
-        }
-
-        public async Task<Result<List<PreviewCuotaDto>>> GetHistorialCuotas(int socioId)
-        {
-            // Validar ID
-            if (socioId <= 0)
-                return Result<List<PreviewCuotaDto>>.Error("El ID del socio no es válido.", 400);
-
-            // Buscar socio
-            var socio = await _SocioRepository.GetSocioById(socioId);
-
-            if (socio is null)
-                return Result<List<PreviewCuotaDto>>.Error("No existe un socio con ese ID.", 404);
-
-            // Obtener cuotas del socio
-            var cuotas = await _SocioRepository.GetCuotasSocioById(socioId);
-
-            if (cuotas is null || !cuotas.Any())
-                return Result<List<PreviewCuotaDto>>.Exito(new List<PreviewCuotaDto>());
-
-            // Mapear a DTO
-            var dto = cuotas.Select(c => new PreviewCuotaDto
-            {
-                Id = c.Id,
-                FechaPago = c.FechaPago,
-                Importe = c.Monto,
-                MetodoPago = c.FormaDePago.ToString()
-            }).ToList();
-
-
-            return Result<List<PreviewCuotaDto>>.Exito(dto);
         }
     }
 }

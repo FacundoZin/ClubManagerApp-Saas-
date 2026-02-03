@@ -29,7 +29,7 @@ namespace APIClub.Application.Validators
             if (usuario.Rol != RolUsuario.Cobrador)
                 return Result<Socio>.Error("solamente los cobradores pueden registrar este tipo de pagos", 403);
 
-            var socio = await _socioRepository.GetSocioById(idSocio);
+            var socio = await _socioRepository.GetSocioByIdWithCuotas(idSocio);
             if (socio == null)
                 return Result<Socio>.Error("Socio no encontrado.", 404);
 
@@ -46,7 +46,7 @@ namespace APIClub.Application.Validators
 
         public async Task<Result<Socio>> ValidarPagoEnEstablecimeinto(int idSocio, List<PeriodoAdeudadoDto> periodos)
         {
-            var socio = await _socioRepository.GetSocioById(idSocio);
+            var socio = await _socioRepository.GetSocioByIdWithCuotas(idSocio);
             if (socio == null)
                 return Result<Socio>.Error("Socio no encontrado.", 404);
 

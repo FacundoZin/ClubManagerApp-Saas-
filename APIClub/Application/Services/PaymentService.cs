@@ -3,7 +3,6 @@ using APIClub.Application.Dtos.Payment;
 using APIClub.Application.Helpers;
 using APIClub.Domain.GestionSocios;
 using APIClub.Domain.PaymentsOnline;
-using APIClub.Domain.PaymentsOnline.Modelos;
 
 namespace APIClub.Application.Services
 {

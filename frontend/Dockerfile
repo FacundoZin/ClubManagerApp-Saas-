@@ -17,5 +17,7 @@ RUN npm run build
 # Runtime stage
 FROM nginx:alpine
 COPY --from=build-stage /app/dist /usr/share/nginx/html
+# Copiamos la configuración de Nginx para manejar las rutas de la SPA (Vue)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

@@ -11,16 +11,14 @@ namespace APIClub.Application.Services
 {
     public class CuotasService : ICuotasService
     {
-        private readonly ISocioRepository _SocioRepository;
         private readonly ICuotaRepository _CuotaRepository;
         private readonly IHistorialCobradoresRepository _HistorialCobradoresRepository;
         private readonly IPagoCuotaValidator _Validator;
         private readonly UnitOfWork _UnitOfWork;
 
-        public CuotasService(ISocioRepository socioRepository, ICuotaRepository cuotaRepository, IPagoCuotaValidator validator, IHistorialCobradoresRepository historialCobradoresRepository,
+        public CuotasService(ICuotaRepository cuotaRepository, IPagoCuotaValidator validator, IHistorialCobradoresRepository historialCobradoresRepository,
             UnitOfWork unitOfWork)
         {
-            _SocioRepository = socioRepository;
             _CuotaRepository = cuotaRepository;
             _Validator = validator;
             _HistorialCobradoresRepository = historialCobradoresRepository;
@@ -125,19 +123,7 @@ namespace APIClub.Application.Services
 
         public async Task<Result<object>> RegistrarPagoCuoataOnline(PaymentToken token)
         {
-            var socio = await _SocioRepository.GetSocioById(token.IdSocio);
-            if (socio == null)
-                return Result<object>.Error("Socio no encontrado.", 404);
-
             var fechaPago = DateOnly.FromDateTime(DateTime.Now);
-
-
-            bool cuotaExistente = socio.HistorialCuotas.Any(c =>
-                c.Anio == token.anio && c.Semestre == token.semestre);
-
-            if (cuotaExistente)
-                return Result<object>.Error("Ya existe una cuota registrada para este semestre y año.", 409);
-
             var valorCuotaActual = await _CuotaRepository.ObtenerValorCuota();
 
             var nuevaCuota = new Cuota
@@ -147,19 +133,17 @@ namespace APIClub.Application.Services
                 FormaDePago = FormasDePago.LinkDePago,
                 Anio = token.anio,
                 Semestre = token.semestre,
-                SocioId = socio.Id,
-                Socio = socio
+                SocioId = token.IdSocio
             };
 
-            socio.HistorialCuotas.Add(nuevaCuota);
-            await _SocioRepository.UpdateSocio(socio);
+            _CuotaRepository.RegistrarCuotas(new List<Cuota> { nuevaCuota });
+            await _UnitOfWork.SaveChangesAsync();
 
             return Result<object>.Exito(new
             {
                 Mensaje = "Pago de cuota registrado exitosamente.",
                 Cuota = nuevaCuota
             });
-
         }
     }
 }

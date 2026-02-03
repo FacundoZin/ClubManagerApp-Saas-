@@ -51,7 +51,7 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
 
         public async Task<Socio?> GetSocioById(int id)
         {
-            return await _Dbcontext.Socios.Include(s => s.HistorialCuotas)
+            return await _Dbcontext.Socios
                 .FirstOrDefaultAsync(s => s.Id == id);
         }
 

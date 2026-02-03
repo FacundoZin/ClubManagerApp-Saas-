@@ -15,6 +15,6 @@ namespace APIClub.Application.Dtos.Socios
         public string? Localidad { get; set; }
         public DateOnly? FechaAsociacion { get; set; }
         public bool AdeudaCuotas { get; set; }
-        public List<PreviewCuotaDto> HistorialCuotas { get; set; } = new List<PreviewCuotaDto>();
+        public List<PeriodoCuotasDto> HistorialCuotas { get; set; } = new List<PeriodoCuotasDto>();
     }
 }
