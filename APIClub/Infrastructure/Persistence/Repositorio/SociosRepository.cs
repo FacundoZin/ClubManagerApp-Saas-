@@ -1,4 +1,5 @@
 ﻿using APIClub.Domain.Enums;
+using APIClub.Application.Dtos.Socios;
 using APIClub.Domain.GestionSocios.Models;
 using APIClub.Domain.GestionSocios.Repositories;
 using APIClub.Infrastructure.Persistence.Data;
@@ -130,23 +131,73 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
             .ToListAsync();
         }
 
-        public async Task<(List<Socio> Items, int TotalCount)> GetSociosDeudoresByLote(int IdLote, int anioActual, int semestreActual, int pageNumber, int pageSize)
+        public async Task<(List<PreviewSocioForCobranzaDto> Items, int TotalCount)> GetSociosDeudoresByLote(int IdLote, int anioActual, int semestreActual, int pageNumber, int pageSize)
         {
             var query = _Dbcontext.Socios.
-                Where(s => s.Lote.Id == IdLote && s.PreferenciaDePago == FormasDePago.Cobrador && !s.HistorialCuotas
+                Where(s => s.LoteId == IdLote && s.PreferenciaDePago == FormasDePago.Cobrador && !s.HistorialCuotas
                 .Any(c => c.Anio == anioActual && c.Semestre == semestreActual))
                 .AsNoTracking();
 
             int totalCount = await query.CountAsync();
 
-            var items = await query
+            // Proyectamos a un tipo anónimo para traer solo lo necesario de la DB
+            var socios = await query
                 .OrderBy(s => s.Apellido)
                 .ThenBy(s => s.Nombre)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
+                .Select(s => new
+                {
+                    s.Id,
+                    s.Nombre,
+                    s.Apellido,
+                    s.Dni,
+                    s.Telefono,
+                    s.Direcccion,
+                    s.FechaAsociacion,
+                    CuotasPagas = s.HistorialCuotas.Select(c => new { c.Anio, c.Semestre }).ToList()
+                })
                 .ToListAsync();
 
-            return (items, totalCount);
+            // Transformamos al DTO final
+            var dtoSocios = socios.Select(s =>
+            {
+                var periodosAdeudados = new List<PeriodoAdeudadoDto>();
+                int anioInicio = s.FechaAsociacion.Year;
+                int semestreInicio = s.FechaAsociacion.Month <= 6 ? 1 : 2;
+
+                for (int anio = anioInicio; anio <= anioActual; anio++)
+                {
+                    int semestreDesde = (anio == anioInicio) ? semestreInicio : 1;
+                    int semestreHasta = (anio == anioActual) ? semestreActual : 2;
+
+                    for (int sem = semestreDesde; sem <= semestreHasta; sem++)
+                    {
+                        if (!s.CuotasPagas.Any(c => c.Anio == anio && c.Semestre == sem))
+                        {
+                            periodosAdeudados.Add(new PeriodoAdeudadoDto
+                            {
+                                Anio = anio,
+                                Semestre = sem
+                            });
+                        }
+                    }
+                }
+
+                return new PreviewSocioForCobranzaDto
+                {
+                    Id = s.Id,
+                    Nombre = s.Nombre,
+                    Apellido = s.Apellido,
+                    Dni = s.Dni,
+                    Telefono = s.Telefono,
+                    Direcccion = s.Direcccion,
+                    PeriodosAdeudados = periodosAdeudados
+                };
+
+            }).ToList();
+
+            return (dtoSocios, totalCount);
         }
 
         public async Task<List<Socio>> GetSociosDeudoresWithPreferenceLinkDePagoPaginado(int anioActual, int semestreActual, int pageNumber, int pageSize)

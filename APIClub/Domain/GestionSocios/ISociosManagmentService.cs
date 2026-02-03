@@ -8,7 +8,7 @@ namespace APIClub.Domain.GestionSocios
     {
         Task<Result<PagedResult<SocioCardDto>>> GetSociosDeudores(int pageNumber, int pageSize);
         Task<Result<object?>> cargarSocio(CreateSocioDto _dto);
-        Task<Result<PreviewSocioDto>> GetSocioByDni(string dni);
+        Task<Result<SocioDebtPreviewDto>> GetSocioByDni(string dni);
         Task<Result<object>> UpdateSocio(int id, UpdateSocio dto);
         Task<Result<object>> RemoveSocio(int id);
         Task<Result<object>> ReactivarSocio(int id);

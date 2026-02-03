@@ -1,4 +1,5 @@
-﻿using APIClub.Domain.GestionSocios.Models;
+﻿using APIClub.Application.Dtos.Socios;
+using APIClub.Domain.GestionSocios.Models;
 
 namespace APIClub.Domain.GestionSocios.Repositories
 {
@@ -18,7 +19,7 @@ namespace APIClub.Domain.GestionSocios.Repositories
         Task<(List<Socio> Items, int TotalCount)> GetSociosDeudoresPaginado(int anioActual, int semestreActual, int pageNumber, int pageSize);
         Task RemoveSocios(Socio socio);
         Task<List<Cuota>> GetCuotasSocioById(int socioId);
-        Task<(List<Socio> Items, int TotalCount)> GetSociosDeudoresByLote(int IdLote, int anioActual, int semestreActual, int pageNumber, int pageSize);
+        Task<(List<PreviewSocioForCobranzaDto> Items, int TotalCount)> GetSociosDeudoresByLote(int IdLote, int anioActual, int semestreActual, int pageNumber, int pageSize);
         Task<List<Socio>> GetSociosDeudoresWithPreferenceLinkDePagoPaginado(int anioActual, int semestreActual, int pageNumber, int pageSize);
     }
 }

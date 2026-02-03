@@ -2,6 +2,7 @@
 using APIClub.Domain.GestionSocios.Repositories;
 using APIClub.Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace APIClub.Infrastructure.Persistence.Repositorio
 {
@@ -32,6 +33,11 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
                 .FirstOrDefaultAsync();
 
             return valorCuota;
+        }
+
+        public void RegistrarCuotas(IEnumerable<Cuota> cuotas)
+        {
+            _dbcontext.Cuotas.AddRange(cuotas);
         }
     }
 }

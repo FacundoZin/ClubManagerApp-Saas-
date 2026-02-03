@@ -22,7 +22,7 @@ namespace APIClub.Contrrollers
         {
             var result = await _cobranzasServices.ListarSociosDedudoresPorLote(IdLote, pageNumber, pageSize);
 
-            if (!result.Exit) return BadRequest(result.Errormessage);
+            if (!result.Exit) return StatusCode(result.Errorcode, result.Errormessage);
 
             return Ok(result.Data);
         }

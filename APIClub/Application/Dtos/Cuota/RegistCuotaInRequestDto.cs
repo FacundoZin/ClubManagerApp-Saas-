@@ -1,4 +1,5 @@
-﻿using APIClub.Domain.Enums;
+﻿using APIClub.Application.Dtos.Socios;
+using APIClub.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace APIClub.Application.Dtos.Cuota
@@ -9,7 +10,6 @@ namespace APIClub.Application.Dtos.Cuota
         public int IdSocio { get; set; }
         [Required]
         public FormasDePago FormaPago { get; set; }
+        public List<PeriodoAdeudadoDto> Periodos { get; set; } = new List<PeriodoAdeudadoDto>();
     }
-    
-
 }

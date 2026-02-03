@@ -28,7 +28,7 @@ namespace APIClub.Application.Services
 
             if (!result.Exit)
             {
-                if(result.Errorcode == 409) return Result<object?>.Conflict(result.Errormessage, result.Errorcode, result.Data);
+                if (result.Errorcode == 409) return Result<object?>.Conflict(result.Errormessage, result.Errorcode, result.Data);
                 return Result<object?>.Error(result.Errormessage, result.Errorcode);
             }
 
@@ -91,30 +91,48 @@ namespace APIClub.Application.Services
             return Result<object>.Exito(new { Message = "Socio reactivado correctamente.", SocioId = socio.Id });
         }
 
-        public async Task<Result<PreviewSocioDto>> GetSocioByDni(string dni)
+        public async Task<Result<SocioDebtPreviewDto>> GetSocioByDni(string dni)
         {
             if (string.IsNullOrWhiteSpace(dni))
             {
-                return Result<PreviewSocioDto>.Error("Debe indicar un DNI válido.", 400);
+                return Result<SocioDebtPreviewDto>.Error("Debe indicar un DNI válido.", 400);
             }
 
             var socio = await _SocioRepository.GetSocioByDni(dni);
 
             if (socio is null)
             {
-                return Result<PreviewSocioDto>.Error("No se encontró un socio con ese DNI.", 404);
+                return Result<SocioDebtPreviewDto>.Error("No se encontró un socio con ese DNI.", 404);
             }
 
-            var fechaPagoActual = DateOnly.FromDateTime(DateTime.Now);
-            int anioActual = fechaPagoActual.Year;
-            int semestreActual = fechaPagoActual.Month <= 6 ? 1 : 2;
+            var hoy = DateTime.Now;
+            int anioActual = hoy.Year;
+            int semestreActual = hoy.Month <= 6 ? 1 : 2;
 
-            bool debeCuota = false;
 
-            if (!socio.HistorialCuotas.Any(c => c.Anio == anioActual && c.Semestre == semestreActual))
-                debeCuota = true;
+            var periodosAdeudados = new List<PeriodoAdeudadoDto>();
+            int anioInicio = socio.FechaAsociacion.Year;
+            int semestreInicio = socio.FechaAsociacion.Month <= 6 ? 1 : 2;
 
-            var dto = new PreviewSocioDto
+            for (int anio = anioInicio; anio <= anioActual; anio++)
+            {
+                int semestreDesde = (anio == anioInicio) ? semestreInicio : 1;
+                int semestreHasta = (anio == anioActual) ? semestreActual : 2;
+
+                for (int sem = semestreDesde; sem <= semestreHasta; sem++)
+                {
+                    if (!socio.HistorialCuotas.Any(c => c.Anio == anio && c.Semestre == sem))
+                    {
+                        periodosAdeudados.Add(new PeriodoAdeudadoDto
+                        {
+                            Anio = anio,
+                            Semestre = sem
+                        });
+                    }
+                }
+            }
+
+            var dto = new SocioDebtPreviewDto
             {
                 Id = socio.Id,
                 Nombre = socio.Nombre,
@@ -126,10 +144,11 @@ namespace APIClub.Application.Services
                 IdLote = socio.LoteId,
                 Localidad = socio.Localidad,
                 PreferenciaDePago = socio.PreferenciaDePago,
-                AdeudaCuotas = debeCuota,
+                AdeudaCuotas = periodosAdeudados.Count > 0 ? true : false,
+                PeriodosAdeudados = periodosAdeudados
             };
 
-            return Result<PreviewSocioDto>.Exito(dto);
+            return Result<SocioDebtPreviewDto>.Exito(dto);
         }
 
         public async Task<Result<PagedResult<SocioCardDto>>> GetSociosDeudores(int pageNumber, int pageSize)

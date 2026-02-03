@@ -22,8 +22,8 @@ namespace APIClub.Application.Services
         {
             _SociosRepository = sociosRepository;
             _context = context;
-            _UsuariosRepository = usuariosRepository;   
-            _historialCobradoresRepository = historialCobradoresRepository; 
+            _UsuariosRepository = usuariosRepository;
+            _historialCobradoresRepository = historialCobradoresRepository;
         }
 
         public async Task<List<PreviewLote>> GetLotesPreview()
@@ -49,31 +49,20 @@ namespace APIClub.Application.Services
                 int anioActual = hoy.Year;
                 int semestreActual = hoy.Month <= 6 ? 1 : 2;
 
-                var (paginatedSocios, totalCount) = await _SociosRepository.GetSociosDeudoresByLote(Idlote, anioActual, semestreActual, pageNumber, pageSize);
-
-                var dto = paginatedSocios.Select(s => new PreviewSocioForCobranzaDto
-                {
-                    Id = s.Id,
-                    Nombre = s.Nombre,  
-                    Apellido = s.Apellido,
-                    Dni = s.Dni,
-                    Telefono = s.Telefono,
-                    Direcccion = s.Direcccion,
-
-                }).ToList();
+                var (dto, totalCount) = await _SociosRepository.GetSociosDeudoresByLote(Idlote, anioActual, semestreActual, pageNumber, pageSize);
 
                 var pagedResult = new PagedResult<PreviewSocioForCobranzaDto>(dto, totalCount, pageNumber, pageSize);
 
                 return Result<PagedResult<PreviewSocioForCobranzaDto>>.Exito(pagedResult);
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return Result<PagedResult<PreviewSocioForCobranzaDto>>.Error("algo salio mal al obtener los socios", 500);
             }
-            
+
         }
-        
+
         public async Task<Result<bool>> CrearLote(CreateLoteDto dto)
         {
             try
@@ -115,10 +104,12 @@ namespace APIClub.Application.Services
         {
             var historial = await _historialCobradoresRepository.GetHistorialCobradorByMes(idCobrador, mes, anio);
 
-            var cobrosRealizados = historial.Select(c => new CobroDto { 
-                FechaCobro = c.FechaCobro, 
-                MontoCobrado = c.MontoCobrado, 
-                NombreSocio = c.NombreSocio })
+            var cobrosRealizados = historial.Select(c => new CobroDto
+            {
+                FechaCobro = c.FechaCobro,
+                MontoCobrado = c.MontoCobrado,
+                NombreSocio = c.NombreSocio
+            })
                 .ToList();
 
             var montoTotalCobrado = cobrosRealizados.Sum(c => c.MontoCobrado);

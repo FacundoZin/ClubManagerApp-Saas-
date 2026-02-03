@@ -6,14 +6,15 @@ export default {
             throw new Error("Datos de pago inválidos");
         }
 
-        // Construir el request DTO exacto
+        // Construir el request DTO para pago general (plural)
         const request = {
             IdSocio: paymentData.socioId,
-            FormaPago: paymentData.formaPago
+            FormaPago: paymentData.formaPago,
+            Periodos: paymentData.periodos || [] // Lista de { anio, semestre }
         };
 
         try {
-            const response = await fetch(`${API_URL}/pagarCuota`, {
+            const response = await fetch(`${API_URL}/RegistrarPagos`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -37,7 +38,7 @@ export default {
             return await response.json();
         } catch (error) {
             console.error("Error en registrarCuota:", error);
-            throw error; 
+            throw error;
         }
     },
 
@@ -48,7 +49,8 @@ export default {
 
         const request = {
             IdSocio: paymentData.socioId,
-            FormaPago: paymentData.formaPago
+            FormaPago: paymentData.formaPago,
+            Periodos: paymentData.periodos || [] // Lista de { anio, semestre }
         };
 
         try {

@@ -24,12 +24,12 @@ namespace APIClub.Contrrollers
             return Ok(new { result.Data });
         }
 
-        [HttpPost("pagarCuota")]
-        public async Task<IActionResult> RegistrarCuota([FromBody] RegistCuotaInRequestDto request)
+        [HttpPost("RegistrarPagos")]
+        public async Task<IActionResult> RegistrarPagos([FromBody] RegistCuotaInRequestDto request)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var result = await _CuotasService.RegistrarPagoCuoata(request.IdSocio, request.FormaPago);
+            var result = await _CuotasService.RegistrarPagosCuotas(request.IdSocio, request.Periodos, request.FormaPago);
 
             if (!result.Exit)
                 return StatusCode(result.Errorcode, new { mensaje = result.Errormessage });
@@ -40,15 +40,15 @@ namespace APIClub.Contrrollers
         [HttpPost("RegistrarPagoConCobrador")]
         public async Task<IActionResult> RegistrarPagoDeCuotaConCobrador([FromBody] RegistCuotaInRequestDto request)
         {
-            if(!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var idCobrador = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-            var result = await _CuotasService.RegistrarPagoCuoataCobrador(request.IdSocio, idCobrador);
+            var result = await _CuotasService.RegistrarPagosCuotasCobrador(request.IdSocio, request.Periodos, idCobrador);
 
-            if(!result.Exit) return StatusCode(result.Errorcode,result.Errormessage);
+            if (!result.Exit) return StatusCode(result.Errorcode, result.Errormessage);
 
-            return Ok(new { data = result.Data });  
-        }   
+            return Ok(new { data = result.Data });
+        }
     }
 }
