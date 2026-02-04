@@ -118,5 +118,48 @@ export default {
             console.error("Error en actualizarValor:", error);
             throw error;
         }
+    },
+
+    async obtenerHistorialCuotas(filtros) {
+        try {
+            const params = new URLSearchParams({
+                tipoFiltro: filtros.tipoFiltro || 'fecha',
+                pageNumber: filtros.pageNumber || 1,
+                pageSize: filtros.pageSize || 10
+            });
+
+            if (filtros.tipoFiltro === 'fecha' && filtros.fechaPago) {
+                params.append('fechaPago', filtros.fechaPago);
+            } else if (filtros.tipoFiltro === 'periodo') {
+                if (filtros.anio) params.append('anio', filtros.anio);
+                if (filtros.semestre) params.append('semestre', filtros.semestre);
+            }
+
+            const response = await fetch(`${API_URL}/HistorialCuotas?${params.toString()}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+            });
+
+            if (!response.ok) {
+                if (response.status >= 500) {
+                    throw new Error("Lo sentimos, algo salió mal en el servidor.");
+                }
+
+                if (response.status >= 400) {
+                    const errorData = await response.json().catch(() => ({}));
+                    const errorMessage = errorData.mensaje || errorData.title || 'Error al obtener el historial';
+                    throw new Error(errorMessage);
+                }
+            }
+
+            const result = await response.json();
+            return result.data;
+        } catch (error) {
+            console.error("Error en obtenerHistorialCuotas:", error);
+            throw error;
+        }
     }
 };

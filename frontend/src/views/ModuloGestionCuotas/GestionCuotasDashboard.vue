@@ -57,9 +57,23 @@ const actions = [
     bg: 'bg-blue-50',
     hoverBorder: 'group-hover:border-blue-200',
   },
+  {
+    id: 'history',
+    title: 'Ver historial de cuotas',
+    description: 'Consultar el historial de pagos registrados filtrando por fecha o periodo.',
+    icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+    color: 'text-purple-600',
+    bg: 'bg-purple-50',
+    hoverBorder: 'group-hover:border-purple-200',
+  },
 ]
 
 const selectAction = (actionId) => {
+  if (actionId === 'history') {
+    router.push('/cuotas/historial')
+    return
+  }
+
   currentAction.value = actionId
   searchResult.value = null
   searchDni.value = ''
@@ -210,7 +224,7 @@ const handleView = (socio) => {
       </div>
 
       <!-- Action Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
         <button
           v-for="action in actions"
           :key="action.id"

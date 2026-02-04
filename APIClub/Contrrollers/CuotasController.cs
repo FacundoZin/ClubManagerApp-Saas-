@@ -50,5 +50,32 @@ namespace APIClub.Contrrollers
 
             return Ok(new { data = result.Data });
         }
+
+        [HttpGet("HistorialCuotas")]
+        public async Task<IActionResult> VerHistorialCuotas(
+            [FromQuery] string tipoFiltro = "fecha",
+            [FromQuery] string? fechaPago = null,
+            [FromQuery] int? anio = null,
+            [FromQuery] int? semestre = null,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            var request = new HistorialCuotasRequestDto
+            {
+                TipoFiltro = tipoFiltro,
+                FechaPago = !string.IsNullOrEmpty(fechaPago) ? DateOnly.Parse(fechaPago) : null,
+                Anio = anio,
+                Semestre = semestre,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+
+            var result = await _CuotasService.VerHistorialCuotas(request);
+
+            if (!result.Exit)
+                return StatusCode(result.Errorcode, new { mensaje = result.Errormessage });
+
+            return Ok(new { data = result.Data });
+        }
     }
 }

@@ -8,6 +8,7 @@ import AlquilerArticuloDetailView from '../views/ModuloAlquilerDeArticulos/Alqui
 import AlquilerArticulosDashboard from '../views/ModuloAlquilerDeArticulos/AlquilerArticulosDashboard.vue'
 import AlquilerEspaciosDashboard from '../views/ModuloAlquilerDeEspacios/AlquilerEspaciosDashboard.vue'
 import GestionCuotasDashboard from '../views/ModuloGestionCuotas/GestionCuotasDashboard.vue'
+import HistorialCuotasView from '../views/ModuloGestionCuotas/HistorialCuotasView.vue'
 import SocioDetailView from '../views/ModuloGestionSocios/SocioDetailView.vue'
 import SociosDashboard from '../views/ModuloGestionSocios/SociosDashboard.vue'
 import CobradorDashboard from '@/views/ModuloCobradores/CobradorDashboard.vue'
@@ -69,6 +70,18 @@ const router = createRouter({
       name: 'pagos',
       component: GestionCuotasDashboard,
       meta: { module: 'pagos', headerTitle: 'Registrar Pagos', headerDescription: 'Ingreso rápido de cuotas', requiresAuth: true }
+    },
+    {
+      path: '/cuotas',
+      name: 'cuotas',
+      component: GestionCuotasDashboard,
+      meta: { module: 'pagos', headerTitle: 'Gestión de Cuotas', headerDescription: 'Administración de cuotas', requiresAuth: true }
+    },
+    {
+      path: '/cuotas/historial',
+      name: 'cuotas-historial',
+      component: HistorialCuotasView,
+      meta: { module: 'pagos', headerTitle: 'Historial de Cuotas', headerDescription: 'Consulta de pagos registrados', requiresAuth: true }
     },
     {
       path: '/alquiler-articulos',

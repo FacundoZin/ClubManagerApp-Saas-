@@ -1,4 +1,5 @@
 ﻿using APIClub.Application.Common;
+using APIClub.Application.Dtos.Cuota;
 using APIClub.Application.Dtos.Socios;
 using APIClub.Domain.Enums;
 using APIClub.Domain.GestionSocios;
@@ -144,6 +145,45 @@ namespace APIClub.Application.Services
                 Mensaje = "Pago de cuota registrado exitosamente.",
                 Cuota = nuevaCuota
             });
+        }
+
+        public async Task<Result<PagedResult<CuotaConSocioDto>>> VerHistorialCuotas(HistorialCuotasRequestDto request)
+        {
+            PagedResult<CuotaConSocioDto> resultado;
+
+            if (request.TipoFiltro.ToLower() == "fecha")
+            {
+                if (!request.FechaPago.HasValue)
+                {
+                    return Result<PagedResult<CuotaConSocioDto>>.Error("Debe proporcionar una fecha de pago para filtrar por fecha.", 400);
+                }
+
+                resultado = await _CuotaRepository.ObtenerCuotasPorFechaPago(
+                    request.FechaPago.Value,
+                    request.PageNumber,
+                    request.PageSize
+                );
+            }
+            else if (request.TipoFiltro.ToLower() == "periodo")
+            {
+                if (!request.Anio.HasValue || !request.Semestre.HasValue)
+                {
+                    return Result<PagedResult<CuotaConSocioDto>>.Error("Debe proporcionar año y semestre para filtrar por periodo.", 400);
+                }
+
+                resultado = await _CuotaRepository.ObtenerCuotasPorPeriodo(
+                    request.Anio.Value,
+                    request.Semestre.Value,
+                    request.PageNumber,
+                    request.PageSize
+                );
+            }
+            else
+            {
+                return Result<PagedResult<CuotaConSocioDto>>.Error("Tipo de filtro inválido. Use 'fecha' o 'periodo'.", 400);
+            }
+
+            return Result<PagedResult<CuotaConSocioDto>>.Exito(resultado);
         }
     }
 }
