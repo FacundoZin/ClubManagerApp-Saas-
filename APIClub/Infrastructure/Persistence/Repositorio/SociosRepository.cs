@@ -78,11 +78,10 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
                 .Select(s => new { s.Id, s.FechaAsociacion })
                 .FirstOrDefaultAsync(s => s.Id == id);
 
-            int anioIngreso = FechaAsociacionSocio!.FechaAsociacion.Year;
-            int semestreIngreso = FechaAsociacionSocio.FechaAsociacion.Month <= 6 ? 1 : 2;
+            int semestreIngreso = FechaAsociacionSocio!.FechaAsociacion.Month <= 6 ? 1 : 2;
 
             return await _Dbcontext.Socios
-                .Include(s => s.HistorialCuotas.Where(c => c.Anio > anioIngreso || (c.Anio == anioIngreso && c.Semestre >= semestreIngreso)))
+                .Include(s => s.HistorialCuotas.Where(c => c.Anio > FechaAsociacionSocio.FechaAsociacion.Year || (c.Anio == FechaAsociacionSocio.FechaAsociacion.Year && c.Semestre >= semestreIngreso)))
                 .FirstOrDefaultAsync(s => s.Id == id);
         }
 

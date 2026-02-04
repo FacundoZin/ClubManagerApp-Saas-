@@ -266,22 +266,27 @@ namespace APIClub.Application.Services
                 return Result<FullSocioDto>.Error("No se encontró un socio con ese ID.", 404);
             }
 
-            var fechaPagoActual = DateOnly.FromDateTime(DateTime.Now);
-            int anioActual = fechaPagoActual.Year;
-            int semestreActual = fechaPagoActual.Month <= 6 ? 1 : 2;
+            var hoy = DateTime.Now;
+            int anioActual = hoy.Year;
+            int semestreActual = hoy.Month <= 6 ? 1 : 2;
+
+            int maxAnioPagado = socio.HistorialCuotas.Any() ? Math.Max(anioActual, socio.HistorialCuotas.Max(c => c.Anio)) : anioActual;
+            int maxSemestrePagado = (maxAnioPagado == anioActual) ? semestreActual : socio.HistorialCuotas.Where(c => c.Anio == maxAnioPagado).Max(c => (int?)c.Semestre) ?? 2;
 
             var periodosCuotas = new List<PeriodoCuotasDto>();
             int anioAsociacion = socio.FechaAsociacion.Year;
             int semestreInicio = socio.FechaAsociacion.Month <= 6 ? 1 : 2;
 
-            for (int anio = anioAsociacion; anio <= anioActual; anio++)
+            for (int anio = anioAsociacion; anio <= maxAnioPagado; anio++)
             {
                 int semestreDesde = (anio == anioAsociacion) ? semestreInicio : 1;
-                int semestreHasta = (anio == anioActual) ? semestreActual : 2;
+                int semestreHasta = (anio == maxAnioPagado) ? maxSemestrePagado : 2;
 
                 for (int sem = semestreDesde; sem <= semestreHasta; sem++)
                 {
-                    if (!socio.HistorialCuotas.Any(c => c.Anio == anio && c.Semestre == sem))
+                    var cuota = socio.HistorialCuotas.FirstOrDefault(c => c.Anio == anio && c.Semestre == sem);
+
+                    if (cuota == null)
                     {
                         periodosCuotas.Add(new PeriodoCuotasDto
                         {
@@ -292,11 +297,9 @@ namespace APIClub.Application.Services
                     }
                     else
                     {
-                        var cuota = socio.HistorialCuotas.FirstOrDefault(c => c.Semestre == sem && c.Anio == anio);
-
                         periodosCuotas.Add(new PeriodoCuotasDto
                         {
-                            FechaDePago = cuota!.FechaPago,
+                            FechaDePago = cuota.FechaPago,
                             ImportePagado = cuota.Monto,
                             MetodoDePago = cuota.FormaDePago,
                             anio = anio,
