@@ -298,9 +298,139 @@ namespace APIClub.Infrastructure.Persistence.Data
             Console.WriteLine(">>> DatabaseSeeder finished successfully!");
         }
 
-        public Task seedSociosExistentes()
+        public async Task seedSociosExistentes()
         {
-            throw new NotImplementedException();
+            // Intentar buscar el archivo en varias ubicaciones
+            string fileName = "padron_procesado.csv.csv";
+            string[] possiblePaths = new[]
+            {
+                // 1. En el directorio actual (ideal para VPS/Docker donde copiamos el archivo junto al binario)
+                Path.Combine(Directory.GetCurrentDirectory(), fileName),
+                
+                // 2. Un nivel arriba (ideal para desarrollo local: ./APIClub -> ../padron...)
+                Path.Combine(Directory.GetCurrentDirectory(), "..", fileName),
+                
+                // 3. Ruta absoluta hardcodeada (fallback desarrollo local especifico)
+                @"c:\Repositorio\SistemaClubAbuelos\padron_procesado.csv.csv"
+            };
+
+            string filePath = possiblePaths.FirstOrDefault(p => System.IO.File.Exists(p));
+
+            if (string.IsNullOrEmpty(filePath))
+            {
+                Console.WriteLine($">>> Error: No se encontró el archivo CSV en ninguna de las rutas esperadas:");
+                foreach (var p in possiblePaths) Console.WriteLine($"   - {p}");
+                return;
+            }
+
+            Console.WriteLine($">>> CSV encontrado en: {filePath}");
+            Console.WriteLine(">>> Seeding Socios Existentes...");
+
+            // 1. Crear o buscar Lote "Sin Lote"
+            var sinLote = await _appDbcontext.Lotes.FirstOrDefaultAsync(l => l.NombreLote == "Sin Lote");
+            if (sinLote == null)
+            {
+                sinLote = new Lote
+                {
+                    NombreLote = "Sin Lote",
+                    CalleNorte = "-",
+                    CalleSur = "-",
+                    CalleEste = "-",
+                    CalleOeste = "-"
+                };
+                await _appDbcontext.Lotes.AddAsync(sinLote);
+                await _appDbcontext.SaveChangesAsync();
+            }
+
+            var lines = await System.IO.File.ReadAllLinesAsync(filePath);
+            var sociosNuevos = new List<Socio>();
+
+            // Ignorar cabecera (fila 1)
+            for (int i = 1; i < lines.Length; i++)
+            {
+                var line = lines[i];
+                if (string.IsNullOrWhiteSpace(line)) continue;
+
+                var parts = ParseCsvLine(line);
+                if (parts.Length < 4) continue;
+
+                // 0: Nombre y Apellido
+                string rawName = parts[0].Trim().Trim('"');
+                string apellido = rawName;
+                string nombre = "";
+
+                if (rawName.Contains(','))
+                {
+                    var splitName = rawName.Split(',');
+                    apellido = splitName[0].Trim();
+                    if (splitName.Length > 1) nombre = splitName[1].Trim();
+                }
+                else
+                {
+                    // Heuristica: Primera palabra es apellido, resto nombre
+                    var splitSpace = rawName.Split(' ', 2);
+                    apellido = splitSpace[0].Trim();
+                    if (splitSpace.Length > 1) nombre = splitSpace[1].Trim();
+                }
+
+                // 1: Direccion
+                string direccion = parts[1].Trim().Trim('"');
+
+                // 2: Telefono
+                string? telefono = parts[2].Trim().Trim('"');
+                if (string.IsNullOrEmpty(telefono)) telefono = null;
+
+                // 3: DNI
+                string dni = parts[3].Trim().Trim('"');
+                if (dni.Length < 8) dni = dni.PadLeft(8, '0');
+
+                var socio = new Socio
+                {
+                    Nombre = nombre,
+                    Apellido = apellido,
+                    Dni = dni,
+                    Telefono = telefono,
+                    Direcccion = direccion,
+                    Localidad = "San Francisco",
+                    PreferenciaDePago = FormasDePago.Cobrador,
+                    Lote = sinLote,
+                    FechaAsociacion = DateOnly.FromDateTime(DateTime.Now),
+                    IsActivo = true
+                };
+
+                sociosNuevos.Add(socio);
+            }
+
+            await _appDbcontext.Socios.AddRangeAsync(sociosNuevos);
+            await _appDbcontext.SaveChangesAsync();
+            Console.WriteLine($">>> {sociosNuevos.Count} Socios Existentes insertados.");
+        }
+
+        private string[] ParseCsvLine(string line)
+        {
+            var result = new List<string>();
+            bool inQuotes = false;
+            string currentValue = "";
+
+            for (int i = 0; i < line.Length; i++)
+            {
+                char c = line[i];
+                if (c == '"')
+                {
+                    inQuotes = !inQuotes;
+                }
+                else if (c == ',' && !inQuotes)
+                {
+                    result.Add(currentValue);
+                    currentValue = "";
+                }
+                else
+                {
+                    currentValue += c;
+                }
+            }
+            result.Add(currentValue);
+            return result.ToArray();
         }
     }
 }

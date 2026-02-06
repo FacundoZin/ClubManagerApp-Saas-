@@ -20,6 +20,8 @@ services:
     restart: always
     depends_on:
       - postgres
+    volumes:
+      - ./padron_procesado.csv.csv:/app/padron_procesado.csv.csv
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:5000
