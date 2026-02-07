@@ -5,6 +5,7 @@ using APIClub.Domain.GestionSocios;
 using APIClub.Domain.GestionSocios.Models;
 using APIClub.Domain.GestionSocios.Repositories;
 using APIClub.Domain.GestionSocios.Validations;
+using System.Drawing.Printing;
 
 
 namespace APIClub.Application.Services
@@ -357,6 +358,31 @@ namespace APIClub.Application.Services
                 Message = "Socio eliminado correctamente.",
                 SocioId = id
             });
+        }
+
+        public async Task<Result<PagedResult<socioCardSinEstadoDto>>> GetPadronSocios(int pageNumber, int PageSize)
+        {
+            var fechaPagoActual = DateOnly.FromDateTime(DateTime.Now);
+            int anioActual = fechaPagoActual.Year;
+            int semestreActual = fechaPagoActual.Month <= 6 ? 1 : 2;
+
+            var (socios, totalCount) = await _SocioRepository.GetSociosPaginado(pageNumber, PageSize);
+
+            var items = socios.Select(s => new socioCardSinEstadoDto
+            {
+                Id = s.Id,
+                Nombre = s.Nombre,
+                Apellido = s.Apellido,
+                Dni = s.Dni,
+                Telefono = s.Telefono?.FormatearForUserVisibility(),
+                Direcccion = s.Direcccion,
+                nombreLote = s.Lote?.NombreLote,
+                Localidad = s.Localidad,
+            }).ToList();
+
+            var result = new PagedResult<socioCardSinEstadoDto>(items, totalCount, pageNumber, PageSize);
+
+            return Result<PagedResult<socioCardSinEstadoDto>>.Exito(result);
         }
     }
 }

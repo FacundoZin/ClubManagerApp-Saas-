@@ -114,6 +114,24 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
             return (items, totalCount);
         }
 
+        public async Task<(List<Socio> Items, int TotalCount)> GetSociosPaginado(int pageNumber, int pageSize)
+        {
+            var query = _Dbcontext.Socios
+                .Include(s => s.Lote)
+                .AsNoTracking();
+
+            int totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderBy(s => s.Apellido)
+                .ThenBy(s => s.Nombre)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (items, totalCount);
+        }
+
         public async Task RemoveSocios(Socio socio)
         {
             socio.IsActivo = false;

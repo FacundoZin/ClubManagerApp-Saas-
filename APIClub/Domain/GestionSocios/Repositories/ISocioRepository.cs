@@ -21,5 +21,6 @@ namespace APIClub.Domain.GestionSocios.Repositories
         Task<List<Cuota>> GetCuotasSocioById(int socioId);
         Task<(List<PreviewSocioForCobranzaDto> Items, int TotalCount)> GetSociosDeudoresByLote(int IdLote, int anioActual, int semestreActual, int pageNumber, int pageSize);
         Task<List<Socio>> GetSociosDeudoresWithPreferenceLinkDePagoPaginado(int anioActual, int semestreActual, int pageNumber, int pageSize);
+        Task<(List<Socio> Items, int TotalCount)> GetSociosPaginado(int pageNumber, int pageSize);
     }
 }

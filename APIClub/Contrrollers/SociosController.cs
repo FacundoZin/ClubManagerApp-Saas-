@@ -19,7 +19,7 @@ namespace APIClub.Contrrollers
         [HttpPost]
         public async Task<IActionResult> CargarSocio([FromBody] CreateSocioDto dto)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
@@ -32,6 +32,19 @@ namespace APIClub.Contrrollers
                 {
                     return Conflict(new { message = result.Errormessage, data = result.Data });
                 }
+                return StatusCode(result.Errorcode, result.Errormessage);
+            }
+
+            return Ok(result.Data);
+        }
+
+        [HttpGet("padroncompleto")]
+        public async Task<IActionResult> GetAllSocios([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            var result = await _SocioService.GetPadronSocios(pageNumber, pageSize);
+
+            if (result.Exit != true)
+            {
                 return StatusCode(result.Errorcode, result.Errormessage);
             }
 
