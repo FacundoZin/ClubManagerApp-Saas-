@@ -23,7 +23,9 @@ export default {
       throw new Error(error || 'Error al obtener los lotes')
     }
 
-    return await response.json()
+
+    const data = await response.json()
+    return data
   },
 
   async crearLote(loteData) {
