@@ -2,7 +2,6 @@ using APIClub.Application.Dtos.AlquilerDeArticulos;
 using APIClub.Application.Dtos.ItemsAlquiler;
 using APIClub.Domain.AlquilerArticulos;
 using Microsoft.AspNetCore.Mvc;
-using APIClub.Application.Common;
 using Microsoft.AspNetCore.Authorization;
 
 namespace APIClub.Contrrollers

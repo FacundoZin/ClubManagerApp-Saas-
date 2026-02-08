@@ -5,8 +5,6 @@ using APIClub.Domain.GestionSocios;
 using APIClub.Domain.GestionSocios.Models;
 using APIClub.Domain.GestionSocios.Repositories;
 using APIClub.Domain.GestionSocios.Validations;
-using System.Drawing.Printing;
-
 
 namespace APIClub.Application.Services
 {
@@ -32,25 +30,12 @@ namespace APIClub.Application.Services
                 return Result<object?>.Error(result.Errormessage, result.Errorcode);
             }
 
-            string telefonoFormateado = null;
-
-            if (_dto.Telefono != null)
-            {
-                var FormatResult = _dto.Telefono.FormatearForWhatsapp();
-
-                if (!FormatResult.Exit)
-                    return Result<object?>.Error(FormatResult.Errormessage, FormatResult.Errorcode);
-
-                telefonoFormateado = FormatResult.Data;
-            }
-            ;
-
             var socio = new Socio
             {
                 Nombre = _dto.Nombre,
                 Apellido = _dto.Apellido,
                 Dni = _dto.Dni,
-                Telefono = telefonoFormateado,
+                Telefono = _dto.Telefono?.FormatearForWhatsapp().Data,
                 Direcccion = _dto.Direcccion,
                 LoteId = _dto.IdLote,
                 Localidad = _dto.Localidad,
@@ -183,27 +168,13 @@ namespace APIClub.Application.Services
 
             if (!result.Exit) return Result<object>.Error(result.Errormessage, result.Errorcode);
 
-
             var socio = result.Data;
-
-            string telefonoFormateado = null;
-
-            if (dto.Telefono != null)
-            {
-                var FormatResult = dto.Telefono.FormatearForWhatsapp();
-
-                if (!FormatResult.Exit)
-                    return Result<object>.Error(FormatResult.Errormessage, FormatResult.Errorcode);
-
-                telefonoFormateado = FormatResult.Data;
-            }
-            ;
 
             // Actualizar propiedades
             socio.Nombre = dto.Nombre;
             socio.Apellido = dto.Apellido;
             socio.Dni = dto.Dni;
-            socio.Telefono = telefonoFormateado;
+            socio.Telefono = dto.Telefono?.FormatearForWhatsapp().Data;
             socio.Direcccion = dto.Direcccion;
             socio.LoteId = dto.IdLote;
             socio.Localidad = dto.Localidad;

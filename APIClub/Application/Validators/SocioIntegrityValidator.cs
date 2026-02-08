@@ -1,5 +1,6 @@
 using APIClub.Application.Common;
 using APIClub.Application.Dtos.Socios;
+using APIClub.Application.Helpers;
 using APIClub.Domain.Enums;
 using APIClub.Domain.GestionSocios.Models;
 using APIClub.Domain.GestionSocios.Validations;
@@ -36,8 +37,26 @@ namespace APIClub.Application.Validators
                 }
             }
 
-            if (dto.PreferenciaDePago == FormasDePago.LinkDePago && string.IsNullOrEmpty(dto.Telefono))
-                return Result<object?>.Error("si el socio va a pagar a traves del link de pago debe ingresar un numero de telefono.", 400);
+            var telefonoFormateado = string.Empty;
+
+            if (!string.IsNullOrEmpty(dto.Telefono))
+            {
+                var ResultFormateo = dto.Telefono.FormatearNumero();
+                telefonoFormateado = ResultFormateo.Data;
+
+                if(!ResultFormateo.Exit)
+                    return Result<object?>.Error(ResultFormateo.Errormessage, ResultFormateo.Errorcode);
+            }
+
+            if (dto.PreferenciaDePago == FormasDePago.LinkDePago)
+            {
+                if (string.IsNullOrEmpty(dto.Telefono)) return Result<object?>
+                        .Error("si el socio va a pagar con link de pago es necesario que ingrese un numero de telefono", 400);
+
+                if (telefonoFormateado.EsTelefonoFijo())
+                    return Result<object?>
+                        .Error("si el socio va a pagar con link de pago no puede ingresar un telefono fijo, cambie el numero de telefono o elija otra preferencia de pago", 400);
+            }
 
             return Result<object?>.Exito(null);
         }
@@ -77,8 +96,26 @@ namespace APIClub.Application.Validators
                 return Result<Socio>.Error("No se encontró un socio con ese ID.", 404);
             }
 
-            if (dto.PreferenciaDePago == FormasDePago.LinkDePago && string.IsNullOrEmpty(dto.Telefono))
-                return Result<Socio>.Error("si el socio va a pagar a traves del link de pago debe ingresar un numero de telefono.", 400);
+            var telefonoFormateado = string.Empty;
+
+            if (!string.IsNullOrEmpty(dto.Telefono))
+            {
+                var ResultFormateo = dto.Telefono.FormatearNumero();
+                telefonoFormateado = ResultFormateo.Data;
+
+                if (!ResultFormateo.Exit)
+                    return Result<Socio>.Error(ResultFormateo.Errormessage, ResultFormateo.Errorcode);
+            }
+
+            if (dto.PreferenciaDePago == FormasDePago.LinkDePago)
+            {
+                if (string.IsNullOrEmpty(dto.Telefono)) return Result<Socio>
+                        .Error("si el socio va a pagar con link de pago es necesario que ingrese un numero de telefono", 400);
+
+                if (telefonoFormateado.EsTelefonoFijo())
+                    return Result<Socio>
+                        .Error("si el socio va a pagar con link de pago no puede ingresar un telefono fijo, cambie el numero de telefono o elija otra preferencia de pago", 400);
+            }
 
             // Validar que el nuevo DNI no esté asignado a otro socio
             if (socio.Dni != dto.Dni)
