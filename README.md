@@ -87,6 +87,12 @@ docker-compose up -d --build
 
 ---
 
+## 📖 Documentación Técnica
+
+- **[Query Filters en Entity Framework Core](docs/QUERY_FILTERS.md)** - Guía completa sobre los filtros globales implementados en el sistema (soft delete, filtrado de datos históricos, etc.)
+
+---
+
 ## 🗄️ Otros comandos útiles
 
 - **Ejecutar Seeder (Datos de prueba):** `dotnet run --ExecuteSeeder` (dentro de APIClub).
