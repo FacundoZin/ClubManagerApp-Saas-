@@ -1,4 +1,3 @@
-using APIClub.Domain.AlquilerArticulos;
 using APIClub.Domain.AlquilerArticulos.Repositories;
 using APIClub.Domain.GestionSocios;
 using APIClub.Domain.GestionSocios.Repositories;
@@ -30,6 +29,7 @@ using APIClub.Infrastructure.JobsProgramados;
 using APIClub.Domain.Analiticas;
 using APIClub.Domain.Common;
 using Microsoft.AspNetCore.HttpOverrides;
+using APIClub.Domain.AlquilerArticulos.UseCases;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -75,7 +75,8 @@ builder.Services.AddScoped<ICuotasService, CuotasService>();
 builder.Services.AddScoped<IReservasServices, ReservasServices>();
 builder.Services.AddScoped<ICobranzasServices, CobranzasService>();
 builder.Services.AddScoped<IManagmentArticulosService, ManagmentArticulosService>();
-builder.Services.AddScoped<IAlquilerArticulosService, AlquilerArticulosService>();
+builder.Services.AddScoped<IAlquilerArticulosManagmnetService, AlquilerArticulosService>();
+builder.Services.AddScoped<IConsultaAlquileres, AlquilerArticulosService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IPaymentTokenService, PaymentTokenService>();
 builder.Services.AddScoped<IMercadoPagoService, MPService>();

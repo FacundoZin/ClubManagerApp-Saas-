@@ -4,16 +4,17 @@ using APIClub.Application.Dtos.ItemsAlquiler;
 using APIClub.Application.Helpers;
 using APIClub.Domain.AlquilerArticulos;
 using APIClub.Domain.AlquilerArticulos.Models;
+using APIClub.Domain.AlquilerArticulos.UseCases;
 
 namespace APIClub.Application.Services
 {
-    public class AlquilerArticulosService : IAlquilerArticulosService
+    public class AlquilerArticulosService : IAlquilerArticulosManagmnetService, IConsultaAlquileres
     {
         private readonly UnitOfWork _UnitOfWork;
 
         public AlquilerArticulosService(UnitOfWork unitOfWork)
         {
-            _UnitOfWork = unitOfWork;   
+            _UnitOfWork = unitOfWork;
         }
 
         public async Task<Result<AlquilerCreated>> RegistrarAlquiler(CreateAlquilerDto dto)
@@ -22,7 +23,7 @@ namespace APIClub.Application.Services
                 return Result<AlquilerCreated>.Error("Debe incluir al menos un artículo", 400);
 
             var socio = await _UnitOfWork._SocioRepository.GetSocioById(dto.idSocio);
-             
+
             if (socio == null)
                 return Result<AlquilerCreated>.Error("No existe un socio con ese id, seleccione correctamente un socio antes de registar el alquiler", 404);
 
@@ -45,7 +46,7 @@ namespace APIClub.Application.Services
 
             await _UnitOfWork._AlquilerRepository.CrearAlquiler(alquiler);
 
-            return Result<AlquilerCreated>.Exito(new AlquilerCreated { idAlquiler = alquiler.Id, Fecha = alquiler.FechaAlquiler});
+            return Result<AlquilerCreated>.Exito(new AlquilerCreated { idAlquiler = alquiler.Id, Fecha = alquiler.FechaAlquiler });
         }
 
         public async Task<Result<object?>> ModificarCantidadItem(int alquilerId, ModifyItemQuantityDto dto)
@@ -87,7 +88,7 @@ namespace APIClub.Application.Services
             var articulo = await _UnitOfWork._ArticuloRepository.GetArticuloById(dto.ArticuloId);
 
             if (articulo == null)
-                 return Result<object?>.Error("No se encontró un artículo con ese ID", 404);
+                return Result<object?>.Error("No se encontró un artículo con ese ID", 404);
 
             if (alquiler.Items.Any(i => i.ArticuloId == dto.ArticuloId))
                 return Result<object?>.Error("El artículo ya existe en el alquiler", 400);
@@ -122,10 +123,10 @@ namespace APIClub.Application.Services
             if (item.AlquilerId != alquilerId)
                 return Result<object?>.Error("El artículo no pertenece a este alquiler", 400);
 
-            var exit = await _UnitOfWork._ItemAlquilerRepository.RemoveItemAlquiler(item);  
+            var exit = await _UnitOfWork._ItemAlquilerRepository.RemoveItemAlquiler(item);
 
             if (!exit)
-                return Result<object?>.Error("Error al eliminar el articulo del alquiler", 500); 
+                return Result<object?>.Error("Error al eliminar el articulo del alquiler", 500);
 
             return Result<object?>.Exito(null);
         }
@@ -199,16 +200,16 @@ namespace APIClub.Application.Services
             return Result<object?>.Exito(null);
         }
 
-        public async Task<Result<AlquilerDto>> GetAlquilerById(int id)
+        public async Task<Result<AlquilerDto?>> GetAlquilerById(int id)
         {
             var alquiler = await _UnitOfWork._AlquilerRepository.GetAlquilerByIdWithDetails(id);
 
             if (alquiler == null)
-                return Result<AlquilerDto>.Error("No se encontró un alquiler con ese ID", 404);
+                return Result<AlquilerDto?>.Error("No se encontró un alquiler con ese ID", 404);
 
             var alquilerDto = MapearAlquilerADto(alquiler);
 
-            return Result<AlquilerDto>.Exito(alquilerDto);
+            return Result<AlquilerDto?>.Exito(alquilerDto);
         }
 
         public async Task<Result<PagedResult<AlquilerPreviewDto>>> GetAlquileresActivos(int pageNumber, int pageSize)
@@ -220,38 +221,26 @@ namespace APIClub.Application.Services
             return Result<PagedResult<AlquilerPreviewDto>>.Exito(result);
         }
 
-        public async Task<Result<AlquilerPreviewDto?>> GetAlquilerBySocio(string dniSocio)
+        public async Task<Result<StatusAlquileresSociosDto>> ObtenerEstadoAlquilerSocio(string dni)
         {
-            var socio = await _UnitOfWork._SocioRepository.GetSocioByDni(dniSocio);
+            var socio = await _UnitOfWork._SocioRepository.GetSocioByDni(dni);
 
             if (socio == null)
-                return Result<AlquilerPreviewDto?>.Error("No existe un socio en el sistema con ese DNI", 404);
+                return Result<StatusAlquileresSociosDto>.Error("No existe un socio en el sistema con ese DNI", 404);
 
-            var alquiler = await _UnitOfWork._AlquilerRepository.GetAlquilerBySocio(socio.Id);
+            var (hasActiveAlquiler, alquilerId) = await _UnitOfWork._AlquilerRepository.TrySearchActiveAlquilerBySocio(socio.Id);
 
-            if (alquiler == null) return Result<AlquilerPreviewDto?>.NotFound("el socio que esta buscando no tiene alquileres registados actualmente.");
-
-            var hoy = DateOnly.FromDateTime(DateTime.Today);
-
-            var dto = new AlquilerPreviewDto
+            return Result<StatusAlquileresSociosDto>.Exito(new StatusAlquileresSociosDto
             {
-                Id = alquiler.Id,
-                FechaAlquiler = alquiler.FechaAlquiler,
-
                 NombreSocio = socio.Nombre,
                 ApellidoSocio = socio.Apellido,
-                DniSocio = socio.Dni,
-                TelefonoSocio = socio.Telefono,
-                DireccionSocio = socio.Direcccion,
-                LocalidadSocio = socio.Localidad,
-
-                estaAlDia = alquiler.HistorialDePagos.Any(p =>
-                    p.Anio == hoy.Year &&
-                    p.Mes == hoy.Month
-                )
-            };
-
-            return Result<AlquilerPreviewDto?>.Exito(dto);
+                Telefono = socio.Telefono?.FormatearForUserVisibility(),
+                Mensaje = hasActiveAlquiler
+                    ? "este socio ya posee un alquiler activo, puede modificar este alquiler añadiendo nuevos articulos."
+                    : "este socio no tiene un alquiler abierto, puede continuar registrando un nuevo alquiler para este socio",
+                IdSocio = socio.Id,
+                IdAlquiler = hasActiveAlquiler ? alquilerId : null,
+            });
         }
 
         private AlquilerDto MapearAlquilerADto(Alquiler alquiler)
@@ -260,15 +249,14 @@ namespace APIClub.Application.Services
             var montoMensual = alquiler.Items.Sum(i => i.Articulo.PrecioAlquiler * i.Cantidad);
 
             var mesesAdeudados = new List<PagoAlquilerAdeudadoDto>();
-            
-            // Empezamos desde la fecha del alquiler hasta el mes actual
+
             var inicioAlquiler = new DateOnly(alquiler.FechaAlquiler.Year, alquiler.FechaAlquiler.Month, 1);
             var mesActual = new DateOnly(hoy.Year, hoy.Month, 1);
 
             while (inicioAlquiler <= mesActual)
             {
                 bool pagado = alquiler.HistorialDePagos.Any(p => p.Anio == inicioAlquiler.Year && p.Mes == inicioAlquiler.Month);
-                
+
                 if (!pagado)
                 {
                     mesesAdeudados.Add(new PagoAlquilerAdeudadoDto
@@ -278,7 +266,7 @@ namespace APIClub.Application.Services
                         Monto = montoMensual
                     });
                 }
-                
+
                 inicioAlquiler = inicioAlquiler.AddMonths(1);
             }
 
@@ -320,5 +308,7 @@ namespace APIClub.Application.Services
                 MesesAdeudados = mesesAdeudados
             };
         }
+
+
     }
 }

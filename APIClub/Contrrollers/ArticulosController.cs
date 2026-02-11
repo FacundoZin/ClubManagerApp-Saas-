@@ -1,8 +1,8 @@
 ﻿using APIClub.Application.Dtos.Articulos;
-using APIClub.Domain.AlquilerArticulos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using APIClub.Domain.AlquilerArticulos.UseCases;
 
 namespace APIClub.Contrrollers
 {

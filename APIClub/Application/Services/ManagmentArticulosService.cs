@@ -1,8 +1,8 @@
 using APIClub.Application.Common;
 using APIClub.Application.Dtos.Articulos;
-using APIClub.Domain.AlquilerArticulos;
 using APIClub.Domain.AlquilerArticulos.Models;
 using APIClub.Domain.AlquilerArticulos.Repositories;
+using APIClub.Domain.AlquilerArticulos.UseCases;
 
 namespace APIClub.Application.Services
 {

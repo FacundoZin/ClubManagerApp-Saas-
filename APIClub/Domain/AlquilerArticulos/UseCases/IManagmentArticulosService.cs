@@ -1,7 +1,7 @@
 ﻿using APIClub.Application.Common;
 using APIClub.Application.Dtos.Articulos;
 
-namespace APIClub.Domain.AlquilerArticulos
+namespace APIClub.Domain.AlquilerArticulos.UseCases
 {
     public interface IManagmentArticulosService
     {

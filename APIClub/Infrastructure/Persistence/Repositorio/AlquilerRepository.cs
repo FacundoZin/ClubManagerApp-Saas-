@@ -117,5 +117,17 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
             return await _dbContext.alquileresArticulos
                 .AnyAsync(a => a.IdSocio == socioId);
         }
+
+        public async Task<(bool HasActiveAlquiler, int? AlquilerId)> TrySearchActiveAlquilerBySocio(int socioId)
+        {
+            var alquilerId = await _dbContext.alquileresArticulos
+                .AsNoTracking()
+                .Where(a => a.IdSocio == socioId)
+                .Select(a => (int?)a.Id)
+                .FirstOrDefaultAsync();
+
+            if(alquilerId == null) return (false, null);
+            return (true, alquilerId);
+        }
     }
 }

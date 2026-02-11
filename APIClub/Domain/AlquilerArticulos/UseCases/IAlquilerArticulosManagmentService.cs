@@ -4,7 +4,7 @@ using APIClub.Application.Dtos.ItemsAlquiler;
 
 namespace APIClub.Domain.AlquilerArticulos
 {
-    public interface IAlquilerArticulosService
+    public interface IAlquilerArticulosManagmentService
     {
         Task<Result<AlquilerCreated>> RegistrarAlquiler(CreateAlquilerDto dto);
         Task<Result<object?>> ModificarCantidadItem(int alquilerId, ModifyItemQuantityDto dto);
@@ -12,8 +12,5 @@ namespace APIClub.Domain.AlquilerArticulos
         Task<Result<object?>> EliminarItemDeAlquiler(int alquilerId, int itemId);
         Task<Result<PagoAlquilerDto>> RegistrarPago(int idAlquiler, int mes, int anio);
         Task<Result<object?>> FinalizarAlquiler(int alquilerId);
-        Task<Result<AlquilerDto>> GetAlquilerById(int id);
-        Task<Result<PagedResult<AlquilerPreviewDto>>> GetAlquileresActivos(int pageNumber, int pageSize);
-        Task<Result<AlquilerPreviewDto?>> GetAlquilerBySocio(string dniSocio);
     }
 }

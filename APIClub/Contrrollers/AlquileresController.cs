@@ -1,8 +1,9 @@
 using APIClub.Application.Dtos.AlquilerDeArticulos;
 using APIClub.Application.Dtos.ItemsAlquiler;
-using APIClub.Domain.AlquilerArticulos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using APIClub.Domain.AlquilerArticulos.UseCases;
+using APIClub.Domain.AlquilerArticulos;
 
 namespace APIClub.Contrrollers
 {
@@ -11,11 +12,13 @@ namespace APIClub.Contrrollers
     [Authorize]
     public class AlquileresController : ControllerBase
     {
-        private readonly IAlquilerArticulosService _alquileresService;
+        private readonly IAlquilerArticulosManagmentService _alquileresService;
+        private readonly IConsultaAlquileres _alquilerQueries;
 
-        public AlquileresController(IAlquilerArticulosService alquileresService)
+        public AlquileresController(IAlquilerArticulosManagmentService alquileresService, IConsultaAlquileres alquilerQueries)
         {
             _alquileresService = alquileresService;
+            _alquilerQueries = alquilerQueries;
         }
 
         [HttpPost]
@@ -39,12 +42,10 @@ namespace APIClub.Contrrollers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAlquilerById(int id)
         {
-            var result = await _alquileresService.GetAlquilerById(id);
+            var result = await _alquilerQueries.GetAlquilerById(id);
 
             if (!result.Exit)
-            {
                 return StatusCode(result.Errorcode, result.Errormessage);
-            }
 
             return Ok(result.Data);
         }
@@ -52,7 +53,7 @@ namespace APIClub.Contrrollers
         [HttpGet("activos")]
         public async Task<IActionResult> GetAlquileresActivos([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 12)
         {
-            var result = await _alquileresService.GetAlquileresActivos(pageNumber, pageSize);
+            var result = await _alquilerQueries.GetAlquileresActivos(pageNumber, pageSize);
 
             if (!result.Exit)
             {
@@ -62,10 +63,11 @@ namespace APIClub.Contrrollers
             return Ok(result.Data);
         }
 
-        [HttpGet("socio/{socioDni}")]
-        public async Task<IActionResult> GetAlquilerBySocio(string socioDni)
+
+        [HttpGet("estado-socio/{dni}")]
+        public async Task<IActionResult> ObtenerEstadoAlquilerSocio(string dni)
         {
-            var result = await _alquileresService.GetAlquilerBySocio(socioDni);
+            var result = await _alquilerQueries.ObtenerEstadoAlquilerSocio(dni);
 
             if (!result.Exit)
             {
