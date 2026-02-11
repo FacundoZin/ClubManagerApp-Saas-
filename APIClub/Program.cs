@@ -1,12 +1,10 @@
 using APIClub.Domain.AlquilerArticulos.Repositories;
 using APIClub.Domain.GestionSocios;
 using APIClub.Domain.GestionSocios.Repositories;
-using APIClub.Domain.ReservasSalones;
 using APIClub.Domain.ReservasSalones.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 using System.Net.Http.Headers;
-using APIClub.Domain.PaymentsOnline;
 using APIClub.Domain.PaymentsOnline.Repository;
 using APIClub.Domain.GestionSocios.Validations;
 using APIClub.Infrastructure;
@@ -15,8 +13,6 @@ using APIClub.Infrastructure.Persistence.Data;
 using APIClub.Application.Services;
 using APIClub.Application.Common;
 using APIClub.Application.Validators;
-
-using APIClub.Domain.Auth;
 using APIClub.Domain.Auth.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -27,9 +23,17 @@ using APIClub.Domain.Notificaciones.Services;
 using Quartz;
 using APIClub.Infrastructure.JobsProgramados;
 using APIClub.Domain.Analiticas;
-using APIClub.Domain.Common;
 using Microsoft.AspNetCore.HttpOverrides;
 using APIClub.Domain.AlquilerArticulos.UseCases;
+using APIClub.Domain.ModuloGestionCobradores.Repositorios;
+using APIClub.Domain.ModuloGestionCobradores.UseCases;
+using APIClub.Domain.ModuloGestionCuotas.UseCases;
+using APIClub.Domain.ModuloGestionCuotas.Validations;
+using APIClub.Domain.PaymentsOnline.ExternalServices;
+using APIClub.Domain.PaymentsOnline.useCases;
+using APIClub.Domain.Auth.useCases;
+using APIClub.Domain.ModuloReservasSalones.useCases;
+using APIClub.Infrastructure.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 

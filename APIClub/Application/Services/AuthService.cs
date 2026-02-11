@@ -1,8 +1,8 @@
 using APIClub.Application.Common;
 using APIClub.Application.Dtos.Auth;
-using APIClub.Domain.Auth;
 using APIClub.Domain.Auth.Models;
 using APIClub.Domain.Auth.Repositories;
+using APIClub.Domain.Auth.useCases;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

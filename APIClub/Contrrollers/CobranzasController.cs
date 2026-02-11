@@ -1,8 +1,8 @@
 ﻿using APIClub.Application.Dtos.Lote;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using APIClub.Domain.GestionSocios;
 using System.Security.Claims;
+using APIClub.Domain.ModuloGestionCobradores.UseCases;
 
 namespace APIClub.Contrrollers
 {

@@ -2,10 +2,10 @@ using APIClub.Application.Dtos.Analiticas;
 using APIClub.Domain.Analiticas;
 using APIClub.Domain.Enums;
 using APIClub.Infrastructure.Persistence.Data;
-using APIClub.Domain.GestionSocios.Models; // Solves Socio, Cuota
 using APIClub.Domain.ReservasSalones.Models; // Solves PagoReservaSalon
 using Microsoft.EntityFrameworkCore;
 using APIClub.Domain.AlquilerArticulos.Models;
+using APIClub.Domain.ModuloGestionCuotas.Models;
 
 namespace APIClub.Infrastructure.Persistence.Repositorio
 {
@@ -320,9 +320,9 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
             // Calcular porcentajes
             var dto = new DistribucionFormaPagoDto
             {
-                Cobrador = Math.Round((decimal)(dist.FirstOrDefault(x => x.Metodo == FormasDePago.Cobrador)?.Count ?? 0) / totalSocios * 100, 2),
-                LinkDePago = Math.Round((decimal)(dist.FirstOrDefault(x => x.Metodo == FormasDePago.LinkDePago)?.Count ?? 0) / totalSocios * 100, 2),
-                Sede = Math.Round((decimal)(dist.FirstOrDefault(x => x.Metodo == FormasDePago.Sede)?.Count ?? 0) / totalSocios * 100, 2)
+                Cobrador = Math.Round((decimal)(dist.FirstOrDefault(x => x.Metodo == MetodosDePago.Cobrador)?.Count ?? 0) / totalSocios * 100, 2),
+                LinkDePago = Math.Round((decimal)(dist.FirstOrDefault(x => x.Metodo == MetodosDePago.LinkDePago)?.Count ?? 0) / totalSocios * 100, 2),
+                Sede = Math.Round((decimal)(dist.FirstOrDefault(x => x.Metodo == MetodosDePago.Sede)?.Count ?? 0) / totalSocios * 100, 2)
             };
 
             return dto;

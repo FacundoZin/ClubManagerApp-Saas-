@@ -1,8 +1,9 @@
 using APIClub.Application.Common;
 using APIClub.Application.Dtos.Auth;
-using APIClub.Domain.Auth;
 using APIClub.Domain.Auth.Models;
 using APIClub.Domain.Auth.Repositories;
+using APIClub.Domain.Auth.useCases;
+using APIClub.Domain.Enums;
 
 namespace APIClub.Application.Services
 {

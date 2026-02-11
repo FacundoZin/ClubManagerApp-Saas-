@@ -9,7 +9,7 @@ namespace APIClub.Application.Dtos.Cuota
         [Required]
         public int IdSocio { get; set; }
         [Required]
-        public FormasDePago FormaPago { get; set; }
+        public MetodosDePago FormaPago { get; set; }
         public List<PeriodoAdeudadoDto> Periodos { get; set; } = new List<PeriodoAdeudadoDto>();
     }
 }

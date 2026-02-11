@@ -1,5 +1,6 @@
 using APIClub.Domain.Auth.Models;
 using APIClub.Domain.Auth.Repositories;
+using APIClub.Domain.Enums;
 using APIClub.Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 

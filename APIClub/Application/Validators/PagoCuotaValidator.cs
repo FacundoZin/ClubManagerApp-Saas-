@@ -1,10 +1,10 @@
 ﻿using APIClub.Application.Common;
 using APIClub.Application.Dtos.Socios;
-using APIClub.Domain.Auth.Models;
 using APIClub.Domain.Auth.Repositories;
+using APIClub.Domain.Enums;
 using APIClub.Domain.GestionSocios.Models;
 using APIClub.Domain.GestionSocios.Repositories;
-using APIClub.Domain.GestionSocios.Validations;
+using APIClub.Domain.ModuloGestionCuotas.Validations;
 
 namespace APIClub.Application.Validators
 {

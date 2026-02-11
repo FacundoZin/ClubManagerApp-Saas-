@@ -3,9 +3,10 @@ using APIClub.Application.Dtos.Cobrador;
 using APIClub.Application.Dtos.Lote;
 using APIClub.Application.Dtos.Socios;
 using APIClub.Domain.Auth.Repositories;
-using APIClub.Domain.GestionSocios;
-using APIClub.Domain.GestionSocios.Models;
 using APIClub.Domain.GestionSocios.Repositories;
+using APIClub.Domain.ModuloGestionCobradores.Models;
+using APIClub.Domain.ModuloGestionCobradores.Repositorios;
+using APIClub.Domain.ModuloGestionCobradores.UseCases;
 using APIClub.Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 

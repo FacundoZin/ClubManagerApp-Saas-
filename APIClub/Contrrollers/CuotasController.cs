@@ -1,5 +1,5 @@
 ﻿using APIClub.Application.Dtos.Cuota;
-using APIClub.Domain.GestionSocios;
+using APIClub.Domain.ModuloGestionCuotas.UseCases;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;

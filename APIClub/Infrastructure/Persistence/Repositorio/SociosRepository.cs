@@ -5,6 +5,7 @@ using APIClub.Domain.GestionSocios.Repositories;
 using APIClub.Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 using APIClub.Application.Helpers;
+using APIClub.Domain.ModuloGestionCuotas.Models;
 
 namespace APIClub.Infrastructure.Persistence.Repositorio
 {
@@ -152,7 +153,7 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
         public async Task<(List<PreviewSocioForCobranzaDto> Items, int TotalCount)> GetSociosDeudoresByLote(int IdLote, int anioActual, int semestreActual, int pageNumber, int pageSize)
         {
             var query = _Dbcontext.Socios.
-                Where(s => s.LoteId == IdLote && s.PreferenciaDePago == FormasDePago.Cobrador && !s.HistorialCuotas
+                Where(s => s.LoteId == IdLote && s.PreferenciaDePago == MetodosDePago.Cobrador && !s.HistorialCuotas
                 .Any(c => c.Anio == anioActual && c.Semestre == semestreActual))
                 .AsNoTracking();
 
@@ -221,7 +222,7 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
         public async Task<List<Socio>> GetSociosDeudoresWithPreferenceLinkDePagoPaginado(int anioActual, int semestreActual, int pageNumber, int pageSize)
         {
             var items = await _Dbcontext.Socios
-                .Where(s => s.PreferenciaDePago == FormasDePago.LinkDePago &&
+                .Where(s => s.PreferenciaDePago == MetodosDePago.LinkDePago &&
                 !s.HistorialCuotas.Any(c => c.Anio == anioActual && c.Semestre == semestreActual))
                 .AsNoTracking()
                 .OrderBy(s => s.Apellido)

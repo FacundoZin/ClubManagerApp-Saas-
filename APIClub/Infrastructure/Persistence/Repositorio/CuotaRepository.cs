@@ -2,6 +2,7 @@
 using APIClub.Application.Dtos.Cuota;
 using APIClub.Domain.GestionSocios.Models;
 using APIClub.Domain.GestionSocios.Repositories;
+using APIClub.Domain.ModuloGestionCuotas.Models;
 using APIClub.Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 

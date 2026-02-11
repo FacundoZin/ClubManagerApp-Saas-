@@ -1,3 +1,5 @@
+using APIClub.Domain.Enums;
+
 namespace APIClub.Domain.Auth.Models
 {
     public class Usuario

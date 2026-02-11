@@ -2,7 +2,6 @@
 using APIClub.Application.Dtos.AlquilerDeArticulos;
 using APIClub.Application.Dtos.ItemsAlquiler;
 using APIClub.Application.Helpers;
-using APIClub.Domain.AlquilerArticulos;
 using APIClub.Domain.AlquilerArticulos.Models;
 using APIClub.Domain.AlquilerArticulos.UseCases;
 

@@ -1,4 +1,4 @@
-using APIClub.Domain.Auth.Models;
+using APIClub.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace APIClub.Application.Dtos.Auth

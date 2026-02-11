@@ -1,8 +1,10 @@
 ﻿using APIClub.Domain.AlquilerArticulos.Models;
-using APIClub.Domain.Common;
 using APIClub.Domain.Enums;
 using APIClub.Domain.GestionSocios.Models;
+using APIClub.Domain.ModuloGestionCobradores.Models;
+using APIClub.Domain.ModuloGestionCuotas.Models;
 using APIClub.Domain.ReservasSalones.Models;
+using APIClub.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace APIClub.Infrastructure.Persistence.Data
@@ -126,7 +128,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                     Telefono = "11" + _random.Next(40000000, 69999999).ToString(),
                     Direcccion = $"Calle {_random.Next(1, 100)} {_random.Next(100, 5000)}",
                     Localidad = "Pilar",
-                    PreferenciaDePago = (FormasDePago)_random.Next(0, 3), // Cobrador, LinkDePago, Sede
+                    PreferenciaDePago = (MetodosDePago)_random.Next(0, 3), // Cobrador, LinkDePago, Sede
                     FechaAsociacion = fechaAsociacion,
                     IsActivo = isActivo,
                     FechaDeBaja = fechaBaja,
@@ -175,7 +177,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                             };
                             cuotas.Add(cuota);
 
-                            if (socio.PreferenciaDePago == FormasDePago.Cobrador)
+                            if (socio.PreferenciaDePago == MetodosDePago.Cobrador)
                             {
                                 registrosCobradores.Add(new RegistroCobrador
                                 {
@@ -392,7 +394,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                     Telefono = telefono,
                     Direcccion = direccion,
                     Localidad = "San Francisco",
-                    PreferenciaDePago = FormasDePago.Cobrador,
+                    PreferenciaDePago = MetodosDePago.Cobrador,
                     Lote = sinLote,
                     FechaAsociacion = DateOnly.FromDateTime(DateTime.Now),
                     IsActivo = true

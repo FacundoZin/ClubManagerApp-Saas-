@@ -20,6 +20,6 @@ namespace APIClub.Application.Dtos.Socios
         public string? Localidad { get; set; }
 
         [Required(ErrorMessage = "La forma de pago es requerida")]
-        public FormasDePago PreferenciaDePago { get; set; }
+        public MetodosDePago PreferenciaDePago { get; set; }
     }
 }

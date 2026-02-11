@@ -1,6 +1,6 @@
 ﻿using APIClub.Application.Common;
-using APIClub.Domain.PaymentsOnline;
 using APIClub.Domain.PaymentsOnline.Modelos;
+using APIClub.Domain.PaymentsOnline.useCases;
 
 namespace APIClub.Application.Services
 {

@@ -1,5 +1,5 @@
-﻿using APIClub.Domain.GestionSocios.Models;
-using APIClub.Domain.GestionSocios.Repositories;
+﻿using APIClub.Domain.ModuloGestionCobradores.Models;
+using APIClub.Domain.ModuloGestionCobradores.Repositorios;
 using APIClub.Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 

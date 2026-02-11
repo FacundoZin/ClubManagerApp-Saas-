@@ -1,6 +1,6 @@
 ﻿using APIClub.Application.Common;
 using APIClub.Application.Dtos.Payment;
-using APIClub.Domain.PaymentsOnline;
+using APIClub.Domain.PaymentsOnline.ExternalServices;
 using MercadoPago.Client.Common;
 using MercadoPago.Client.Payment;
 using MercadoPago.Client.Preference;

@@ -1,4 +1,4 @@
-﻿using APIClub.Domain.PaymentsOnline;
+﻿using APIClub.Domain.PaymentsOnline.useCases;
 using Quartz;
 
 namespace APIClub.Infrastructure.JobsProgramados

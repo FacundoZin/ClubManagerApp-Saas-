@@ -7,7 +7,7 @@ namespace APIClub.Application.Dtos.Cuota
         public int Id { get; set; }
         public DateOnly FechaPago { get; set; }
         public decimal Monto { get; set; }
-        public FormasDePago FormaDePago { get; set; }
+        public MetodosDePago FormaDePago { get; set; }
         public int Anio { get; set; }
         public int Semestre { get; set; }
 

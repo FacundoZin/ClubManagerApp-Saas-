@@ -1,8 +1,9 @@
 ﻿using APIClub.Application.Common;
 using APIClub.Application.Dtos.Payment;
 using APIClub.Application.Helpers;
-using APIClub.Domain.GestionSocios;
-using APIClub.Domain.PaymentsOnline;
+using APIClub.Domain.ModuloGestionCuotas.UseCases;
+using APIClub.Domain.PaymentsOnline.ExternalServices;
+using APIClub.Domain.PaymentsOnline.useCases;
 
 namespace APIClub.Application.Services
 {

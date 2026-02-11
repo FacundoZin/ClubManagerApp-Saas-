@@ -48,7 +48,7 @@ namespace APIClub.Application.Validators
                     return Result<object?>.Error(ResultFormateo.Errormessage, ResultFormateo.Errorcode);
             }
 
-            if (dto.PreferenciaDePago == FormasDePago.LinkDePago)
+            if (dto.PreferenciaDePago == MetodosDePago.LinkDePago)
             {
                 if (string.IsNullOrEmpty(dto.Telefono)) return Result<object?>
                         .Error("si el socio va a pagar con link de pago es necesario que ingrese un numero de telefono", 400);
@@ -107,7 +107,7 @@ namespace APIClub.Application.Validators
                     return Result<Socio>.Error(ResultFormateo.Errormessage, ResultFormateo.Errorcode);
             }
 
-            if (dto.PreferenciaDePago == FormasDePago.LinkDePago)
+            if (dto.PreferenciaDePago == MetodosDePago.LinkDePago)
             {
                 if (string.IsNullOrEmpty(dto.Telefono)) return Result<Socio>
                         .Error("si el socio va a pagar con link de pago es necesario que ingrese un numero de telefono", 400);

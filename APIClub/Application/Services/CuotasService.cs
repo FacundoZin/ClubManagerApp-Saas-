@@ -2,10 +2,13 @@
 using APIClub.Application.Dtos.Cuota;
 using APIClub.Application.Dtos.Socios;
 using APIClub.Domain.Enums;
-using APIClub.Domain.GestionSocios;
 using APIClub.Domain.GestionSocios.Models;
 using APIClub.Domain.GestionSocios.Repositories;
-using APIClub.Domain.GestionSocios.Validations;
+using APIClub.Domain.ModuloGestionCobradores.Models;
+using APIClub.Domain.ModuloGestionCobradores.Repositorios;
+using APIClub.Domain.ModuloGestionCuotas.Models;
+using APIClub.Domain.ModuloGestionCuotas.UseCases;
+using APIClub.Domain.ModuloGestionCuotas.Validations;
 using APIClub.Domain.PaymentsOnline.Modelos;
 
 namespace APIClub.Application.Services
@@ -33,7 +36,7 @@ namespace APIClub.Application.Services
             return Result<object>.Exito("al valor de la cuoata ahora es $" + nuevoValor);
         }
 
-        public async Task<Result<object>> RegistrarPagosCuotas(int idSocio, List<PeriodoAdeudadoDto> periodos, FormasDePago formaPago)
+        public async Task<Result<object>> RegistrarPagosCuotas(int idSocio, List<PeriodoAdeudadoDto> periodos, MetodosDePago formaPago)
         {
             var result = await _Validator.ValidarPagoEnEstablecimeinto(idSocio, periodos);
 
@@ -100,7 +103,7 @@ namespace APIClub.Application.Services
                 {
                     FechaPago = now,
                     Monto = valorCuotaActual,
-                    FormaDePago = FormasDePago.Cobrador,
+                    FormaDePago = MetodosDePago.Cobrador,
                     Anio = periodo.Anio,
                     Semestre = periodo.Semestre,
                     SocioId = socio.Id
@@ -131,7 +134,7 @@ namespace APIClub.Application.Services
             {
                 FechaPago = fechaPago,
                 Monto = valorCuotaActual,
-                FormaDePago = FormasDePago.LinkDePago,
+                FormaDePago = MetodosDePago.LinkDePago,
                 Anio = token.anio,
                 Semestre = token.semestre,
                 SocioId = token.IdSocio

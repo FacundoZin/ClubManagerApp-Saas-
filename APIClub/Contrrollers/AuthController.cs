@@ -1,7 +1,7 @@
 using APIClub.Application.Dtos.Auth;
-using APIClub.Domain.Auth;
 using Microsoft.AspNetCore.Mvc;
 using APIClub.Application.Common;
+using APIClub.Domain.Auth.useCases;
 
 namespace APIClub.Contrrollers
 {

@@ -1,6 +1,9 @@
 ﻿using APIClub.Domain.AlquilerArticulos.Models;
 using APIClub.Domain.Auth.Models;
+using APIClub.Domain.Enums;
 using APIClub.Domain.GestionSocios.Models;
+using APIClub.Domain.ModuloGestionCobradores.Models;
+using APIClub.Domain.ModuloGestionCuotas.Models;
 using APIClub.Domain.PaymentsOnline.Modelos;
 using APIClub.Domain.ReservasSalones.Models;
 using Microsoft.EntityFrameworkCore;

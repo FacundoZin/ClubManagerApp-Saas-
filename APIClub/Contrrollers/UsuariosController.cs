@@ -1,5 +1,5 @@
 using APIClub.Application.Dtos.Auth;
-using APIClub.Domain.Auth;
+using APIClub.Domain.Auth.useCases;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;

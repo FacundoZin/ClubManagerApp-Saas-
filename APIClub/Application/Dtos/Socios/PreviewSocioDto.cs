@@ -13,7 +13,7 @@ namespace APIClub.Application.Dtos.Socios
         public string? nombreLote { get; set; }
         public int? IdLote { get; set; }
         public string? Localidad { get; set; }
-        public FormasDePago PreferenciaDePago { get; set; }
+        public MetodosDePago PreferenciaDePago { get; set; }
         public DateOnly? FechaAsociacion { get; set; }
 
         public bool AdeudaCuotas { get; set; }

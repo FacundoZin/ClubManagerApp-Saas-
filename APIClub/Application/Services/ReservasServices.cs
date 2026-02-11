@@ -2,7 +2,7 @@
 using APIClub.Application.Dtos.Reservas;
 using APIClub.Application.Helpers;
 using APIClub.Domain.GestionSocios.Repositories;
-using APIClub.Domain.ReservasSalones;
+using APIClub.Domain.ModuloReservasSalones.useCases;
 using APIClub.Domain.ReservasSalones.Models;
 using APIClub.Domain.ReservasSalones.Repositories;
 
