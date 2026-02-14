@@ -110,6 +110,34 @@ var alquileresFinalizados = await _context.alquileresArticulos
     .ToListAsync();
 ```
 
+### 4. Viaje - Filtro de Viajes Futuros
+
+**Ubicación:** [AppDbContext.cs:218](file:///d:/Repositorio/SistemaClubAbuelos/APIClub/Infrastructure/Persistence/Data/AppDbcontext.cs#L218)
+
+```csharp
+entity.HasQueryFilter(v => v.Fechasalida >= DateOnly.FromDateTime(DateTime.Today));
+```
+
+**Propósito:** Filtra los viajes para mostrar solo aquellos cuya fecha de salida es hoy o en el futuro.
+
+**Comportamiento:**
+
+- ✅ Solo retorna viajes con `Fechasalida >= hoy`
+- ❌ Oculta viajes que ya han salido (históricos)
+- 🔓 Se puede desactivar usando `.IgnoreQueryFilters()`
+
+**Ejemplo de uso:**
+
+```csharp
+// Solo viajes próximos o en curso (filtro aplicado automáticamente)
+var viajesProximos = await _context.Viajes.ToListAsync();
+
+// Todos los viajes, incluyendo el historial
+var todosLosViajes = await _context.Viajes
+    .IgnoreQueryFilters()
+    .ToListAsync();
+```
+
 ---
 
 ## 🛠️ Cómo Desactivar Query Filters

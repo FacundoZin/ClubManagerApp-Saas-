@@ -4,6 +4,7 @@ using APIClub.Domain.Enums;
 using APIClub.Domain.GestionSocios.Models;
 using APIClub.Domain.ModuloGestionCobradores.Models;
 using APIClub.Domain.ModuloGestionCuotas.Models;
+using APIClub.Domain.ModuloGestionViajes.Models;
 using APIClub.Domain.PaymentsOnline.Modelos;
 using APIClub.Domain.ReservasSalones.Models;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +32,10 @@ namespace APIClub.Infrastructure.Persistence.Data
         public DbSet<Lote> Lotes { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<RegistroCobrador> RegistroCobradores { get; set; }
+        public DbSet<Viaje> Viajes { get; set; }
+        public DbSet<InscriptoViaje> Inscriptos { get; set; }
+        public DbSet<VarianteViaje> VariantesViaje { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -196,6 +201,50 @@ namespace APIClub.Infrastructure.Persistence.Data
                 entity.Property(u => u.Rol).IsRequired();
 
                 entity.HasIndex(u => u.NombreUsuario).IsUnique();
+            });
+
+            // ---------------------------
+            // Modulo Gestión de Viajes
+            // ---------------------------
+            modelBuilder.Entity<Viaje>(entity =>
+            {
+                entity.Property(v => v.Titulo).IsRequired().HasMaxLength(200);
+                entity.Property(v => v.ValorBase).HasColumnType("decimal(18,2)");
+                entity.Property(v => v.Fechasalida)
+                      .HasConversion(
+                          v => v.ToDateTime(new TimeOnly(0, 0)),
+                          v => DateOnly.FromDateTime(v));
+
+                entity.HasQueryFilter(v => v.Fechasalida >= DateOnly.FromDateTime(DateTime.Today));
+            });
+
+            modelBuilder.Entity<VarianteViaje>(entity =>
+            {
+                entity.Property(vv => vv.NombreVariante).IsRequired().HasMaxLength(150);
+                entity.Property(vv => vv.ValorViaje).HasColumnType("decimal(18,2)");
+                entity.Property(vv => vv.ValorSeña).HasColumnType("decimal(18,2)");
+                entity.Property(vv => vv.TipoDeButaca).HasMaxLength(100);
+
+                entity.HasOne(vv => vv.Viaje)
+                      .WithMany(v => v.Variantes)
+                      .HasForeignKey(vv => vv.IdViaje)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<InscriptoViaje>(entity =>
+            {
+                entity.Property(iv => iv.montoAbonado).HasColumnType("decimal(18,2)");
+                entity.Property(iv => iv.MontoPendente).HasColumnType("decimal(18,2)");
+
+                entity.HasOne(iv => iv.Variante)
+                      .WithMany(vv => vv.Inscriptos)
+                      .HasForeignKey(iv => iv.VarianteViajeId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(iv => iv.Socio)
+                      .WithMany()
+                      .HasForeignKey(iv => iv.SocioId)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
 
             // 0) Usuarios (SuperAdmin)

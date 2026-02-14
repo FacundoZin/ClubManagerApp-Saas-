@@ -51,4 +51,9 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.0" />
   </ItemGroup>
 
+
+	<ItemGroup>
+	  <Folder Include="Domain\ModuloGestionViajes\Repositories\" />
+	</ItemGroup>
+
 </Project>

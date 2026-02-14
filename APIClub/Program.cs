@@ -34,6 +34,7 @@ using APIClub.Domain.Auth.useCases;
 using APIClub.Domain.ModuloReservasSalones.useCases;
 using APIClub.Infrastructure.Interfaces;
 using APIClub.Domain.AlquilerArticulos;
+using APIClub.Domain.ModuloGestionViajes.useCases;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -86,6 +87,7 @@ builder.Services.AddScoped<IPaymentTokenService, PaymentTokenService>();
 builder.Services.AddScoped<IMercadoPagoService, MPService>();
 builder.Services.AddScoped<INotificationsService, NotificacionsService>();
 builder.Services.AddScoped<IAnaliticasService, AnaliticasService>();
+builder.Services.AddScoped<IViajesServices, ViajesService>();
 
 
 
