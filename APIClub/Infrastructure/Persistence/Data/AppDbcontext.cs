@@ -234,7 +234,7 @@ namespace APIClub.Infrastructure.Persistence.Data
             modelBuilder.Entity<InscriptoViaje>(entity =>
             {
                 entity.Property(iv => iv.montoAbonado).HasColumnType("decimal(18,2)");
-                entity.Property(iv => iv.MontoPendente).HasColumnType("decimal(18,2)");
+                entity.Property(iv => iv.MontoPendiente).HasColumnType("decimal(18,2)");
 
                 entity.HasOne(iv => iv.Variante)
                       .WithMany(vv => vv.Inscriptos)

@@ -15,6 +15,6 @@ namespace APIClub.Domain.ModuloGestionViajes.Models
 
         //metadata 
         public decimal montoAbonado { get; set; }
-        public decimal MontoPendente { get; set; }
+        public decimal MontoPendiente { get; set; }
     }
 }

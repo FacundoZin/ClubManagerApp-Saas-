@@ -35,6 +35,7 @@ using APIClub.Domain.ModuloReservasSalones.useCases;
 using APIClub.Infrastructure.Interfaces;
 using APIClub.Domain.AlquilerArticulos;
 using APIClub.Domain.ModuloGestionViajes.useCases;
+using APIClub.Domain.ModuloGestionViajes.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -114,6 +115,8 @@ builder.Services.AddScoped<IPaymentTokenRepository, PaymentTokenRepository>();
 builder.Services.AddScoped<IHistorialCobradoresRepository, HistorialCobradoresRepository>();
 builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>();
 builder.Services.AddScoped<IAnaliticasRepository, AnaliticasRepository>();
+builder.Services.AddScoped<IViajeReadRepository, ViajeReadRepository>();
+builder.Services.AddScoped<IViajeWriteRepository, ViajeWriteRepository>();
 
 
 builder.Services.AddQuartz(q =>
