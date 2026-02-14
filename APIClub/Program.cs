@@ -3,7 +3,6 @@ using APIClub.Domain.GestionSocios;
 using APIClub.Domain.GestionSocios.Repositories;
 using APIClub.Domain.ReservasSalones.Repositories;
 using Microsoft.EntityFrameworkCore;
-
 using System.Net.Http.Headers;
 using APIClub.Domain.PaymentsOnline.Repository;
 using APIClub.Domain.GestionSocios.Validations;
@@ -34,6 +33,7 @@ using APIClub.Domain.PaymentsOnline.useCases;
 using APIClub.Domain.Auth.useCases;
 using APIClub.Domain.ModuloReservasSalones.useCases;
 using APIClub.Infrastructure.Interfaces;
+using APIClub.Domain.AlquilerArticulos;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -79,7 +79,7 @@ builder.Services.AddScoped<ICuotasService, CuotasService>();
 builder.Services.AddScoped<IReservasServices, ReservasServices>();
 builder.Services.AddScoped<ICobranzasServices, CobranzasService>();
 builder.Services.AddScoped<IManagmentArticulosService, ManagmentArticulosService>();
-builder.Services.AddScoped<IAlquilerArticulosManagmnetService, AlquilerArticulosService>();
+builder.Services.AddScoped<IAlquilerArticulosManagmentService, AlquilerArticulosService>();
 builder.Services.AddScoped<IConsultaAlquileres, AlquilerArticulosService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IPaymentTokenService, PaymentTokenService>();

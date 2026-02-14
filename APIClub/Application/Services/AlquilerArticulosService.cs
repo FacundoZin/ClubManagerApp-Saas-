@@ -2,12 +2,13 @@
 using APIClub.Application.Dtos.AlquilerDeArticulos;
 using APIClub.Application.Dtos.ItemsAlquiler;
 using APIClub.Application.Helpers;
+using APIClub.Domain.AlquilerArticulos;
 using APIClub.Domain.AlquilerArticulos.Models;
 using APIClub.Domain.AlquilerArticulos.UseCases;
 
 namespace APIClub.Application.Services
 {
-    public class AlquilerArticulosService : IAlquilerArticulosManagmnetService, IConsultaAlquileres
+    public class AlquilerArticulosService : IAlquilerArticulosManagmentService, IConsultaAlquileres
     {
         private readonly UnitOfWork _UnitOfWork;
 
