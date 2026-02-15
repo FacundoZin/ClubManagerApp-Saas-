@@ -5,15 +5,6 @@ const props = defineProps({
   statusData: {
     type: Object,
     required: true,
-    // Expected structure based on StatusAlquileresSociosDto:
-    // {
-    //   idSocio: number,
-    //   nombreSocio: string,
-    //   apellidoSocio: string,
-    //   telefono: string,
-    //   mensaje: string,
-    //   idAlquiler: number | null
-    // }
   },
 })
 

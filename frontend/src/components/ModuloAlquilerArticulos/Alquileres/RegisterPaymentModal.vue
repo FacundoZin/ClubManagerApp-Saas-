@@ -111,7 +111,7 @@ const handleSubmit = async () => {
 
         <!-- Modal Card -->
         <div
-          class="relative inline-block align-bottom bg-white rounded-2xl text-left shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-slate-100 z-10"
+          class="relative inline-block align-bottom bg-white rounded-3xl text-left shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-slate-100 z-10 overflow-hidden"
         >
           <div class="bg-white px-6 pt-6 pb-4 sm:p-8 sm:pb-6">
             <div class="sm:flex sm:items-start">
@@ -149,7 +149,7 @@ const handleSubmit = async () => {
                       <button
                         @click="toggleMesDropdown"
                         type="button"
-                        class="w-full flex items-center justify-between bg-white border border-slate-200 text-slate-900 text-sm rounded-xl p-2.5 hover:border-teal-500 transition-all focus:ring-2 focus:ring-teal-500/20 shadow-sm"
+                        class="w-full flex items-center justify-between bg-white border border-slate-200 text-slate-900 text-sm rounded-2xl p-2.5 hover:border-teal-500 transition-all focus:ring-2 focus:ring-teal-500/20 shadow-sm"
                       >
                         <span class="font-medium">{{
                           meses.find((m) => m.value === mes)?.label
@@ -172,7 +172,7 @@ const handleSubmit = async () => {
 
                       <div
                         v-if="isMesOpen"
-                        class="absolute z-20 mt-1 w-full bg-white border border-slate-200 rounded-xl shadow-lg ring-1 ring-black/5 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200"
+                        class="absolute z-20 mt-1 w-full bg-white border border-slate-200 rounded-2xl shadow-lg ring-1 ring-black/5 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200"
                       >
                         <div
                           class="overflow-y-auto py-1 custom-scrollbar"
@@ -200,7 +200,7 @@ const handleSubmit = async () => {
                       <button
                         @click="toggleAnioDropdown"
                         type="button"
-                        class="w-full flex items-center justify-between bg-white border border-slate-200 text-slate-900 text-sm rounded-xl p-2.5 hover:border-teal-500 transition-all focus:ring-2 focus:ring-teal-500/20 shadow-sm"
+                        class="w-full flex items-center justify-between bg-white border border-slate-200 text-slate-900 text-sm rounded-2xl p-2.5 hover:border-teal-500 transition-all focus:ring-2 focus:ring-teal-500/20 shadow-sm"
                       >
                         <span class="font-medium">{{ anio }}</span>
                         <svg
@@ -221,7 +221,7 @@ const handleSubmit = async () => {
 
                       <div
                         v-if="isAnioOpen"
-                        class="absolute z-20 mt-1 w-full bg-white border border-slate-200 rounded-xl shadow-lg ring-1 ring-black/5 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200"
+                        class="absolute z-20 mt-1 w-full bg-white border border-slate-200 rounded-2xl shadow-lg ring-1 ring-black/5 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200"
                       >
                         <div class="py-1">
                           <div
@@ -240,7 +240,7 @@ const handleSubmit = async () => {
 
                   <div
                     v-if="error"
-                    class="p-3 bg-rose-50 border border-rose-100 rounded-xl flex items-start gap-3 animate-head-shake"
+                    class="p-3 bg-rose-50 border border-rose-100 rounded-2xl flex items-start gap-3 animate-head-shake"
                   >
                     <svg
                       class="h-5 w-5 text-rose-500 shrink-0 mt-0.5"
@@ -262,13 +262,13 @@ const handleSubmit = async () => {
             </div>
           </div>
           <div
-            class="bg-slate-50 px-6 py-4 sm:px-8 sm:flex sm:flex-row-reverse gap-3 border-t border-slate-100 rounded-b-2xl"
+            class="bg-slate-50 px-6 py-4 sm:px-8 sm:flex sm:flex-row-reverse gap-3 border-t border-slate-100 rounded-b-3xl"
           >
             <button
               @click="handleSubmit"
               :disabled="loading"
               type="button"
-              class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-6 py-2.5 bg-teal-600 text-base font-semibold text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:w-auto transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              class="w-full inline-flex justify-center rounded-2xl border border-transparent shadow-sm px-6 py-2.5 bg-teal-600 text-base font-semibold text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:w-auto transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <svg
                 v-if="loading"
@@ -295,7 +295,7 @@ const handleSubmit = async () => {
             <button
               @click="handleClose"
               type="button"
-              class="mt-3 w-full inline-flex justify-center rounded-xl border border-slate-200 shadow-sm px-6 py-2.5 bg-white text-base font-semibold text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 sm:mt-0 sm:w-auto transition-all"
+              class="mt-3 w-full inline-flex justify-center rounded-2xl border border-slate-200 shadow-sm px-6 py-2.5 bg-white text-base font-semibold text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 sm:mt-0 sm:w-auto transition-all"
             >
               Cancelar
             </button>
