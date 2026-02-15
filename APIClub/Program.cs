@@ -267,6 +267,19 @@ if (args.Contains("--ExecuteSeedSociosExisting"))
     return;
 }
 
+//FLAG PARA CARGAR VIAJES E INSCRIPTOS
+if (args.Contains("--ExecuteSeedViajes"))
+{
+    Console.WriteLine(">>> SEEDER FLAG DETECTED: --ExecuteSeedViajes");
+    using var scope = app.Services.CreateScope();
+
+    var seeder = scope.ServiceProvider.GetRequiredService<IDataSeeder>();
+    await seeder.seedViajesAsync();
+
+    Console.WriteLine(">>> SEEDER PROCESS FINISHED.");
+    return;
+}
+
 // Aplicar migraciones automáticamente
 using (var scope = app.Services.CreateScope())
 {

@@ -4,5 +4,6 @@
     {
         Task seedTestDataAsync();
         Task seedSociosExistentes();
+        Task seedViajesAsync();
     }
 }

@@ -10,11 +10,11 @@ namespace APIClub.Domain.ModuloGestionViajes.useCases
         Task<Result<object?>> CreateVarianteViaje(CreateVarianteViajeDto dto);
         Task<Result<object?>> InscriptSocioToViaje(InsertInscriptoViajeDto dto);
 
-        Task<Result<List<PrevieViajeDto>>> ListarViajesDisponibles();
+        Task<Result<List<PreviewViajeDto>>> ListarViajesDisponibles();
         Task<Result<List<PreviewVarianteViajeDto>>> ListarVariantesDeViaje(int IdViajeBase);
         Task<Result<FullViewViajeDto>> VerViajeCompleto(int IdViajeBase);
 
-        Task<Result<bool?>> ActualizarPagoDeViaje(int IdVarianteViaje, decimal montoAbonado);
-        Task CancelarViajeDeSocio(int idSocio);
+        Task<Result<object?>> ActualizarPagoDeViaje(int IdInscripto, decimal montoAbonado);
+        Task<Result<object?>> CancelarViajeDeSocio(int idInscripto);
     }
 }

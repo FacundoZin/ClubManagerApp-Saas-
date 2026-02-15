@@ -3,6 +3,7 @@ using APIClub.Domain.Enums;
 using APIClub.Domain.GestionSocios.Models;
 using APIClub.Domain.ModuloGestionCobradores.Models;
 using APIClub.Domain.ModuloGestionCuotas.Models;
+using APIClub.Domain.ModuloGestionViajes.Models;
 using APIClub.Domain.ReservasSalones.Models;
 using APIClub.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -406,6 +407,122 @@ namespace APIClub.Infrastructure.Persistence.Data
             await _appDbcontext.Socios.AddRangeAsync(sociosNuevos);
             await _appDbcontext.SaveChangesAsync();
             Console.WriteLine($">>> {sociosNuevos.Count} Socios Existentes insertados.");
+        }
+
+        public async Task seedViajesAsync()
+        {
+            Console.WriteLine(">>> Seeding Viajes, Variantes e Inscriptos...");
+
+            // 1. Limpiar datos existentes de viajes (opcional, pero recomendado para pruebas limpias)
+            try
+            {
+                await _appDbcontext.Database.ExecuteSqlRawAsync("SET session_replication_role = 'replica';");
+                await _appDbcontext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"Inscriptos\" RESTART IDENTITY CASCADE;");
+                await _appDbcontext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"VariantesViaje\" RESTART IDENTITY CASCADE;");
+                await _appDbcontext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"Viajes\" RESTART IDENTITY CASCADE;");
+                await _appDbcontext.Database.ExecuteSqlRawAsync("SET session_replication_role = 'origin';");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($">>> Warning: Could not truncate travel tables: {ex.Message}");
+            }
+
+            var socios = await _appDbcontext.Socios.Take(10).ToListAsync();
+            if (!socios.Any())
+            {
+                Console.WriteLine(">>> Error: No hay socios cargados para inscribir en viajes. Corra el seeder de socios primero.");
+                return;
+            }
+
+            // 2. Crear Viajes
+            var viajes = new List<Viaje>
+            {
+                new Viaje
+                {
+                    Titulo = "Escapada a Carlos Paz",
+                    Dias = 4,
+                    Noches = 3,
+                    Fechasalida = DateOnly.FromDateTime(DateTime.Today.AddMonths(2)),
+                    PorcentajeComision = 10,
+                    VentasParaLiberado = 20,
+                    ValorBase = 85000,
+                    Variantes = new List<VarianteViaje>
+                    {
+                        new VarianteViaje
+                        {
+                            NombreVariante = "Bus Semi-Cama + Media Pensión",
+                            ValorViaje = 85000,
+                            ValorSeña = 20000,
+                            Regimen = RegimenViaje.MediaPension,
+                            TipoDeButaca = "Semi-Cama"
+                        },
+                        new VarianteViaje
+                        {
+                            NombreVariante = "Bus Cama + Pensión Completa",
+                            ValorViaje = 105000,
+                            ValorSeña = 30000,
+                            Regimen = RegimenViaje.PensionCompleta,
+                            TipoDeButaca = "Cama"
+                        }
+                    }
+                },
+                new Viaje
+                {
+                    Titulo = "Merlo San Luis - Relax",
+                    Dias = 5,
+                    Noches = 4,
+                    Fechasalida = DateOnly.FromDateTime(DateTime.Today.AddMonths(3)),
+                    PorcentajeComision = 12,
+                    VentasParaLiberado = 15,
+                    ValorBase = 120000,
+                    Variantes = new List<VarianteViaje>
+                    {
+                        new VarianteViaje
+                        {
+                            NombreVariante = "Standard",
+                            ValorViaje = 120000,
+                            ValorSeña = 40000,
+                            Regimen = RegimenViaje.MediaPension,
+                            TipoDeButaca = "Semi-Cama"
+                        }
+                    }
+                }
+            };
+
+            await _appDbcontext.Viajes.AddRangeAsync(viajes);
+            await _appDbcontext.SaveChangesAsync();
+
+            // 3. Inscribir algunos socios en las variantes
+            var inscriptos = new List<InscriptoViaje>();
+            var todasLasVariantes = viajes.SelectMany(v => v.Variantes).ToList();
+
+            foreach (var variante in todasLasVariantes)
+            {
+                // Inscribir 2-3 socios por variante
+                var numInscriptos = _random.Next(2, 4);
+                for (int i = 0; i < numInscriptos; i++)
+                {
+                    var socio = socios[_random.Next(socios.Count)];
+
+                    // Evitar duplicados simples para el seed
+                    if (inscriptos.Any(ins => ins.SocioId == socio.Id && ins.VarianteViajeId == variante.Id)) continue;
+
+                    var montoAbonado = _random.Next(0, (int)variante.ValorViaje / 2);
+                    inscriptos.Add(new InscriptoViaje
+                    {
+                        VarianteViajeId = variante.Id,
+                        SocioId = socio.Id,
+                        montoAbonado = montoAbonado,
+                        MontoPendiente = variante.ValorViaje - montoAbonado,
+                        cancelado = false
+                    });
+                }
+            }
+
+            await _appDbcontext.Inscriptos.AddRangeAsync(inscriptos);
+            await _appDbcontext.SaveChangesAsync();
+
+            Console.WriteLine($">>> Seeding Viajes finished: {viajes.Count} viajes y {inscriptos.Count} inscriptos creados.");
         }
 
         private string[] ParseCsvLine(string line)

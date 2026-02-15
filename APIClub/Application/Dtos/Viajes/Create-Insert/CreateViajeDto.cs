@@ -23,5 +23,9 @@ namespace APIClub.Application.Dtos.Viajes.Create
         [Required(ErrorMessage = "El valor base es obligatorio")]
         [Range(0.01, double.MaxValue, ErrorMessage = "El valor base debe ser mayor a 0")]
         public decimal ValorBase { get; set; }
+
+        [Required(ErrorMessage = "El porcentaje de comision es obligatorio")]
+        [Range(0.1, double.MaxValue, ErrorMessage = "El porcentaje de comision debe ser mayor a 0")]
+        public decimal PorcentajeComision { get; set; }
     }
 }
