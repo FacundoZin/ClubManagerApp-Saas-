@@ -120,6 +120,21 @@ export default {
         return text ? JSON.parse(text) : true;
     },
 
+    async getAlquilerStatusBySocio(dni) {
+        const response = await fetch(`${API_URL}/estado-socio/${dni}`, { credentials: 'include' });
+        
+        if (!response.ok) {
+            if (response.status >= 500) {
+                throw new Error('Lo sentimos, algo salió mal');
+            }
+            const error = await response.text();
+            throw new Error(error || 'Error al verificar estado del socio');
+        }
+        
+        const text = await response.text();
+        return text ? JSON.parse(text) : null;
+    },
+
     async finalize(id) {
         const response = await fetch(`${API_URL}/${id}/finalizar`, {
             method: 'PUT',
