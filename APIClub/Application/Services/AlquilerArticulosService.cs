@@ -309,6 +309,39 @@ namespace APIClub.Application.Services
             };
         }
 
+        public async Task<Result<AlquilerPreviewDto?>> GetAlquilerBySocio(string socioDni)
+        {
+            var socio = await _UnitOfWork._SocioRepository.GetSocioByDni(socioDni);
 
+            if (socio == null)
+                return Result<AlquilerPreviewDto?>.Error("No existe un socio en el sistema con ese DNI", 404);
+
+            var alquiler = await _UnitOfWork._AlquilerRepository.GetAlquilerBySocio(socio.Id);
+
+            if (alquiler == null) 
+                return Result<AlquilerPreviewDto?>.NotFound("el socio que esta buscando no tiene alquileres registados actualmente.");
+
+            var hoy = DateOnly.FromDateTime(DateTime.Today);
+
+            var dto = new AlquilerPreviewDto
+            {
+                Id = alquiler.Id,
+                FechaAlquiler = alquiler.FechaAlquiler,
+
+                NombreSocio = socio.Nombre,
+                ApellidoSocio = socio.Apellido,
+                DniSocio = socio.Dni,
+                TelefonoSocio = socio.Telefono,
+                DireccionSocio = socio.Direcccion,
+                LocalidadSocio = socio.Localidad,
+
+                estaAlDia = alquiler.HistorialDePagos.Any(p =>
+                    p.Anio == hoy.Year &&
+                    p.Mes == hoy.Month
+                )
+            };
+
+            return Result<AlquilerPreviewDto?>.Exito(dto);
+        }
     }
 }

@@ -1,9 +1,9 @@
 using APIClub.Application.Dtos.AlquilerDeArticulos;
 using APIClub.Application.Dtos.ItemsAlquiler;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using APIClub.Domain.AlquilerArticulos.UseCases;
 using APIClub.Domain.AlquilerArticulos;
+using APIClub.Domain.AlquilerArticulos.UseCases;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace APIClub.Contrrollers
 {
@@ -68,6 +68,19 @@ namespace APIClub.Contrrollers
         public async Task<IActionResult> ObtenerEstadoAlquilerSocio(string dni)
         {
             var result = await _alquilerQueries.ObtenerEstadoAlquilerSocio(dni);
+
+            if (!result.Exit)
+            {
+                return StatusCode(result.Errorcode, result.Errormessage);
+            }
+
+            return Ok(result.Data);
+        }
+
+        [HttpGet("socio/{socioDni}")]
+        public async Task<IActionResult> GetAlquilerBySocio(string socioDni)
+        {
+            var result = await _alquilerQueries.GetAlquilerBySocio(socioDni);
 
             if (!result.Exit)
             {
