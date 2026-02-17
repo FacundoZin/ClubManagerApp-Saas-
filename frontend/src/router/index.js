@@ -15,6 +15,7 @@ import CobradorDashboard from '@/views/ModuloCobradores/CobradorDashboard.vue'
 import OnlinePaymentView from '@/views/OnlinePaymentView.vue'
 import GestionUsuariosView from '@/views/ModuloGestionUsuarios/GestionUsuariosView.vue'
 import DashboardAnaliticas from '@/views/ModuloAnaliticas-Balances/DashboardAnaliticas.vue'
+import ViajesDashboard from '../views/ModuloGestionViajes/views/ViajesDashboard.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -107,6 +108,18 @@ const router = createRouter({
       component: DashboardAnaliticas,
       meta: { module: 'analiticas', headerTitle: 'Estadísticas y Balances', headerDescription: 'Análisis de socios e ingresos', requiresAuth: true }
     },
+    {
+      path: '/viajes',
+      name: 'viajes',
+      component: ViajesDashboard,
+      meta: { module: 'viajes', headerTitle: 'Gestión de Viajes', headerDescription: 'Viajes base y variantes', requiresAuth: true }
+    },
+    {
+      path: '/viajes/:id',
+      name: 'viaje-detail',
+      component: () => import('../views/ModuloGestionViajes/views/ViajeDetailView.vue'),
+      meta: { module: 'viajes', headerTitle: 'Detalle del Viaje', headerDescription: 'Gestión de inscriptos y abonos', requiresAuth: true }
+    },
   ],
 })
 
@@ -116,33 +129,33 @@ router.beforeEach(async (to, from, next) => {
 
   // 2. Si va a login
   if (to.name === 'login') {
-     // Verificar si ya está logueado
-     let isAuthenticated = AuthService.isAuthenticated.value;
-     if (!isAuthenticated) {
-        isAuthenticated = await AuthService.checkAuth();
-     }
-     
-     if (isAuthenticated) return next({ name: 'home' });
-     return next();
+    // Verificar si ya está logueado
+    let isAuthenticated = AuthService.isAuthenticated.value;
+    if (!isAuthenticated) {
+      isAuthenticated = await AuthService.checkAuth();
+    }
+
+    if (isAuthenticated) return next({ name: 'home' });
+    return next();
   }
 
   // 3. Verificar Autenticación para el resto de rutas (requiresAuth por defecto true si no se especifica o explicito)
   // Asumimos que todo lo demás requiere Auth salvo indicado lo contrario
-  
+
   let isAuthenticated = AuthService.isAuthenticated.value;
   if (!isAuthenticated) {
-      // Intentar recuperar sesión (cookies)
-      isAuthenticated = await AuthService.checkAuth();
+    // Intentar recuperar sesión (cookies)
+    isAuthenticated = await AuthService.checkAuth();
   }
 
   if (!isAuthenticated) {
-      return next({ name: 'login' });
+    return next({ name: 'login' });
   }
 
   // 4. Verificar Roles
   if (to.meta.requiresSuperAdmin && !AuthService.isSuperAdmin()) {
-      alert('Acceso denegado. Se requieren permisos de administrador.');
-      return next({ name: 'home' });
+    alert('Acceso denegado. Se requieren permisos de administrador.');
+    return next({ name: 'home' });
   }
 
   next();
