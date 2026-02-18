@@ -92,22 +92,22 @@ const handleSubmit = async () => {
 
     <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
       <div
-        class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-slate-200">
-        <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4 border-b border-slate-100">
+        class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-slate-200">
+        <div class="bg-white px-4 pb-4 pt-5 sm:p-8 sm:pb-6 border-b border-slate-100">
           <div class="sm:flex sm:items-start">
             <div
-              class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
+              class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-blue-100 sm:mx-0 sm:h-12 sm:w-12">
               <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
             <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-              <h3 class="text-lg font-semibold leading-6 text-slate-900" id="modal-title">
+              <h3 class="text-xl font-bold leading-6 text-slate-900" id="modal-title">
                 Registrar Nueva Reserva
               </h3>
               <div class="mt-2">
-                <p class="text-sm text-slate-500">
+                <p class="text-sm font-medium text-slate-500">
                   Complete los datos para agendar una nueva reserva de salón.
                 </p>
               </div>
@@ -116,23 +116,24 @@ const handleSubmit = async () => {
         </div>
 
         <form @submit.prevent="handleSubmit">
-          <div class="px-4 py-5 sm:p-6 space-y-4">
-            <div v-if="errorMessage" class="p-3 rounded-md bg-red-50 text-red-700 text-sm mb-4">
+          <div class="px-6 py-6 sm:p-8 space-y-5">
+            <div v-if="errorMessage"
+              class="p-4 rounded-xl bg-red-50 text-red-700 text-sm font-medium border border-red-100 mb-4 animate-in fade-in zoom-in duration-300">
               {{ errorMessage }}
             </div>
 
             <div>
-              <label for="titulo" class="block text-sm font-medium text-slate-700">Título / Motivo</label>
+              <label for="titulo" class="block text-sm font-bold text-slate-700 mb-1.5 ml-1">Título / Motivo</label>
               <input type="text" id="titulo" v-model="form.titulo"
-                class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
+                class="mt-1 block w-full rounded-xl border-slate-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 sm:text-sm px-4 py-3 border bg-slate-50/50 transition-all"
                 placeholder="Ej: Cumpleaños de 15" />
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
-                <label for="salon" class="block text-sm font-medium text-slate-700">Salón *</label>
+                <label for="salon" class="block text-sm font-bold text-slate-700 mb-1.5 ml-1">Salón *</label>
                 <select id="salon" v-model="form.salonId"
-                  class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border">
+                  class="mt-1 block w-full rounded-xl border-slate-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 sm:text-sm px-4 py-3 border bg-slate-50/50 transition-all">
                   <option value="" disabled>Seleccione un salón</option>
                   <option v-for="salon in salones" :key="salon.id" :value="salon.id">
                     {{ salon.nombre }}
@@ -140,50 +141,51 @@ const handleSubmit = async () => {
                 </select>
               </div>
               <div>
-                <label for="fecha" class="block text-sm font-medium text-slate-700">Fecha *</label>
+                <label for="fecha" class="block text-sm font-bold text-slate-700 mb-1.5 ml-1">Fecha *</label>
                 <input type="date" id="fecha" v-model="form.fecha" required
-                  class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border" />
+                  class="mt-1 block w-full rounded-xl border-slate-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 sm:text-sm px-4 py-3 border bg-slate-50/50 transition-all" />
               </div>
             </div>
 
             <div>
-              <label for="dniSocio" class="block text-sm font-medium text-slate-700">DNI Socio *</label>
+              <label for="dniSocio" class="block text-sm font-bold text-slate-700 mb-1.5 ml-1">DNI Socio *</label>
               <input type="text" id="dniSocio" v-model="form.dniSocio" required
-                class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
+                class="mt-1 block w-full rounded-xl border-slate-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 sm:text-sm px-4 py-3 border bg-slate-50/50 transition-all"
                 placeholder="Ingrese DNI del socio titular" />
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
-                <label for="importe" class="block text-sm font-medium text-slate-700">Importe Total</label>
-                <div class="relative mt-1 rounded-md shadow-sm">
-                  <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <label for="importe" class="block text-sm font-bold text-slate-700 mb-1.5 ml-1">Importe Total</label>
+                <div class="relative mt-1">
+                  <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
                     <span class="text-slate-500 sm:text-sm">$</span>
                   </div>
                   <input type="number" id="importe" v-model.number="form.importe" step="0.01" min="0"
-                    class="block w-full rounded-md border-slate-300 pl-7 pr-3 focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border" />
+                    class="block w-full rounded-xl border-slate-300 pl-8 pr-4 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 sm:text-sm px-4 py-3 border bg-slate-50/50 transition-all" />
                 </div>
               </div>
               <div>
-                <label for="totalPagado" class="block text-sm font-medium text-slate-700">Monto de seña abonado</label>
-                <div class="relative mt-1 rounded-md shadow-sm">
-                  <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <label for="totalPagado" class="block text-sm font-bold text-slate-700 mb-1.5 ml-1">Monto de seña
+                  abonado</label>
+                <div class="relative mt-1">
+                  <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
                     <span class="text-slate-500 sm:text-sm">$</span>
                   </div>
                   <input type="number" id="totalPagado" v-model.number="form.totalPagado" step="0.01" min="0"
-                    class="block w-full rounded-md border-slate-300 pl-7 pr-3 focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border" />
+                    class="block w-full rounded-xl border-slate-300 pl-8 pr-4 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 sm:text-sm px-4 py-3 border bg-slate-50/50 transition-all" />
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="bg-slate-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-slate-200">
+          <div class="bg-slate-50 px-6 py-5 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-200">
             <button type="submit" :disabled="isSubmitting"
-              class="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+              class="inline-flex w-full justify-center rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-blue-200 hover:bg-blue-700 sm:ml-3 sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 active:scale-95">
               {{ isSubmitting ? 'Guardando...' : 'Crear Reserva' }}
             </button>
             <button type="button" @click="$emit('close')"
-              class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">
+              class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-6 py-3 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-all duration-300">
               Cancelar
             </button>
           </div>
