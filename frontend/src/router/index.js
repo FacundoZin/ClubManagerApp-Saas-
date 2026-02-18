@@ -15,6 +15,8 @@ import CobradorDashboard from '@/views/ModuloCobradores/CobradorDashboard.vue'
 import OnlinePaymentView from '@/views/OnlinePaymentView.vue'
 import GestionUsuariosView from '@/views/ModuloGestionUsuarios/GestionUsuariosView.vue'
 import DashboardAnaliticas from '@/views/ModuloAnaliticas-Balances/DashboardAnaliticas.vue'
+import ViajesDashboard from "@/views/ModuloGestionViajes/ViajesDashboard.vue";
+import ViajeDetailView from "@/views/ModuloGestionViajes/ViajeDetailView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -106,6 +108,18 @@ const router = createRouter({
       name: 'analiticas',
       component: DashboardAnaliticas,
       meta: { module: 'analiticas', headerTitle: 'Estadísticas y Balances', headerDescription: 'Análisis de socios e ingresos', requiresAuth: true }
+    },
+    {
+      path: '/viajes',
+      name: 'viajes',
+      component: ViajesDashboard,
+      meta: { module: 'viajes', headerTitle: 'Gestión de Viajes', headerDescription: 'Organización de excursiones y turismo', requiresAuth: true }
+    },
+    {
+      path: '/viajes/:id',
+      name: 'viaje-detail',
+      component: ViajeDetailView,
+      meta: { module: 'viajes', headerTitle: 'Detalle de Viaje', requiresAuth: true }
     },
   ],
 })

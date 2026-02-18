@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import CuotasService from '../../services/CuotasService'
-import Pagination from '../../components/Common/Pagination.vue'
+import DataTable from '../../components/Common/DataTable.vue'
 import LoadingOverlay from '../../components/Common/LoadingOverlay.vue'
 
 const router = useRouter()
@@ -270,108 +270,43 @@ onMounted(() => {
       </div>
 
       <!-- Tabla de Resultados -->
-      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-slate-200">
-            <thead class="bg-slate-50">
-              <tr>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider border-r border-slate-200"
-                >
-                  Socio
-                </th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider border-r border-slate-200"
-                >
-                  Fecha de Pago
-                </th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider border-r border-slate-200"
-                >
-                  Periodo
-                </th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider border-r border-slate-200"
-                >
-                  Monto
-                </th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider"
-                >
-                  Forma de Pago
-                </th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-slate-200">
-              <tr v-if="cuotas.length === 0 && !isLoading">
-                <td colspan="5" class="px-6 py-12 text-center text-slate-500">
-                  <svg
-                    class="mx-auto h-12 w-12 text-slate-400 mb-3"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
-                  </svg>
-                  <p class="text-sm font-medium">
-                    No se encontraron cuotas con los filtros seleccionados
-                  </p>
-                </td>
-              </tr>
-              <tr v-for="cuota in cuotas" :key="cuota.id" class="hover:bg-slate-50">
-                <td
-                  class="px-6 py-4 whitespace-nowrap text-sm text-slate-900 border-r border-slate-200"
-                >
-                  {{ cuota.apellidoSocio }}, {{ cuota.nombreSocio }}
-                </td>
-                <td
-                  class="px-6 py-4 whitespace-nowrap text-sm text-slate-500 border-r border-slate-200"
-                >
-                  {{ formatearFecha(cuota.fechaPago) }}
-                </td>
-                <td
-                  class="px-6 py-4 whitespace-nowrap text-sm text-slate-500 border-r border-slate-200"
-                >
-                  {{ cuota.anio }} - {{ cuota.semestre }}° Semestre
-                </td>
-                <td
-                  class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-emerald-600 border-r border-slate-200"
-                >
-                  ${{ cuota.monto.toFixed(2) }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
-                  <span
-                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                    :class="{
-                      'bg-blue-100 text-blue-800': cuota.formaDePago === 2,
-                      'bg-purple-100 text-purple-800': cuota.formaDePago === 1,
-                      'bg-orange-100 text-orange-800': cuota.formaDePago === 0,
-                    }"
-                  >
-                    {{ getFormaPagoLabel(cuota.formaDePago) }}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Paginación -->
-        <div v-if="cuotas.length > 0" class="px-6">
-          <Pagination
-            :current-page="paginationData.pageNumber"
-            :total-pages="paginationData.totalPages"
-            :total-count="paginationData.totalCount"
-            :page-size="paginationData.pageSize"
-            @change-page="handlePageChange"
-          />
-        </div>
-      </div>
+      <DataTable
+        :headers="[
+          { label: 'Socio', key: 'socio' },
+          { label: 'Fecha de Pago', key: 'fechaPago' },
+          { label: 'Periodo', key: 'periodo' },
+          { label: 'Monto', key: 'monto', class: 'font-semibold text-emerald-600' },
+          { label: 'Forma de Pago', key: 'formaDePago' },
+        ]"
+        :items="cuotas"
+        :isLoading="isLoading"
+        :showPagination="true"
+        :paginationData="paginationData"
+        @change-page="handlePageChange"
+      >
+        <template #cell(socio)="{ item }">
+          {{ item.apellidoSocio }}, {{ item.nombreSocio }}
+        </template>
+        <template #cell(fechaPago)="{ item }">
+          {{ formatearFecha(item.fechaPago) }}
+        </template>
+        <template #cell(periodo)="{ item }">
+          {{ item.anio }} - {{ item.semestre }}° Semestre
+        </template>
+        <template #cell(monto)="{ item }"> ${{ item.monto.toFixed(2) }} </template>
+        <template #cell(formaDePago)="{ item }">
+          <span
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+            :class="{
+              'bg-blue-100 text-blue-800': item.formaDePago === 2,
+              'bg-purple-100 text-purple-800': item.formaDePago === 1,
+              'bg-orange-100 text-orange-800': item.formaDePago === 0,
+            }"
+          >
+            {{ getFormaPagoLabel(item.formaDePago) }}
+          </span>
+        </template>
+      </DataTable>
     </main>
 
     <!-- Toast Notification -->
