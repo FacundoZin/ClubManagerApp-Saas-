@@ -71,9 +71,9 @@ const modulesConfig = {
     defaultTitle: 'Estadísticas y Balances',
   },
   default: {
-    icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
-    colorClass: 'bg-blue-700',
-    defaultTitle: 'Panel de Administración',
+    icon: 'M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z',
+    colorClass: 'bg-blue-600',
+    defaultTitle: 'PANEL DE ADMINISTRACIÓN',
   },
 }
 
@@ -84,6 +84,14 @@ const currentModule = computed(() => {
 })
 
 const moduleName = computed(() => route.meta.headerTitle || currentModule.value.defaultTitle)
+
+const formattedDate = computed(() => {
+  return new Date().toLocaleDateString('es-ES', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'short'
+  }).toUpperCase()
+})
 </script>
 
 <template>
@@ -93,73 +101,50 @@ const moduleName = computed(() => route.meta.headerTitle || currentModule.value.
         <!-- Logo / Título -->
         <router-link to="/" class="flex items-center gap-3 group">
           <div
-            class="w-9 h-9 rounded-lg flex items-center justify-center shadow-md text-white transition-all duration-300 group-hover:scale-105"
-            :class="currentModule.colorClass"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                :d="currentModule.icon"
-              />
+            class="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm text-white transition-all duration-300 group-hover:scale-105"
+            :class="currentModule.colorClass">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5.5 w-5.5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="currentModule.icon" />
             </svg>
           </div>
           <div>
-            <h1 class="text-lg font-bold text-slate-900 tracking-tight leading-none">
-              Asociación Casa del Jubilado
+            <h1 class="text-[15px] font-bold text-[#1e293b] tracking-tight leading-tight">
+              Asociación Civil Casa del Jubilado
             </h1>
-            <span class="text-xs text-slate-500 font-medium transition-all duration-300">{{
+            <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">{{
               moduleName
-            }}</span>
+            }}</p>
           </div>
         </router-link>
 
         <!-- User / Actions -->
         <div class="flex items-center gap-4">
           <template v-if="currentUser">
-            <div class="hidden sm:flex flex-col items-end">
-              <span class="text-xs font-semibold text-slate-700 leading-tight">
-                {{ currentUser.nombreUsuario }}
-              </span>
-              <span class="text-[10px] text-slate-400 uppercase tracking-wider font-medium">
+            <div class="hidden sm:flex flex-col items-end mr-1">
+              <span class="text-sm text-[#2563eb] leading-tight">
                 {{ currentUser.rol === 1 ? 'Administrador' : 'Usuario' }}
+              </span>
+              <span class="text-[10px] text-slate-400 uppercase tracking-widest mt-0.5">
+                {{ formattedDate }}
               </span>
             </div>
 
             <div
-              class="h-9 w-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 text-xs font-bold shadow-sm ring-2 ring-white"
-              :title="currentUser.rol === 1 ? 'SuperAdmin' : 'Usuario'"
-            >
+              class="h-10 w-10 rounded-full bg-[#eff6ff] border border-blue-100 flex items-center justify-center text-[#2563eb] text-xs font-bold shadow-sm"
+              :title="currentUser.nombreUsuario">
               {{ userInitials }}
             </div>
 
             <div class="h-6 w-px bg-slate-200 mx-1"></div>
 
-            <button
-              @click="logout"
+            <button @click="logout"
               class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200 group"
-              title="Cerrar Sesión"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                />
+              title="Cerrar Sesión">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
             </button>
           </template>
