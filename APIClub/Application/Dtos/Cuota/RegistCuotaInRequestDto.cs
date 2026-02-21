@@ -8,7 +8,8 @@ namespace APIClub.Application.Dtos.Cuota
     {
         [Required]
         public int IdSocio { get; set; }
-        [Required]
+        
+        [Required(ErrorMessage = "Porfavor seleccione la FORMA DE PAGO")]
         public MetodosDePago FormaPago { get; set; }
         public List<PeriodoAdeudadoDto> Periodos { get; set; } = new List<PeriodoAdeudadoDto>();
     }

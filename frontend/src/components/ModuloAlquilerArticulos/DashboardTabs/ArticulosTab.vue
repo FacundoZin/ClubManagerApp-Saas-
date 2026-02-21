@@ -56,7 +56,7 @@ onMounted(() => {
     <div class="mb-6 sm:hidden">
       <button
         @click="isArticuloModalOpen = true"
-        class="w-full inline-flex justify-center items-center px-4 py-3 border border-transparent text-sm font-semibold rounded-lg shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors"
+        class="w-full inline-flex justify-center items-center px-4 py-4 border border-transparent text-sm font-bold rounded-xl shadow-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all transform active:scale-95"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -76,11 +76,11 @@ onMounted(() => {
       </button>
     </div>
 
-    <!-- Header Actions (Desktop) - Optional: Can be placed here or in parent if we want it in the main header -->
-    <div class="hidden sm:flex justify-end mb-6">
+    <!-- Header Actions (Desktop) -->
+    <div class="hidden sm:flex justify-end mb-8">
       <button
         @click="isArticuloModalOpen = true"
-        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors"
+        class="inline-flex items-center px-6 py-2.5 border border-transparent text-sm font-bold rounded-xl shadow-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all transform hover:-translate-y-0.5"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -103,7 +103,7 @@ onMounted(() => {
     <!-- Content -->
     <div v-if="loadingArticulos" class="flex justify-center py-12">
       <svg
-        class="animate-spin h-8 w-8 text-teal-600"
+        class="animate-spin h-8 w-8 text-blue-600"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
@@ -126,7 +126,7 @@ onMounted(() => {
 
     <div
       v-else-if="articulos.length > 0"
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
     >
       <ArticuloCard
         v-for="art in articulos"
@@ -138,28 +138,32 @@ onMounted(() => {
 
     <div
       v-else
-      class="text-center py-12 text-slate-500 bg-white rounded-lg border border-dashed border-slate-200"
+      class="text-center py-16 text-slate-500 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200"
     >
-      <svg
-        class="mx-auto h-12 w-12 text-slate-400"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        aria-hidden="true"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-        />
-      </svg>
-      <h3 class="mt-2 text-sm font-medium text-slate-900">No hay artículos</h3>
-      <p class="mt-1 text-sm text-slate-500">Comience creando un nuevo artículo.</p>
-      <div class="mt-6">
+      <div class="p-4 bg-white rounded-full w-fit mx-auto shadow-sm mb-4">
+        <svg
+          class="h-8 w-8 text-slate-300"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+          />
+        </svg>
+      </div>
+      <h3 class="mt-2 text-lg font-bold text-slate-900">No hay artículos</h3>
+      <p class="mt-1 text-sm text-slate-500 max-w-xs mx-auto">
+        No se encontraron artículos registrados. Comience creando uno nuevo.
+      </p>
+      <div class="mt-8">
         <button
           @click="isArticuloModalOpen = true"
-          class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+          class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-bold rounded-xl shadow-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all"
         >
           <svg
             class="-ml-1 mr-2 h-5 w-5"

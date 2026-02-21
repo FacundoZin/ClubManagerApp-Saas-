@@ -8,7 +8,7 @@ namespace APIClub.Application.Dtos.Viajes.Views
         public string NombreVariante { get; set; } = string.Empty;
         public decimal ValorViaje { get; set; }
         public decimal ValorSeña { get; set; }
-        public RegimenViaje Regimen { get; set; }
-        public string TipoDeButaca { get; set; } = string.Empty;
+        public RegimenViaje? Regimen { get; set; }
+        public string? TipoDeButaca { get; set; } = string.Empty;
     }
 }

@@ -15,7 +15,7 @@ namespace APIClub.Domain.ModuloGestionViajes.Models
         public Viaje Viaje { get; set; } = null!;
 
         public List<InscriptoViaje> Inscriptos { get; set; } = new List<InscriptoViaje>();
-        public RegimenViaje Regimen { get; set; }
-        public string TipoDeButaca { get; set; } = string.Empty;
+        public RegimenViaje? Regimen { get; set; }
+        public string? TipoDeButaca { get; set; } = string.Empty;
     }
 }

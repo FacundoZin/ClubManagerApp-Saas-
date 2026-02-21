@@ -86,11 +86,23 @@ const currentModule = computed(() => {
 const moduleName = computed(() => route.meta.headerTitle || currentModule.value.defaultTitle)
 
 const formattedDate = computed(() => {
-  return new Date().toLocaleDateString('es-ES', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'short'
-  }).toUpperCase()
+  return new Date()
+    .toLocaleDateString('es-ES', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'short',
+    })
+    .toUpperCase()
+})
+
+const userRoleName = computed(() => {
+  if (!currentUser.value) return ''
+  const roles = {
+    0: 'Usuario',
+    1: 'Administrador',
+    2: 'Cobrador',
+  }
+  return roles[currentUser.value.rol] || 'Usuario'
 })
 </script>
 
@@ -102,19 +114,30 @@ const formattedDate = computed(() => {
         <router-link to="/" class="flex items-center gap-3 group">
           <div
             class="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm text-white transition-all duration-300 group-hover:scale-105"
-            :class="currentModule.colorClass">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5.5 w-5.5" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="currentModule.icon" />
+            :class="currentModule.colorClass"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5.5 w-5.5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                :d="currentModule.icon"
+              />
             </svg>
           </div>
           <div>
             <h1 class="text-[15px] font-bold text-[#1e293b] tracking-tight leading-tight">
               Asociación Civil Casa del Jubilado
             </h1>
-            <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">{{
-              moduleName
-            }}</p>
+            <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">
+              {{ moduleName }}
+            </p>
           </div>
         </router-link>
 
@@ -122,8 +145,8 @@ const formattedDate = computed(() => {
         <div class="flex items-center gap-4">
           <template v-if="currentUser">
             <div class="hidden sm:flex flex-col items-end mr-1">
-              <span class="text-sm text-[#2563eb] leading-tight">
-                {{ currentUser.rol === 1 ? 'Administrador' : 'Usuario' }}
+              <span class="text-sm text-[#2563eb] font-semibold leading-tight">
+                {{ userRoleName }}
               </span>
               <span class="text-[10px] text-slate-400 uppercase tracking-widest mt-0.5">
                 {{ formattedDate }}
@@ -132,19 +155,31 @@ const formattedDate = computed(() => {
 
             <div
               class="h-10 w-10 rounded-full bg-[#eff6ff] border border-blue-100 flex items-center justify-center text-[#2563eb] text-xs font-bold shadow-sm"
-              :title="currentUser.nombreUsuario">
+              :title="currentUser.nombreUsuario"
+            >
               {{ userInitials }}
             </div>
 
             <div class="h-6 w-px bg-slate-200 mx-1"></div>
 
-            <button @click="logout"
+            <button
+              @click="logout"
               class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200 group"
-              title="Cerrar Sesión">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              title="Cerrar Sesión"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
               </svg>
             </button>
           </template>

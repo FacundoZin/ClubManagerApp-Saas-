@@ -5,13 +5,13 @@ namespace APIClub.Application.Dtos.Socios
 {
     public class CreateSocioDto
     {
-        [Required]
+        [Required(ErrorMessage = "porfavor ingrese el NOMBRE del socio")]
         public string Nombre { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "porfavor ingrese el APELLIDO del socio")]
         public string Apellido { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "porfavor ingrese el DNI del socio")]
         public string Dni { get; set; }
 
         public string? Telefono { get; set; }
@@ -19,7 +19,7 @@ namespace APIClub.Application.Dtos.Socios
         public int? IdLote { get; set; }
         public string? Localidad { get; set; }
 
-        [Required(ErrorMessage = "La forma de pago es requerida")]
+        [Required(ErrorMessage = "Porfavor seleccione la preferencia de pago del socio")]
         public MetodosDePago PreferenciaDePago { get; set; }
     }
 }

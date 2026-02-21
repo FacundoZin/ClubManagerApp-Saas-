@@ -7,20 +7,18 @@ namespace APIClub.Application.Dtos.Viajes.Create
     {
         public int IdViaje { get; set; }
 
-        [Required(ErrorMessage = "El nombre de la variante es obligatorio")]
+        [Required(ErrorMessage = "Porfavor ingrese el nombre de la variante de viaje")]
         public string NombreVariante { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "El valor del viaje es obligatorio")]
+        [Required(ErrorMessage = "Porfavor ingrese el valor del viaje")]
         public decimal ValorViaje { get; set; }
 
-        [Required(ErrorMessage = "El valor de la seña es obligatorio")]
+        [Required(ErrorMessage = "Porfavor seleccione un valor de seña")]
         [Range(1, double.MaxValue, ErrorMessage = "El valor de la seña debe ser mayor a 0")]
         public decimal ValorSeña { get; set; }
 
-        [Required(ErrorMessage = "El régimen del viaje es obligatorio")]
-        public RegimenViaje Regimen { get; set; }
+        public RegimenViaje? Regimen { get; set; }
 
-        [Required(ErrorMessage = "El tipo de butaca es obligatorio")]
-        public string TipoDeButaca { get; set; } = string.Empty;
+        public string? TipoDeButaca { get; set; } = string.Empty;
     }
 }

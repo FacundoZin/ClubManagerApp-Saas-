@@ -58,6 +58,9 @@ namespace APIClub.Application.Validators
                         .Error("si el socio va a pagar con link de pago no puede ingresar un telefono fijo, cambie el numero de telefono o elija otra preferencia de pago", 400);
             }
 
+            if (dto.PreferenciaDePago == MetodosDePago.Cobrador && dto.IdLote == null)
+                return Result<object?>.Error("si elsocio va a pagar con cobrador es necesario asignarle un lote", 400);
+
             return Result<object?>.Exito(null);
         }
 
@@ -116,6 +119,9 @@ namespace APIClub.Application.Validators
                     return Result<Socio>
                         .Error("si el socio va a pagar con link de pago no puede ingresar un telefono fijo, cambie el numero de telefono o elija otra preferencia de pago", 400);
             }
+
+            if (dto.PreferenciaDePago == MetodosDePago.Cobrador && dto.IdLote == null)
+                return Result<Socio>.Error("si el socio quiere pagar con cobrador es necesario asignarle un lote", 400);
 
             // Validar que el nuevo DNI no esté asignado a otro socio
             if (socio.Dni != dto.Dni)

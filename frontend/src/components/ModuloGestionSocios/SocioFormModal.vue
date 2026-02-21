@@ -15,16 +15,14 @@ const props = defineProps({
 const emit = defineEmits(['close', 'save'])
 
 const form = reactive({
-  nombre: '',
-  apellido: '',
-  dni: '',
-  telefono: '',
-  direcccion: '', // Note: keeping typo to match DTO
-  idLote: '',
-  localidad: '',
-  idLote: '',
-  localidad: '',
-  preferenciaDePago: '',
+  nombre: null,
+  apellido: null,
+  dni: null,
+  telefono: null,
+  direcccion: null, // Note: keeping typo to match DTO
+  idLote: null,
+  localidad: null,
+  preferenciaDePago: null,
 })
 
 const paymentOptions = [
@@ -55,8 +53,10 @@ onMounted(() => {
 watch(
   () => props.isOpen,
   (newVal) => {
-    if (newVal && lotes.value.length === 0) {
-      fetchLotes()
+    if (newVal) {
+      if (lotes.value.length === 0) fetchLotes()
+    } else {
+      resetForm()
     }
   },
 )
@@ -65,14 +65,14 @@ const isSubmitting = ref(false)
 const errorMessage = ref('')
 
 const resetForm = () => {
-  form.nombre = ''
-  form.apellido = ''
-  form.dni = ''
-  form.telefono = ''
-  form.direcccion = ''
-  form.idLote = ''
-  form.localidad = ''
-  form.preferenciaDePago = ''
+  form.nombre = null
+  form.apellido = null
+  form.dni = null
+  form.telefono = null
+  form.direcccion = null
+  form.idLote = null
+  form.localidad = null
+  form.preferenciaDePago = null
   errorMessage.value = ''
 }
 
@@ -102,7 +102,15 @@ const handleSubmit = async () => {
   errorMessage.value = ''
 
   try {
-    const data = await SociosService.create(form)
+    // Sanitize data: convert empty values to null or appropriate types
+    const sanitizedForm = Object.fromEntries(
+      Object.entries(form).map(([key, value]) => [
+        key,
+        value === '' || value === null ? null : key === 'idLote' ? Number(value) : value,
+      ]),
+    )
+
+    const data = await SociosService.create(sanitizedForm)
     emit('save', data)
     resetForm()
   } catch (error) {
@@ -142,13 +150,13 @@ const handleSubmit = async () => {
 
     <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
       <div
-        class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-slate-200"
+        class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-slate-200"
       >
         <!-- Header -->
         <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4 border-b border-slate-100">
           <div class="sm:flex sm:items-start">
             <div
-              class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10"
+              class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-12 sm:w-12"
             >
               <svg
                 class="h-6 w-6 text-blue-600"
@@ -166,12 +174,12 @@ const handleSubmit = async () => {
               </svg>
             </div>
             <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-              <h3 class="text-lg font-semibold leading-6 text-slate-900" id="modal-title">
+              <h3 class="text-xl font-bold leading-6 text-slate-900" id="modal-title">
                 Registrar Nuevo Socio
               </h3>
-              <div class="mt-2">
-                <p class="text-sm text-slate-500">
-                  Complete la información para dar de alta un nuevo socio en el sistema.
+              <div class="mt-1">
+                <p class="text-sm font-medium text-slate-500">
+                  Complete la información para dar de alta un nuevo socio.
                 </p>
               </div>
             </div>
@@ -181,23 +189,40 @@ const handleSubmit = async () => {
         <!-- Form -->
         <form @submit.prevent="handleSubmit">
           <div class="px-4 py-5 sm:p-6 space-y-4">
-            <div v-if="errorMessage" class="p-3 rounded-md bg-red-50 text-red-700 text-sm mb-4">
+            <div
+              v-if="errorMessage"
+              class="p-3 rounded-xl bg-red-50 border border-red-100 text-red-700 text-sm flex items-start gap-2"
+            >
+              <svg
+                class="h-5 w-5 text-red-400 shrink-0"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
               {{ errorMessage }}
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label for="nombre" class="block text-sm font-medium text-slate-700">Nombre</label>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1">
+                <label for="nombre" class="block text-sm font-bold text-slate-700">Nombre</label>
                 <input
                   type="text"
                   id="nombre"
                   v-model="form.nombre"
                   required
-                  class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
+                  class="block w-full rounded-xl border-slate-200 bg-slate-50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 sm:text-sm px-3 py-2 border transition-all"
+                  placeholder="Juan"
                 />
               </div>
-              <div>
-                <label for="apellido" class="block text-sm font-medium text-slate-700"
+              <div class="space-y-1">
+                <label for="apellido" class="block text-sm font-bold text-slate-700"
                   >Apellido</label
                 >
                 <input
@@ -205,89 +230,90 @@ const handleSubmit = async () => {
                   id="apellido"
                   v-model="form.apellido"
                   required
-                  class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
+                  class="block w-full rounded-xl border-slate-200 bg-slate-50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 sm:text-sm px-3 py-2 border transition-all"
+                  placeholder="Pérez"
                 />
               </div>
             </div>
 
-            <div>
-              <label for="dni" class="block text-sm font-medium text-slate-700">DNI</label>
-              <input
-                type="text"
-                id="dni"
-                v-model="form.dni"
-                required
-                class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
-              />
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1">
+                <label for="dni" class="block text-sm font-bold text-slate-700">DNI</label>
+                <input
+                  type="text"
+                  id="dni"
+                  v-model="form.dni"
+                  required
+                  class="block w-full rounded-xl border-slate-200 bg-slate-50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 sm:text-sm px-3 py-2 border transition-all"
+                  placeholder="12345678"
+                />
+              </div>
+              <div class="space-y-1">
+                <label for="telefono" class="block text-sm font-bold text-slate-700"
+                  >Teléfono</label
+                >
+                <input
+                  type="tel"
+                  id="telefono"
+                  v-model="form.telefono"
+                  class="block w-full rounded-xl border-slate-200 bg-slate-50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 sm:text-sm px-3 py-2 border transition-all"
+                  placeholder="11 1234-5678"
+                />
+              </div>
             </div>
 
-            <div>
-              <label for="telefono" class="block text-sm font-medium text-slate-700"
-                >Teléfono</label
-              >
-              <input
-                type="tel"
-                id="telefono"
-                v-model="form.telefono"
-                class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
-              />
-            </div>
-
-            <div>
-              <label for="direccion" class="block text-sm font-medium text-slate-700"
+            <div class="space-y-1">
+              <label for="direccion" class="block text-sm font-bold text-slate-700"
                 >Dirección</label
               >
               <input
                 type="text"
                 id="direccion"
                 v-model="form.direcccion"
-                class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
+                class="block w-full rounded-xl border-slate-200 bg-slate-50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 sm:text-sm px-4 py-2 border transition-all"
+                placeholder="Calle y número (p. ej. Av. Siempreviva 742)"
               />
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label for="lote" class="block text-sm font-medium text-slate-700"
-                  >Lote / Zona</label
-                >
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1">
+                <label for="lote" class="block text-sm font-bold text-slate-700">Lote / Zona</label>
                 <select
                   id="lote"
                   v-model="form.idLote"
-                  class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border bg-white"
+                  class="block w-full rounded-xl border-slate-200 bg-slate-50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 sm:text-sm px-3 py-2 border transition-all bg-white"
                 >
-                  <option value="">Seleccione un lote</option>
+                  <option :value="null" disabled>Seleccionar Lote / Zona</option>
                   <option v-for="lote in lotes" :key="lote.id" :value="lote.id">
                     {{ lote.nombreLote }}
                   </option>
                 </select>
-                <p v-if="isLoadingLotes" class="mt-1 text-xs text-slate-500 italic">
-                  Cargando lotes...
-                </p>
               </div>
-              <div>
-                <label for="localidad" class="block text-sm font-medium text-slate-700"
+              <div class="space-y-1">
+                <label for="localidad" class="block text-sm font-bold text-slate-700"
                   >Localidad</label
                 >
                 <input
                   type="text"
                   id="localidad"
                   v-model="form.localidad"
-                  class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
+                  class="block w-full rounded-xl border-slate-200 bg-slate-50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 sm:text-sm px-3 py-2 border transition-all"
+                  placeholder="Morón"
                 />
               </div>
             </div>
 
-            <div>
-              <label for="preferenciaDePago" class="block text-sm font-medium text-slate-700"
+            <div class="space-y-1">
+              <label for="preferenciaDePago" class="block text-sm font-bold text-slate-700"
                 >Preferencia de Pago</label
               >
               <select
                 id="preferenciaDePago"
                 v-model="form.preferenciaDePago"
                 required
-                class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border bg-white"
+                class="block w-full rounded-xl border-slate-200 bg-slate-50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 sm:text-sm px-3 py-2 border transition-all bg-white"
               >
-                <option value="" disabled>Seleccione una forma de pago</option>
+                <option :value="null" disabled>Seleccionar forma de pago</option>
                 <option v-for="option in paymentOptions" :key="option.value" :value="option.value">
                   {{ option.label }}
                 </option>
@@ -297,19 +323,39 @@ const handleSubmit = async () => {
 
           <!-- Footer Actions -->
           <div
-            class="bg-slate-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-slate-200"
+            class="bg-slate-50 px-4 py-3 flex gap-3 sm:flex-row-reverse sm:px-6 border-t border-slate-100"
           >
             <button
               type="submit"
               :disabled="isSubmitting"
-              class="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              class="inline-flex flex-1 justify-center items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-100 hover:bg-blue-700 sm:ml-3 sm:w-auto sm:flex-none disabled:opacity-50 transition-all active:scale-95"
             >
+              <svg
+                v-if="isSubmitting"
+                class="animate-spin h-4 w-4 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
               {{ isSubmitting ? 'Guardando...' : 'Guardar Socio' }}
             </button>
             <button
               type="button"
               @click="$emit('close')"
-              class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors"
+              class="inline-flex flex-1 justify-center rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-200 hover:bg-slate-50 sm:w-auto sm:flex-none transition-all active:scale-95"
             >
               Cancelar
             </button>

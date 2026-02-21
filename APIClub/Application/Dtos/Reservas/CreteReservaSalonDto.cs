@@ -6,13 +6,13 @@ namespace APIClub.Application.Dtos.Reservas
     {
         public string Titulo { get; set; }
 
-        [Required(ErrorMessage = "La fecha es requerida")]
+        [Required(ErrorMessage = "Porfavor ingrese una fecha para realizar la reserva")]
         public DateOnly Fecha { get; set; }
 
-        [Required(ErrorMessage = "El salón es requerido")]
+        [Required(ErrorMessage = "Porfavor seleccione un salon para realizar la reserva")]
         public int SalonId { get; set; }
 
-        [Required(ErrorMessage = "El DNI del socio es requerido")]
+        [Required(ErrorMessage = "Porfavor ingrese el DNI del socio que realizara la reserva")]
         public string DniSocio { get; set; } = string.Empty;
 
         [Range(0, double.MaxValue, ErrorMessage = "El importe no puede ser negativo")]

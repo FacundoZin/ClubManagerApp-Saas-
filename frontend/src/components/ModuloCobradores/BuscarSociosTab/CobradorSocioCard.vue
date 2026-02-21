@@ -66,11 +66,11 @@ const handlePay = () => {
   <div
     class="bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden flex flex-col h-full"
   >
-    <div class="p-5 flex-grow">
+    <div class="p-3 flex-grow">
       <div class="flex flex-col sm:flex-row justify-between items-start gap-2">
         <div class="w-full">
           <div class="flex items-center justify-between gap-2">
-            <h3 class="text-lg font-bold text-slate-900 truncate">
+            <h3 class="text-base font-bold text-slate-900 truncate">
               {{ socio.nombre }} {{ socio.apellido }}
             </h3>
             <span
@@ -88,7 +88,7 @@ const handlePay = () => {
         </div>
       </div>
 
-      <div class="mt-4 space-y-3">
+      <div class="mt-2 space-y-2">
         <!-- Selección de Periodos -->
         <div v-if="socio.periodosAdeudados?.length > 0" class="border-t border-slate-100 pt-3 mt-3">
           <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
@@ -196,7 +196,7 @@ const handlePay = () => {
       </div>
     </div>
 
-    <div class="bg-slate-50 px-5 py-3 border-t border-slate-100 flex flex-col gap-2">
+    <div class="bg-slate-50 px-3 py-2 border-t border-slate-100 flex flex-col gap-2">
       <button
         @click="handlePay"
         :disabled="selectedPeriods.length === 0"

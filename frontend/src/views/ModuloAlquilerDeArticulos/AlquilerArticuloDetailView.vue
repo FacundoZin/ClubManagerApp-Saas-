@@ -119,106 +119,255 @@ const allMonthsCombined = computed(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-50 font-sans text-slate-800 pb-12">
-    <!-- Header Simple -->
-    <div class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-30">
-      <div class="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <button @click="goBack"
-            class="p-2 -ml-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+  <div class="min-h-screen bg-slate-50 font-sans text-slate-800 pb-20">
+    <!-- Header Premium -->
+    <div class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+      <div
+        class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+      >
+        <div class="flex items-center gap-4">
+          <button
+            @click="goBack"
+            class="group p-2 -ml-2 text-slate-400 hover:text-blue-600 rounded-xl hover:bg-blue-50 transition-all duration-300"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6 transform group-hover:-translate-x-1 transition-transform"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
             </svg>
           </button>
-          <h1 class="text-lg sm:text-xl font-bold text-slate-900 truncate">Detalle de Alquiler</h1>
+          <div>
+            <h1 class="text-xl font-black text-slate-900 tracking-tight">Detalle de Alquiler</h1>
+            <p v-if="alquiler" class="text-xs font-bold text-slate-500 uppercase tracking-widest">
+              Contrato #{{ alquilerId }}
+            </p>
+          </div>
         </div>
-        <div v-if="alquiler" class="flex justify-end">
-          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs sm:text-sm font-medium" :class="alquiler.estaAlDia ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
-            ">
+        <div v-if="alquiler" class="flex items-center gap-3">
+          <span
+            class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest shadow-sm border transition-all"
+            :class="
+              alquiler.estaAlDia
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
+                : 'bg-rose-50 text-rose-700 border-rose-100 animate-pulse'
+            "
+          >
+            <span
+              class="w-2 h-2 rounded-full"
+              :class="alquiler.estaAlDia ? 'bg-emerald-500' : 'bg-rose-500'"
+            ></span>
             {{ alquiler.estaAlDia ? 'Al día' : 'Con Deuda' }}
           </span>
         </div>
       </div>
     </div>
 
-    <LoadingOverlay :show="loading" message="Cargando detalles del alquiler..." />
+    <LoadingOverlay :show="loading" message="Sincronizando registros del alquiler..." />
 
-    <div v-if="!loading && error" class="max-w-3xl mx-auto mt-12 p-6 bg-red-50 text-red-700 rounded-lg text-center">
+    <div
+      v-if="!loading && error"
+      class="max-w-3xl mx-auto mt-12 p-8 bg-red-50 text-red-800 rounded-3xl border border-red-100 text-center font-bold flex items-center justify-center gap-3"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6 text-red-400"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
       {{ error }}
     </div>
 
-    <div v-else-if="!loading && alquiler" class="max-w-5xl mx-auto px-4 sm:px-6 mt-8 space-y-6">
+    <div v-else-if="!loading && alquiler" class="max-w-6xl mx-auto px-4 sm:px-6 mt-10 space-y-10">
       <!-- Info Cards Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Socio Info -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-          <h2 class="text-sm font-medium text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">
-            Información del Socio
-          </h2>
-          <div class="space-y-4">
-            <div class="flex justify-between items-center text-sm">
-              <span class="text-slate-400 font-medium uppercase text-[10px] tracking-wider">Nombre del Socio</span>
-              <span class="font-bold text-slate-900">{{ alquiler.nombreSocio }} {{ alquiler.apellidoSocio }}</span>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Socio Header Card (New Style) -->
+        <div
+          class="lg:col-span-2 bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden"
+        >
+          <div class="h-32 bg-gradient-to-br from-blue-600 to-indigo-700 relative">
+            <div class="absolute -bottom-12 left-8 p-1 bg-white rounded-3xl shadow-xl">
+              <div
+                class="w-24 h-24 bg-blue-100 text-blue-700 rounded-[1.25rem] flex items-center justify-center text-3xl font-black ring-4 ring-white"
+              >
+                {{ alquiler.nombreSocio[0] }}{{ alquiler.apellidoSocio[0] }}
+              </div>
             </div>
-            <div class="flex justify-between items-center text-sm">
-              <span class="text-slate-400 font-medium uppercase text-[10px] tracking-wider">Documento (DNI)</span>
-              <span class="font-semibold text-slate-700">{{ alquiler.dniSocio }}</span>
-            </div>
-            <div class="flex justify-between items-center text-sm" v-if="alquiler.telefonoSocio">
-              <span class="text-slate-400 font-medium uppercase text-[10px] tracking-wider">Teléfono</span>
-              <span class="font-semibold text-slate-700">{{ alquiler.telefonoSocio }}</span>
-            </div>
-            <div class="flex justify-between items-center text-sm" v-if="alquiler.direccionSocio">
-              <span class="text-slate-400 font-medium uppercase text-[10px] tracking-wider">Dirección</span>
-              <span class="font-semibold text-slate-700">{{ alquiler.direccionSocio }}</span>
-            </div>
-            <div class="flex justify-between items-center text-sm" v-if="alquiler.localidadSocio">
-              <span class="text-slate-400 font-medium uppercase text-[10px] tracking-wider">Localidad</span>
-              <span class="font-semibold text-slate-700">{{ alquiler.localidadSocio }}</span>
+          </div>
+          <div class="pt-16 pb-8 px-8">
+            <div
+              class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6"
+            >
+              <div>
+                <h2 class="text-3xl font-black text-slate-900 tracking-tight">
+                  {{ alquiler.nombreSocio }} {{ alquiler.apellidoSocio }}
+                </h2>
+                <div class="flex items-center gap-4 mt-2">
+                  <div class="flex items-center gap-1.5 text-slate-500">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm5 3h1a2 2 0 012 2v1H2v-1a2 2 0 012-2h1"
+                      />
+                    </svg>
+                    <span class="text-sm font-bold">{{ alquiler.dniSocio }}</span>
+                  </div>
+                  <div
+                    v-if="alquiler.telefonoSocio"
+                    class="flex items-center gap-1.5 text-slate-500"
+                  >
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M3 5a2 2 0 012-2h2.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                      />
+                    </svg>
+                    <span class="text-sm font-bold">{{ alquiler.telefonoSocio }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex flex-col gap-1 items-end">
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
+                  >Dirección del Socio</span
+                >
+                <p class="text-base font-bold text-slate-700 text-right">
+                  {{ alquiler.direccionSocio || 'No registrada' }}<br />
+                  <span class="text-xs text-slate-400">{{
+                    alquiler.localidadSocio || 'Sin localidad'
+                  }}</span>
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Rental Info & Actions -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col">
-          <h2 class="text-sm font-medium text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">
-            Estado y Acciones
-          </h2>
-          <div class="flex-1 space-y-3">
-            <div class="flex justify-between">
-              <span class="text-slate-500">Fecha Inicio:</span>
-              <span class="font-medium text-slate-900">{{ alquiler.fechaAlquiler }}</span>
-            </div>
-            <div v-if="alquiler.observaciones" class="text-sm text-slate-600 italic bg-slate-50 p-2 rounded">
-              "{{ alquiler.observaciones }}"
+        <!-- Rental Meta & Quick Actions -->
+        <div
+          class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 flex flex-col justify-between overflow-hidden relative"
+        >
+          <div
+            class="absolute bottom-0 right-0 w-32 h-32 bg-slate-50 rounded-full -mr-16 -mb-16 -z-10"
+          ></div>
+
+          <div>
+            <h2
+              class="text-xs font-black text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2"
+            >
+              <svg
+                class="h-4 w-4 text-blue-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              Resumen del Alquiler
+            </h2>
+            <div class="space-y-4">
+              <div class="flex justify-between items-center group">
+                <span class="text-sm font-bold text-slate-400">Iniciado el:</span>
+                <span
+                  class="font-black text-slate-900 bg-slate-100 px-3 py-1 rounded-lg transition-transform group-hover:scale-105 duration-300"
+                  >{{ alquiler.fechaAlquiler }}</span
+                >
+              </div>
+              <div
+                v-if="alquiler.observaciones"
+                class="mt-4 p-4 bg-blue-50/50 border border-blue-100/50 rounded-2xl"
+              >
+                <p class="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">
+                  Observaciones
+                </p>
+                <p class="text-sm text-blue-700 font-medium italic italic leading-relaxed">
+                  "{{ alquiler.observaciones }}"
+                </p>
+              </div>
             </div>
           </div>
 
-          <div class="mt-6 flex flex-col gap-3">
-            <button @click="isRegisterPaymentModalOpen = true"
-              class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-teal-700 bg-teal-100 hover:bg-teal-200 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <div class="mt-8 space-y-3">
+            <button
+              @click="isRegisterPaymentModalOpen = true"
+              class="w-full inline-flex justify-center items-center px-6 py-4 border border-transparent text-sm font-black uppercase tracking-widest rounded-2xl text-white bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-100 transition-all transform active:scale-95 group"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-3 group-hover:scale-125 transition-transform"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
               Registrar Pago
             </button>
-            <button @click="isConfirmFinalizeOpen = true"
-              class="w-full inline-flex justify-center items-center px-4 py-2 border border-slate-300 text-sm font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-slate-400" fill="none"
-                viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            <button
+              @click="isConfirmFinalizeOpen = true"
+              class="w-full inline-flex justify-center items-center px-6 py-4 border-2 border-slate-100 text-sm font-black uppercase tracking-widest rounded-2xl text-slate-600 bg-white hover:bg-slate-50 transition-all transform active:scale-95"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-3 text-slate-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
-              Finalizar Alquiler
+              Finalizar Contrato
             </button>
-            <div v-if="paymentError"
-              class="mt-2 p-2 bg-red-50 border border-red-100 rounded text-xs text-red-600 flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <div
+              v-if="paymentError"
+              class="mt-4 p-4 bg-red-50 border border-red-100 rounded-2xl text-xs font-bold text-red-800 flex items-center gap-3 animate-pulse"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 shrink-0 text-red-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
               <span>{{ paymentError }}</span>
             </div>
@@ -227,84 +376,195 @@ const allMonthsCombined = computed(() => {
       </div>
 
       <!-- Articulos (Items) -->
-      <ArticulosAlquiladosCard v-if="alquiler" :alquiler-id="alquilerId" :items="alquiler.items"
-        @updated="handleItemUpdated" @add-item="isAddItemModalOpen = true" />
+      <ArticulosAlquiladosCard
+        v-if="alquiler"
+        :alquiler-id="alquilerId"
+        :items="alquiler.items"
+        @updated="handleItemUpdated"
+        @add-item="isAddItemModalOpen = true"
+      />
 
       <!-- Estado de Pagos (Historial y Deuda combinados) -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-12">
-        <div class="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
-          <h2 class="text-base font-bold text-slate-900">Estado de Pagos</h2>
-          <div v-if="alquiler.mesesAdeudados?.length > 0"
-            class="text-xs font-semibold text-rose-600 bg-rose-50 px-2 py-1 rounded-full border border-rose-100">
-            {{ alquiler.mesesAdeudados.length }} mes(es) pendiente(s)
+      <div
+        class="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden mb-12"
+      >
+        <div
+          class="px-10 py-8 border-b border-slate-200 bg-slate-50/50 flex flex-col md:flex-row md:items-center justify-between gap-4"
+        >
+          <div>
+            <h2 class="text-xl font-black text-slate-900 tracking-tight">Cronograma de Pagos</h2>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
+              Historial completo de cuotas mensuales
+            </p>
+          </div>
+          <div
+            v-if="alquiler.mesesAdeudados?.length > 0"
+            class="w-fit text-[10px] font-black text-rose-700 bg-rose-100 px-4 py-1.5 rounded-full border border-rose-200 uppercase tracking-widest animate-pulse"
+          >
+            {{ alquiler.mesesAdeudados.length }} cuota(s) pendiente(s)
           </div>
         </div>
 
-        <div class="p-4 sm:p-6">
-          <div v-if="allMonthsCombined.length > 0"
-            class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3 sm:gap-4">
-            <div v-for="pago in allMonthsCombined" :key="pago.id"
-              class="rounded-lg p-3 text-center transition-all hover:shadow-md border" :class="pago.tipo === 'pagado'
-                ? 'bg-emerald-50 border-emerald-100'
-                : 'bg-rose-50 border-rose-100'
-                ">
-              <div class="text-[10px] uppercase font-bold mb-1"
-                :class="pago.tipo === 'pagado' ? 'text-emerald-400' : 'text-rose-400'">
+        <div class="p-8 sm:p-10">
+          <div
+            v-if="allMonthsCombined.length > 0"
+            class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6"
+          >
+            <div
+              v-for="pago in allMonthsCombined"
+              :key="pago.id"
+              class="group relative rounded-3xl p-5 text-center transition-all hover:shadow-xl hover:-translate-y-1 border-2 overflow-hidden"
+              :class="
+                pago.tipo === 'pagado'
+                  ? 'bg-white border-emerald-100 hover:border-emerald-200'
+                  : 'bg-white border-rose-100 hover:border-rose-200'
+              "
+            >
+              <!-- Background accent -->
+              <div
+                class="absolute top-0 right-0 w-16 h-16 rounded-full -mr-8 -mt-8 opacity-10"
+                :class="pago.tipo === 'pagado' ? 'bg-emerald-500' : 'bg-rose-500'"
+              ></div>
+
+              <div
+                class="text-[9px] uppercase font-black tracking-widest mb-3 py-1 px-2 rounded-full inline-block"
+                :class="
+                  pago.tipo === 'pagado'
+                    ? 'bg-emerald-50 text-emerald-600'
+                    : 'bg-rose-50 text-rose-600'
+                "
+              >
                 {{ pago.tipo === 'pagado' ? 'Pagado' : 'Pendiente' }}
               </div>
-              <div class="text-xs uppercase font-extrabold"
-                :class="pago.tipo === 'pagado' ? 'text-emerald-600' : 'text-rose-600'">
-                {{ getNombreMes(pago.mes) }} {{ pago.anio }}
+              <div class="text-xs uppercase font-black tracking-widest text-slate-500">
+                {{ getNombreMes(pago.mes) }}
               </div>
-              <div class="text-lg font-bold mt-1"
-                :class="pago.tipo === 'pagado' ? 'text-emerald-700' : 'text-rose-700'">
-                ${{ pago.monto }}
+              <div class="text-lg font-black text-slate-900 mb-1">
+                {{ pago.anio }}
+              </div>
+              <div
+                class="text-xl font-black mt-2 transition-transform group-hover:scale-110"
+                :class="pago.tipo === 'pagado' ? 'text-emerald-600' : 'text-rose-600'"
+              >
+                <span class="text-sm opacity-50 font-bold">$</span>{{ pago.monto.toLocaleString() }}
               </div>
             </div>
           </div>
-          <div v-else class="py-10 text-center border-2 border-dashed border-slate-100 rounded-xl">
-            <p class="text-sm text-slate-400">No hay registros de pagos ni deudas.</p>
+          <div
+            v-else
+            class="py-24 text-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2rem]"
+          >
+            <div class="p-4 bg-white rounded-full w-fit mx-auto shadow-sm mb-4">
+              <svg
+                class="h-10 w-10 text-slate-300"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <h4 class="text-lg font-bold text-slate-800 tracking-tight">
+              Sin actividad financiera
+            </h4>
+            <p class="text-sm text-slate-400 font-medium max-w-xs mx-auto mt-2">
+              No se han registrado pagos ni deudas pendientes en este contrato hasta el momento.
+            </p>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Modals -->
-    <AddItemModal :is-open="isAddItemModalOpen" :alquiler-id="parseInt(alquilerId)" @close="isAddItemModalOpen = false"
-      @save="handleAddItem" />
+    <AddItemModal
+      :is-open="isAddItemModalOpen"
+      :alquiler-id="parseInt(alquilerId)"
+      @close="isAddItemModalOpen = false"
+      @save="handleAddItem"
+    />
 
-    <RegisterPaymentModal :is-open="isRegisterPaymentModalOpen" :alquiler-id="parseInt(alquilerId)"
-      @close="isRegisterPaymentModalOpen = false" @saved="handleRegisterPayment" />
+    <RegisterPaymentModal
+      :is-open="isRegisterPaymentModalOpen"
+      :alquiler-id="parseInt(alquilerId)"
+      @close="isRegisterPaymentModalOpen = false"
+      @saved="handleRegisterPayment"
+    />
 
-    <ConfirmModal :is-open="isConfirmFinalizeOpen" title="Finalizar Alquiler"
+    <ConfirmModal
+      :is-open="isConfirmFinalizeOpen"
+      title="Finalizar Alquiler"
       message="¿Está seguro que desea finalizar este alquiler? Se registrará la devolución de todos los artículos."
-      confirm-text="Finalizar Alquiler" type="info" @close="isConfirmFinalizeOpen = false" @confirm="handleFinalize" />
+      confirm-text="Finalizar Alquiler"
+      type="info"
+      @close="isConfirmFinalizeOpen = false"
+      @confirm="handleFinalize"
+    />
 
-    <!-- Toast -->
-    <Transition enter-active-class="transform ease-out duration-300 transition"
-      enter-from-class="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
-      enter-to-class="translate-y-0 opacity-100 sm:translate-x-0" leave-active-class="transition ease-in duration-100"
-      leave-from-class="opacity-100" leave-to-class="opacity-0">
-      <div v-if="toast.show"
-        class="fixed bottom-5 right-5 z-50 flex w-full max-w-sm overflow-hidden bg-white rounded-lg shadow-2xl border border-slate-200 pointer-events-auto ring-1 ring-black ring-opacity-5">
-        <div class="flex items-center justify-center w-12"
-          :class="{ 'bg-teal-500': toast.type === 'success', 'bg-red-500': toast.type === 'error' }">
-          <svg v-if="toast.type === 'success'" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24"
-            stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+    <!-- Toast Premium -->
+    <Transition
+      enter-active-class="transform ease-out duration-300 transition"
+      enter-from-class="translate-y-4 opacity-0"
+      enter-to-class="translate-y-0 opacity-100"
+      leave-active-class="transition ease-in duration-200"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div
+        v-if="toast.show"
+        class="fixed bottom-10 right-10 z-50 flex w-full max-w-md overflow-hidden bg-white rounded-2xl shadow-2xl border border-slate-200 pointer-events-auto ring-1 ring-black ring-opacity-5"
+      >
+        <div
+          class="flex items-center justify-center w-14 shrink-0"
+          :class="{
+            'bg-emerald-500': toast.type === 'success',
+            'bg-red-500': toast.type === 'error',
+          }"
+        >
+          <svg
+            v-if="toast.type === 'success'"
+            class="w-7 h-7 text-white"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2.5"
+              d="M5 13l4 4L19 7"
+            />
           </svg>
-          <svg v-else class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          <svg
+            v-else
+            class="w-7 h-7 text-white"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2.5"
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
         </div>
-        <div class="px-4 py-3">
-          <span class="font-semibold" :class="{
-            'text-teal-500': toast.type === 'success',
-            'text-red-500': toast.type === 'error',
-          }">
-            {{ toast.type === 'success' ? 'Éxito' : 'Error' }}
+        <div class="px-6 py-5">
+          <span
+            class="text-xs font-black uppercase tracking-widest mb-1 block"
+            :class="{
+              'text-emerald-600': toast.type === 'success',
+              'text-red-600': toast.type === 'error',
+            }"
+          >
+            {{ toast.type === 'success' ? 'Operación Exitosa' : 'Se produjo un error' }}
           </span>
-          <p class="text-sm text-slate-600">{{ toast.message }}</p>
+          <p class="text-base font-bold text-slate-700 leading-tight">{{ toast.message }}</p>
         </div>
       </div>
     </Transition>

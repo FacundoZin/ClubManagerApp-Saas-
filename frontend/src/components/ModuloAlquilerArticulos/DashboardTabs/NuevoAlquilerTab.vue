@@ -144,13 +144,13 @@ onMounted(() => {
   <div class="h-full">
     <!-- Paso 1: Buscar Socio -->
     <div v-if="!foundSocio && !rentCheckStatus" class="max-w-2xl mx-auto mt-10">
-      <div class="bg-white p-8 rounded-xl border border-slate-200 shadow-sm text-center">
+      <div class="bg-white p-10 rounded-3xl border border-slate-200 shadow-xl text-center">
         <div
-          class="w-16 h-16 bg-teal-50 text-teal-600 rounded-full flex items-center justify-center mx-auto mb-6"
+          class="w-20 h-20 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm ring-1 ring-blue-100/50"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-8 w-8"
+            class="h-10 w-10"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -163,26 +163,42 @@ onMounted(() => {
             />
           </svg>
         </div>
-        <h3 class="text-xl font-bold text-slate-900 mb-2">Buscar Socio</h3>
-        <p class="text-slate-500 mb-8">
+        <h3 class="text-2xl font-bold text-slate-900 mb-3 tracking-tight">Buscar Socio</h3>
+        <p class="text-slate-500 mb-10 text-lg">
           Ingrese el DNI del socio para iniciar el registro de un nuevo alquiler.
         </p>
 
-        <div class="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
-          <div class="relative flex-1">
+        <div class="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
+          <div class="relative flex-1 group">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+              <svg
+                class="h-5 w-5 text-slate-400 group-focus-within:text-blue-500 transition-colors"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm5 3h1a2 2 0 012 2v1H2v-1a2 2 0 012-2h1"
+                />
+              </svg>
+            </div>
             <input
               type="text"
               v-model="searchSocioDni"
               @keyup.enter="handleSearchSocio"
-              class="block w-full rounded-lg border-slate-300 pl-4 pr-10 focus:border-teal-500 focus:ring-teal-500 sm:text-sm py-3 border transition-shadow shadow-sm"
+              class="block w-full rounded-xl border-slate-300 pl-11 pr-10 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 sm:text-sm py-4 border transition-all shadow-sm"
               placeholder="DNI del socio..."
             />
             <div
               v-if="searchingSocio"
-              class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"
+              class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none"
             >
               <svg
-                class="animate-spin h-5 w-5 text-teal-500"
+                class="animate-spin h-5 w-5 text-blue-500"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -206,7 +222,7 @@ onMounted(() => {
           <button
             @click="handleSearchSocio"
             :disabled="searchingSocio || !searchSocioDni"
-            class="px-6 py-3 bg-teal-600 text-white rounded-lg font-semibold hover:bg-teal-700 disabled:opacity-50 transition-colors shadow-md"
+            class="px-8 py-4 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 disabled:opacity-50 transition-all shadow-lg transform active:scale-95"
           >
             Buscar
           </button>
@@ -214,8 +230,20 @@ onMounted(() => {
 
         <div
           v-if="searchError"
-          class="mt-4 text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-100"
+          class="mt-6 text-sm font-bold text-red-800 bg-red-50 p-4 rounded-xl border border-red-100 flex items-center justify-center gap-2"
         >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 text-red-400"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+              clip-rule="evenodd"
+            />
+          </svg>
           {{ searchError }}
         </div>
       </div>
@@ -234,49 +262,49 @@ onMounted(() => {
     <!-- Paso 2: Formulario de Alquiler -->
     <div v-else-if="foundSocio" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <!-- Columna Izquierda: Información del Socio y Selección de Artículos -->
-      <div class="lg:col-span-2 space-y-6">
+      <div class="lg:col-span-2 space-y-8">
         <!-- Socio Info -->
-        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-          <div class="flex justify-between items-start mb-4">
-            <h3 class="text-lg font-bold text-slate-900">Socio Seleccionado</h3>
+        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-sm font-black text-slate-400 uppercase tracking-widest">
+              Socio Seleccionado
+            </h3>
             <button
               @click="resetNuevoAlquiler"
-              class="text-xs text-slate-500 hover:text-red-500 underline"
+              class="text-xs font-bold text-blue-600 hover:text-red-500 transition-colors bg-blue-50 px-3 py-1.5 rounded-lg"
             >
               Cambiar Socio
             </button>
           </div>
           <div
-            class="flex flex-col sm:items-center sm:flex-row gap-4 sm:gap-6 bg-slate-50 p-4 sm:p-6 rounded-xl border border-slate-100"
+            class="flex flex-col sm:items-center sm:flex-row gap-6 bg-slate-50/50 p-6 rounded-2xl border border-slate-100 backdrop-blur-sm"
           >
             <div
-              class="w-12 h-12 sm:w-16 sm:h-16 bg-teal-100 text-teal-700 rounded-full flex items-center justify-center text-lg sm:text-xl font-black shadow-inner self-center sm:self-auto"
+              class="w-16 h-16 sm:w-20 sm:h-20 bg-blue-100 text-blue-700 rounded-2xl flex items-center justify-center text-xl sm:text-2xl font-black shadow-sm ring-1 ring-blue-200/50 self-center sm:self-auto"
             >
               {{ foundSocio.nombre[0] }}{{ foundSocio.apellido[0] }}
             </div>
-            <div
-              class="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 text-center sm:text-left"
-            >
+            <div class="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center sm:text-left">
               <div class="sm:col-span-1">
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
-                  Socio
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                  Nombre Completo
                 </p>
-                <p class="text-base font-bold text-slate-900 leading-tight">
+                <p class="text-lg font-bold text-slate-900 leading-tight">
                   {{ foundSocio.apellido }}, {{ foundSocio.nombre }}
                 </p>
               </div>
               <div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
-                  DNI
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                  Documento (DNI)
                 </p>
-                <p class="text-base font-medium text-slate-700">{{ foundSocio.dni }}</p>
+                <p class="text-lg font-bold text-slate-700">{{ foundSocio.dni }}</p>
               </div>
               <div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
-                  Contacto
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                  Información de Contacto
                 </p>
-                <p class="text-base font-medium text-slate-700">
-                  {{ foundSocio.telefono || 'N/A' }}
+                <p class="text-lg font-bold text-slate-700">
+                  {{ foundSocio.telefono || 'Sin teléfono' }}
                 </p>
               </div>
             </div>
@@ -284,12 +312,19 @@ onMounted(() => {
         </div>
 
         <!-- Artículos Disponibles -->
-        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-          <h3 class="text-lg font-bold text-slate-900 mb-4">Artículos Disponibles</h3>
+        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-sm font-black text-slate-400 uppercase tracking-widest">
+              Artículos Disponibles
+            </h3>
+            <span class="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-full"
+              >{{ articulos.length }} en inventario</span
+            >
+          </div>
 
-          <div v-if="loadingArticulos" class="flex justify-center py-8">
+          <div v-if="loadingArticulos" class="flex justify-center py-12">
             <svg
-              class="animate-spin h-6 w-6 text-teal-600"
+              class="animate-spin h-8 w-8 text-blue-600"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -314,17 +349,22 @@ onMounted(() => {
             <div
               v-for="art in articulos"
               :key="art.id"
-              class="border border-slate-100 rounded-lg p-3 flex justify-between items-center hover:bg-slate-50 transition-colors group"
+              class="border border-slate-100 rounded-2xl p-4 flex justify-between items-center hover:bg-blue-50/30 hover:border-blue-100 transition-all group cursor-default"
             >
               <div>
-                <p class="font-medium text-slate-800">{{ art.nombre }}</p>
-                <p class="text-xs text-teal-600 font-bold">
-                  ${{ art.precioAlquiler.toLocaleString() }} / mes
+                <p class="font-bold text-slate-800 group-hover:text-blue-700 transition-colors">
+                  {{ art.nombre }}
+                </p>
+                <p class="text-sm text-blue-600 font-black mt-1">
+                  ${{ art.precioAlquiler.toLocaleString() }}
+                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-tight ml-1"
+                    >/ mes</span
+                  >
                 </p>
               </div>
               <button
                 @click="addArticuloToAlquiler(art)"
-                class="p-2 bg-teal-50 text-teal-600 rounded-lg sm:opacity-0 sm:group-hover:opacity-100 hover:bg-teal-600 hover:text-white transition-all"
+                class="p-3 bg-blue-50 text-blue-600 rounded-xl sm:opacity-0 sm:group-hover:opacity-100 hover:bg-blue-600 hover:text-white transition-all transform group-active:scale-90"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -343,56 +383,82 @@ onMounted(() => {
               </button>
             </div>
           </div>
-          <div v-else class="text-center py-8 text-slate-400">
-            No hay artículos cargados en el sistema.
+          <div
+            v-else
+            class="text-center py-12 bg-slate-50 rounded-2xl border border-dashed border-slate-200"
+          >
+            <p class="text-sm font-bold text-slate-400">No hay artículos cargados en el sistema.</p>
           </div>
         </div>
       </div>
 
       <!-- Columna Derecha: Resumen y Confirmación -->
       <div class="space-y-6">
-        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm sticky top-6">
-          <h3 class="text-lg font-bold text-slate-900 mb-6">Resumen del Alquiler</h3>
+        <div
+          class="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl sticky top-6 overflow-hidden"
+        >
+          <div
+            class="absolute top-0 right-0 w-32 h-32 bg-blue-50/50 rounded-full -mr-16 -mt-16 -z-10"
+          ></div>
+
+          <h3 class="text-lg font-black text-slate-900 mb-6 tracking-tight">
+            Resumen del Alquiler
+          </h3>
 
           <!-- Items List -->
-          <div class="space-y-4 mb-6">
+          <div class="space-y-4 mb-8">
             <div
               v-if="newAlquilerItems.length === 0"
-              class="flex flex-col items-center justify-center py-10 px-4 bg-slate-50 border border-dashed border-slate-200 rounded-2xl text-slate-400"
+              class="flex flex-col items-center justify-center py-12 px-4 bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl text-slate-400 group"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-8 w-8 mb-2 opacity-50"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+              <div
+                class="p-4 bg-white rounded-full shadow-sm mb-4 group-hover:scale-110 transition-transform"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <p class="text-xs italic text-center">No se han agregado artículos al alquiler.</p>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-8 w-8 text-slate-300"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                  />
+                </svg>
+              </div>
+              <p class="text-xs font-bold uppercase tracking-widest text-center">Sin artículos</p>
+              <p class="text-[10px] text-slate-400 mt-1 text-center font-medium italic">
+                Agregue productos de la lista
+              </p>
             </div>
             <ul v-else class="divide-y divide-slate-100">
               <li
                 v-for="(item, index) in newAlquilerItems"
                 :key="index"
-                class="py-3 flex justify-between items-start"
+                class="py-4 flex justify-between items-start animate-in fade-in slide-in-from-right-2"
               >
                 <div>
-                  <p class="text-sm font-medium text-slate-900">{{ item.nombre }}</p>
-                  <p class="text-xs text-slate-500">Cantidad: {{ item.cantidad }}</p>
+                  <p class="text-sm font-bold text-slate-900">{{ item.nombre }}</p>
+                  <div class="flex items-center gap-2 mt-1">
+                    <span
+                      class="text-[10px] font-black bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded uppercase tracking-tighter"
+                      >Cant: {{ item.cantidad }}</span
+                    >
+                    <span class="text-[10px] text-slate-400 font-bold tracking-tight"
+                      >${{ item.precio.toLocaleString() }} c/u</span
+                    >
+                  </div>
                 </div>
                 <div class="flex items-center gap-3">
-                  <p class="text-sm font-bold text-teal-600">
+                  <p class="text-sm font-black text-blue-600">
                     ${{ (item.precio * item.cantidad).toLocaleString() }}
                   </p>
                   <button
                     @click="removeArticuloFromAlquiler(index)"
-                    class="text-slate-400 hover:text-red-500 transition-colors"
+                    class="p-1.5 bg-red-50 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-all transform active:scale-90"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -417,10 +483,13 @@ onMounted(() => {
           <!-- Total -->
           <div
             v-if="newAlquilerItems.length > 0"
-            class="flex justify-between items-center py-4 border-t border-slate-100"
+            class="flex flex-col gap-1 py-6 border-t border-slate-100"
           >
-            <span class="text-sm font-medium text-slate-600">Total Mensual</span>
-            <span class="text-xl font-bold text-slate-900">
+            <span
+              class="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center"
+              >Inversión mensual</span
+            >
+            <span class="text-3xl font-black text-slate-900 text-center tracking-tight">
               ${{
                 newAlquilerItems
                   .reduce((sum, item) => sum + item.precio * item.cantidad, 0)
@@ -430,19 +499,19 @@ onMounted(() => {
           </div>
 
           <!-- Observaciones -->
-          <div class="mb-6">
+          <div class="mb-8">
             <label
               for="observaciones"
-              class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2"
+              class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3"
             >
-              Observaciones (Opcional)
+              Observaciones del Alquiler
             </label>
             <textarea
               id="observaciones"
               v-model="observaciones"
               rows="3"
-              class="shadow-sm focus:ring-teal-500 focus:border-teal-500 block w-full sm:text-sm border-slate-300 rounded-lg"
-              placeholder="Detalles adicionales..."
+              class="focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-slate-200 rounded-2xl p-4 bg-slate-50/50 transition-all placeholder:text-slate-400"
+              placeholder="¿Algún detalle especial o recordatorio?..."
             ></textarea>
           </div>
 
@@ -450,7 +519,7 @@ onMounted(() => {
           <button
             @click="handleRegisterAlquiler"
             :disabled="isRegisteringAlquiler || newAlquilerItems.length === 0"
-            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            class="w-full flex justify-center py-4 px-6 border border-transparent rounded-2xl shadow-lg shadow-blue-200 text-sm font-black uppercase tracking-widest text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform active:scale-95"
           >
             <svg
               v-if="isRegisteringAlquiler"
@@ -473,7 +542,8 @@ onMounted(() => {
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               ></path>
             </svg>
-            {{ isRegisteringAlquiler ? 'Registrando...' : 'Confirmar Alquiler' }}
+            <span v-if="!isRegisteringAlquiler">Confirmar Alquiler</span>
+            <span v-else>Procesando...</span>
           </button>
         </div>
       </div>

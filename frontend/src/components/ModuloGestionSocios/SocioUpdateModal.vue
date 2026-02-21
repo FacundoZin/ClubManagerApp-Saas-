@@ -60,8 +60,6 @@ const resetForm = () => {
   form.direcccion = ''
   form.idLote = ''
   form.localidad = ''
-  form.idLote = ''
-  form.localidad = ''
   form.preferenciaDePago = ''
   errorMessage.value = ''
 }
@@ -108,9 +106,17 @@ const handleSubmit = async () => {
   errorMessage.value = ''
 
   try {
-    await SociosService.update(props.socioId, form)
+    // Sanitize data: convert empty strings to null for ALL fields dynamically
+    const sanitizedForm = Object.fromEntries(
+      Object.entries(form).map(([key, value]) => [
+        key,
+        value === '' ? null : key === 'idLote' ? Number(value) : value,
+      ]),
+    )
+
+    await SociosService.update(props.socioId, sanitizedForm)
     // The view expects the updated object to refresh the UI
-    emit('save', { ...form, id: props.socioId })
+    emit('save', { ...sanitizedForm, id: props.socioId })
     resetForm()
   } catch (error) {
     errorMessage.value = error.message
@@ -193,8 +199,8 @@ const handleSubmit = async () => {
               <h3 class="text-xl font-bold leading-6 text-slate-900" id="modal-title">
                 Actualizar Socio
               </h3>
-              <div class="mt-2 text-slate-500">
-                <p class="text-sm font-medium">Modifique la información del socio seleccionado.</p>
+              <div class="mt-1 text-slate-500">
+                <p class="text-sm font-medium">Modifique la información del socio.</p>
               </div>
             </div>
           </div>
@@ -202,13 +208,13 @@ const handleSubmit = async () => {
 
         <!-- Form -->
         <form @submit.prevent="handleSubmit">
-          <div class="px-4 py-5 sm:p-8 space-y-6">
+          <div class="px-4 py-5 sm:p-6 space-y-4">
             <div
               v-if="errorMessage"
-              class="p-4 rounded-xl bg-red-50 border border-red-100 text-red-700 text-sm flex items-start gap-3"
+              class="p-3 rounded-xl bg-red-50 border border-red-100 text-red-700 text-sm flex items-start gap-2"
             >
               <svg
-                class="h-5 w-5 text-red-400 mt-0.5"
+                class="h-5 w-5 text-red-400 shrink-0"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -223,8 +229,8 @@ const handleSubmit = async () => {
               {{ errorMessage }}
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div class="space-y-1.5">
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1">
                 <label for="edit-nombre" class="block text-sm font-bold text-slate-700"
                   >Nombre</label
                 >
@@ -233,11 +239,11 @@ const handleSubmit = async () => {
                   id="edit-nombre"
                   v-model="form.nombre"
                   required
-                  class="block w-full rounded-xl border-slate-200 bg-slate-50/50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 sm:text-sm px-4 py-3 border transition-all"
-                  placeholder="Ingrese nombre"
+                  class="block w-full rounded-xl border-slate-200 bg-slate-50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 sm:text-sm px-3 py-2 border transition-all"
+                  placeholder="Nombre"
                 />
               </div>
-              <div class="space-y-1.5">
+              <div class="space-y-1">
                 <label for="edit-apellido" class="block text-sm font-bold text-slate-700"
                   >Apellido</label
                 >
@@ -246,38 +252,39 @@ const handleSubmit = async () => {
                   id="edit-apellido"
                   v-model="form.apellido"
                   required
-                  class="block w-full rounded-xl border-slate-200 bg-slate-50/50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 sm:text-sm px-4 py-3 border transition-all"
-                  placeholder="Ingrese apellido"
+                  class="block w-full rounded-xl border-slate-200 bg-slate-50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 sm:text-sm px-3 py-2 border transition-all"
+                  placeholder="Apellido"
                 />
               </div>
             </div>
 
-            <div class="space-y-1.5">
-              <label for="edit-dni" class="block text-sm font-bold text-slate-700">DNI</label>
-              <input
-                type="text"
-                id="edit-dni"
-                v-model="form.dni"
-                required
-                class="block w-full rounded-xl border-slate-200 bg-slate-50/50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 sm:text-sm px-4 py-3 border transition-all"
-                placeholder="Ej: 12.345.678"
-              />
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1">
+                <label for="edit-dni" class="block text-sm font-bold text-slate-700">DNI</label>
+                <input
+                  type="text"
+                  id="edit-dni"
+                  v-model="form.dni"
+                  required
+                  class="block w-full rounded-xl border-slate-200 bg-slate-50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 sm:text-sm px-3 py-2 border transition-all"
+                  placeholder="DNI"
+                />
+              </div>
+              <div class="space-y-1">
+                <label for="edit-telefono" class="block text-sm font-bold text-slate-700"
+                  >Teléfono</label
+                >
+                <input
+                  type="tel"
+                  id="edit-telefono"
+                  v-model="form.telefono"
+                  class="block w-full rounded-xl border-slate-200 bg-slate-50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 sm:text-sm px-3 py-2 border transition-all"
+                  placeholder="Teléfono"
+                />
+              </div>
             </div>
 
-            <div class="space-y-1.5">
-              <label for="edit-telefono" class="block text-sm font-bold text-slate-700"
-                >Teléfono</label
-              >
-              <input
-                type="tel"
-                id="edit-telefono"
-                v-model="form.telefono"
-                class="block w-full rounded-xl border-slate-200 bg-slate-50/50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 sm:text-sm px-4 py-3 border transition-all"
-                placeholder="Ej: +54 9 11 1234 5678"
-              />
-            </div>
-
-            <div class="space-y-1.5">
+            <div class="space-y-1">
               <label for="edit-direccion" class="block text-sm font-bold text-slate-700"
                 >Dirección</label
               >
@@ -285,12 +292,12 @@ const handleSubmit = async () => {
                 type="text"
                 id="edit-direccion"
                 v-model="form.direcccion"
-                class="block w-full rounded-xl border-slate-200 bg-slate-50/50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 sm:text-sm px-4 py-3 border transition-all"
+                class="block w-full rounded-xl border-slate-200 bg-slate-50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 sm:text-sm px-4 py-2 border transition-all"
                 placeholder="Calle y número"
               />
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div class="grid grid-cols-2 gap-4">
               <div class="space-y-1.5">
                 <label for="edit-lote" class="block text-sm font-bold text-slate-700"
                   >Lote / Zona</label
@@ -298,16 +305,13 @@ const handleSubmit = async () => {
                 <select
                   id="edit-lote"
                   v-model="form.idLote"
-                  class="block w-full rounded-xl border-slate-200 bg-slate-50/50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 sm:text-sm px-4 py-3 border transition-all"
+                  class="block w-full rounded-xl border-slate-200 bg-slate-50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 sm:text-sm px-3 py-2 border transition-all bg-white"
                 >
                   <option value="">Seleccione un lote</option>
                   <option v-for="lote in lotes" :key="lote.id" :value="lote.id">
                     {{ lote.nombreLote }}
                   </option>
                 </select>
-                <p v-if="isLoadingLotes" class="text-xs text-slate-500 italic mt-1">
-                  Cargando lotes...
-                </p>
               </div>
               <div class="space-y-1.5">
                 <label for="edit-localidad" class="block text-sm font-bold text-slate-700"
@@ -317,8 +321,8 @@ const handleSubmit = async () => {
                   type="text"
                   id="edit-localidad"
                   v-model="form.localidad"
-                  class="block w-full rounded-xl border-slate-200 bg-slate-50/50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 sm:text-sm px-4 py-3 border transition-all"
-                  placeholder="Ciudad o Barrio"
+                  class="block w-full rounded-xl border-slate-200 bg-slate-50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 sm:text-sm px-3 py-2 border transition-all"
+                  placeholder="Ciudad"
                 />
               </div>
             </div>
@@ -331,9 +335,9 @@ const handleSubmit = async () => {
                 id="edit-preferenciaDePago"
                 v-model="form.preferenciaDePago"
                 required
-                class="block w-full rounded-xl border-slate-200 bg-slate-50/50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 sm:text-sm px-4 py-3 border transition-all"
+                class="block w-full rounded-xl border-slate-200 bg-slate-50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 sm:text-sm px-3 py-2 border transition-all bg-white"
               >
-                <option value="" disabled>Seleccione una forma de pago</option>
+                <option value="" disabled>Seleccione forma de pago</option>
                 <option v-for="option in paymentOptions" :key="option.value" :value="option.value">
                   {{ option.label }}
                 </option>
@@ -343,12 +347,12 @@ const handleSubmit = async () => {
 
           <!-- Footer Actions -->
           <div
-            class="bg-slate-50/80 px-4 py-4 sm:flex sm:flex-row-reverse sm:px-8 border-t border-slate-100 backdrop-blur-sm"
+            class="bg-slate-50 px-4 py-3 flex gap-3 sm:flex-row-reverse sm:px-8 border-t border-slate-100"
           >
             <button
               type="submit"
               :disabled="isSubmitting || isLoading"
-              class="inline-flex w-full justify-center items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-blue-200 hover:bg-blue-700 hover:shadow-blue-300 sm:ml-3 sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95"
+              class="inline-flex flex-1 justify-center items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-100 hover:bg-blue-700 sm:ml-3 sm:w-auto sm:flex-none disabled:opacity-50 transition-all active:scale-95"
             >
               <svg
                 v-if="isSubmitting"
@@ -375,7 +379,7 @@ const handleSubmit = async () => {
             <button
               type="button"
               @click="$emit('close')"
-              class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-6 py-3 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-200 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-all active:scale-95"
+              class="inline-flex flex-1 justify-center rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-200 hover:bg-slate-50 sm:w-auto sm:flex-none transition-all active:scale-95"
             >
               Cancelar
             </button>

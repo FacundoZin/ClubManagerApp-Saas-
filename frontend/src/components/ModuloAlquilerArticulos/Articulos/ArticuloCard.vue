@@ -11,10 +11,12 @@ defineEmits(['update-price'])
 
 <template>
   <div
-    class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 hover:shadow-md transition-shadow flex flex-col h-full"
+    class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full group"
   >
     <div class="flex-1">
-      <div class="p-3 bg-blue-50 rounded-lg w-fit mb-4">
+      <div
+        class="p-4 bg-blue-50 rounded-2xl w-fit mb-5 shadow-sm ring-1 ring-black/5 group-hover:scale-110 transition-transform duration-300"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-6 w-6 text-blue-600"
@@ -30,19 +32,21 @@ defineEmits(['update-price'])
           />
         </svg>
       </div>
-      <h3 class="text-lg font-bold text-slate-900 mb-1">{{ articulo.nombre }}</h3>
+      <h3
+        class="text-xl font-bold text-slate-900 mb-1 group-hover:text-blue-700 transition-colors duration-300"
+      >
+        {{ articulo.nombre }}
+      </h3>
       <div class="flex items-center text-slate-500 mb-4">
-        <span class="text-sm">Precio alquiler mensual:</span>
-        <span class="ml-2 text-lg font-semibold text-slate-900"
-          >${{ articulo.precioAlquiler }}</span
-        >
+        <span class="text-sm font-medium">Precio mensual:</span>
+        <span class="ml-2 text-lg font-bold text-slate-900">${{ articulo.precioAlquiler }}</span>
       </div>
     </div>
 
     <div class="pt-4 border-t border-slate-100 mt-4">
       <button
         @click="$emit('update-price', articulo)"
-        class="w-full inline-flex justify-center items-center px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+        class="w-full inline-flex justify-center items-center px-4 py-2.5 text-sm font-bold text-blue-700 bg-blue-50 rounded-xl hover:bg-blue-100 transition-all border border-blue-100 shadow-sm"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
