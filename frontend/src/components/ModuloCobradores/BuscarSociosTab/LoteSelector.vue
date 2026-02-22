@@ -30,8 +30,7 @@ defineEmits(['update:modelValue', 'change'])
         id="lote-select"
         :value="modelValue"
         @change="
-          $emit('update:modelValue', $event.target.value)
-          $emit('change', $event.target.value)
+          ($emit('update:modelValue', $event.target.value), $emit('change', $event.target.value))
         "
         class="appearance-none block w-full rounded-lg border-slate-200 bg-white text-slate-700 font-bold sm:text-sm px-3 py-2 border focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/5 transition-all cursor-pointer pr-10 hover:border-slate-300 shadow-sm"
       >
