@@ -70,4 +70,27 @@ export default {
 
     return await response.json()
   },
+
+  async descargarPlanillaDeudores(idLote) {
+    const response = await fetch(
+      `${API_URL}/lotes/${idLote}/planilla-deudores`,
+      { credentials: 'include' }
+    )
+
+    if (!response.ok) {
+      const error = await response.text()
+      throw new Error(error || 'Error al descargar la planilla')
+    }
+
+    const blob = await response.blob()
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.style.display = 'none'
+    a.href = url
+    a.download = `planilla_deudores_lote_${idLote}.pdf`
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    window.URL.revokeObjectURL(url)
+  },
 }

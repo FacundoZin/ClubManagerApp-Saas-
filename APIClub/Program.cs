@@ -39,6 +39,9 @@ using APIClub.Domain.ModuloGestionViajes.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configurar licencia de QuestPDF
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+
 // Configuración para PostgreSQL: permitir DateTime sin especificar UTC explícitamente
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -80,6 +83,7 @@ builder.Services.AddScoped<ISociosManagmentService, SociosManagmentService>();
 builder.Services.AddScoped<ICuotasService, CuotasService>();
 builder.Services.AddScoped<IReservasServices, ReservasServices>();
 builder.Services.AddScoped<ICobranzasServices, CobranzasService>();
+builder.Services.AddScoped<IPdfPlanillaCobranzaService, PdfPlanillaCobranzaService>();
 builder.Services.AddScoped<IManagmentArticulosService, ManagmentArticulosService>();
 builder.Services.AddScoped<IAlquilerArticulosManagmentService, AlquilerArticulosService>();
 builder.Services.AddScoped<IConsultaAlquileres, AlquilerArticulosService>();

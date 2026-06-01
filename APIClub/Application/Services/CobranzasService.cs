@@ -1,4 +1,4 @@
-﻿using APIClub.Application.Common;
+using APIClub.Application.Common;
 using APIClub.Application.Dtos.Cobrador;
 using APIClub.Application.Dtos.Lote;
 using APIClub.Application.Dtos.Socios;
@@ -18,13 +18,18 @@ namespace APIClub.Application.Services
         private readonly IUsuariosRepository _UsuariosRepository;
         private readonly AppDbcontext _context;
         private readonly IHistorialCobradoresRepository _historialCobradoresRepository;
+        private readonly ICuotaRepository _cuotaRepository;
+        private readonly IPdfPlanillaCobranzaService _pdfService;
+
         public CobranzasService(ISocioRepository sociosRepository, AppDbcontext context, IUsuariosRepository usuariosRepository,
-            IHistorialCobradoresRepository historialCobradoresRepository)
+            IHistorialCobradoresRepository historialCobradoresRepository, ICuotaRepository cuotaRepository, IPdfPlanillaCobranzaService pdfService)
         {
             _SociosRepository = sociosRepository;
             _context = context;
             _UsuariosRepository = usuariosRepository;
             _historialCobradoresRepository = historialCobradoresRepository;
+            _cuotaRepository = cuotaRepository;
+            _pdfService = pdfService;
         }
 
         public async Task<List<PreviewLote>> GetLotesPreview()
@@ -116,6 +121,68 @@ namespace APIClub.Application.Services
             var montoTotalCobrado = cobrosRealizados.Sum(c => c.MontoCobrado);
 
             return new HistorialCobradorDto { Anio = anio, Mes = mes, CobrosRealizados = cobrosRealizados, MontoTotalCobrado = montoTotalCobrado };
+        }
+
+        public async Task<Result<byte[]>> GenerarPlanillaCobranzasPdf(int idLote)
+        {
+            try
+            {
+                // 1. Obtener datos del lote
+                var lote = await _context.Lotes.FindAsync(idLote);
+                if (lote == null)
+                    return Result<byte[]>.Error("Lote no encontrado", 404);
+
+                // 2. Obtener valor actual de cuota
+                var valorCuota = await _cuotaRepository.ObtenerValorCuota();
+
+                // 3. Iterar con paginación para acumular todos los deudores
+                var hoy = DateTime.Now;
+                int anioActual = hoy.Year;
+                int semestreActual = hoy.Month <= 6 ? 1 : 2;
+
+                var todosLosSocios = new List<PreviewSocioForCobranzaDto>();
+                int pageNumber = 1;
+                int pageSize = 50; // tamaño de página interno
+
+                while (true)
+                {
+                    var (items, totalCount) = await _SociosRepository
+                        .GetSociosDeudoresByLote(idLote, anioActual, semestreActual, pageNumber, pageSize);
+                    
+                    if (items != null && items.Count > 0)
+                    {
+                        todosLosSocios.AddRange(items);
+                    }
+
+                    if (todosLosSocios.Count >= totalCount || items == null || items.Count == 0)
+                        break;
+
+                    pageNumber++;
+                }
+
+                if (todosLosSocios.Count == 0)
+                    return Result<byte[]>.Error("No hay socios deudores en este lote", 404);
+
+                // 4. Armar DTO del lote para el PDF
+                var lotePreview = new PreviewLote
+                {
+                    Id = lote.Id,
+                    NombreLote = lote.NombreLote,
+                    CalleNorte = lote.CalleNorte ?? string.Empty,
+                    CalleSur = lote.CalleSur ?? string.Empty,
+                    CalleEste = lote.CalleEste ?? string.Empty,
+                    CalleOeste = lote.CalleOeste ?? string.Empty
+                };
+
+                // 5. Generar PDF
+                var pdfBytes = _pdfService.GenerarPlanillaDeudores(lotePreview, todosLosSocios, valorCuota);
+
+                return Result<byte[]>.Exito(pdfBytes);
+            }
+            catch (Exception ex)
+            {
+                return Result<byte[]>.Error($"Error al generar la planilla PDF: {ex.Message}", 500);
+            }
         }
     }
 }

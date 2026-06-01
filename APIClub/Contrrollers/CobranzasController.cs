@@ -1,4 +1,4 @@
-﻿using APIClub.Application.Dtos.Lote;
+using APIClub.Application.Dtos.Lote;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
@@ -25,6 +25,16 @@ namespace APIClub.Contrrollers
             if (!result.Exit) return StatusCode(result.Errorcode, result.Errormessage);
 
             return Ok(result.Data);
+        }
+
+        [HttpGet("lotes/{IdLote}/planilla-deudores")]
+        public async Task<IActionResult> GetPlanillaCobranzas(int IdLote)
+        {
+            var result = await _cobranzasServices.GenerarPlanillaCobranzasPdf(IdLote);
+
+            if (!result.Exit) return StatusCode(result.Errorcode, result.Errormessage);
+
+            return File(result.Data, "application/pdf", $"planilla_deudores_lote_{IdLote}.pdf");
         }
 
         [HttpGet("lotes")]
