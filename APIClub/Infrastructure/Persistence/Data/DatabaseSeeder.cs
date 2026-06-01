@@ -1,4 +1,4 @@
-﻿using APIClub.Domain.AlquilerArticulos.Models;
+using APIClub.Domain.AlquilerArticulos.Models;
 using APIClub.Domain.Enums;
 using APIClub.Domain.GestionSocios.Models;
 using APIClub.Domain.ModuloGestionCobradores.Models;
@@ -104,7 +104,14 @@ namespace APIClub.Infrastructure.Persistence.Data
             var fechaInicioSocio = new DateOnly(2023, 1, 1);
             var totalDias = (hoy.ToDateTime(TimeOnly.MinValue) - fechaInicioSocio.ToDateTime(TimeOnly.MinValue)).Days;
 
-            for (int i = 0; i < 120; i++)
+            // Generar un conjunto predefinido de 50 direcciones para forzar la coincidencia de domicilios (grupos familiares)
+            var direccionesPool = new List<string>();
+            for (int d = 0; d < 50; d++)
+            {
+                direccionesPool.Add($"Calle {_random.Next(1, 40)} {_random.Next(100, 1500)}");
+            }
+
+            for (int i = 0; i < 350; i++)
             {
                 var nombre = nombres[_random.Next(nombres.Length)];
                 var apellido = apellidos[_random.Next(apellidos.Length)];
@@ -121,15 +128,21 @@ namespace APIClub.Infrastructure.Persistence.Data
                     isActivo = false;
                 }
 
+                // Generar mayormente con preferencia Cobrador (~75%) para tener suficientes deudores por lote
+                var preferencia = _random.Next(100) < 75 ? MetodosDePago.Cobrador : (MetodosDePago)_random.Next(1, 3);
+
+                // Asignar una dirección del pool para asegurar que varios socios vivan en el mismo lugar
+                var direccionElegida = direccionesPool[_random.Next(direccionesPool.Count)];
+
                 socios.Add(new Socio
                 {
                     Nombre = nombre,
                     Apellido = apellido,
                     Dni = (20000000 + i * 1543).ToString(),
                     Telefono = "11" + _random.Next(40000000, 69999999).ToString(),
-                    Direcccion = $"Calle {_random.Next(1, 100)} {_random.Next(100, 5000)}",
+                    Direcccion = direccionElegida,
                     Localidad = "Pilar",
-                    PreferenciaDePago = (MetodosDePago)_random.Next(0, 3), // Cobrador, LinkDePago, Sede
+                    PreferenciaDePago = preferencia, // Cobrador, LinkDePago, Sede
                     FechaAsociacion = fechaAsociacion,
                     IsActivo = isActivo,
                     FechaDeBaja = fechaBaja,

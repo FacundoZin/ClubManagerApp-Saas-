@@ -57,7 +57,7 @@ namespace APIClub.Application.Services
                         {
                             headerCol.Item().PaddingTop(3).Text(t =>
                             {
-                                t.Span("Zona: ").Bold().FontSize(9).FontColor(Colors.Grey.Darken2);
+                                t.Span("DELIMITACIONES: ").Bold().FontSize(9).FontColor(Colors.Grey.Darken2);
                                 t.Span(limites).FontSize(9).Italic().FontColor(Colors.Grey.Darken2);
                             });
                         }
@@ -65,14 +65,28 @@ namespace APIClub.Application.Services
                         headerCol.Item().PaddingVertical(5).LineHorizontal(1.5f).LineColor(Colors.Teal.Darken3);
                     });
 
-                    // CONTENIDO: Cupones de pago recortables organizados en dos columnas
+                    // CONTENIDO: Cupones de pago recortables organizados en dos columnas (Socio y Cobrador de cada uno en la misma fila)
                     page.Content().PaddingTop(10).Grid(grid =>
                     {
                         grid.Columns(2); // 2 columnas por fila
 
+                        // Identificar direcciones compartidas (grupo familiar) en el lote actual
+                        var direccionesCompartidas = socios
+                            .Where(s => !string.IsNullOrWhiteSpace(s.Direcccion))
+                            .GroupBy(s => s.Direcccion.Trim().ToLower())
+                            .Where(g => g.Count() > 1)
+                            .Select(g => g.Key)
+                            .ToHashSet();
+
                         foreach (var socio in socios)
                         {
-                            // ShowEntire() evita que el cupón se divida a la mitad entre dos páginas
+                            var periodosAdeudadosStr = string.Join(", ", socio.PeriodosAdeudados.Select(p => $"{p.Anio}-S{p.Semestre}"));
+                            var cantidadCuotas = socio.PeriodosAdeudados.Count;
+                            var totalAPagar = cantidadCuotas * valorCuota;
+                            var esGrupoFamiliar = !string.IsNullOrWhiteSpace(socio.Direcccion) &&
+                                                  direccionesCompartidas.Contains(socio.Direcccion.Trim().ToLower());
+
+                            // 1. CUPÓN PARA EL SOCIO (Izquierda)
                             grid.Item().ShowEntire().Column(cupItem =>
                             {
                                 // Contenedor del Cupón (Borde gris, fondo blanco)
@@ -86,7 +100,7 @@ namespace APIClub.Application.Services
                                             .FontSize(9)
                                             .FontColor(Colors.Teal.Darken3);
 
-                                        row.ConstantItem(60).AlignRight().Text("CUPÓN")
+                                        row.ConstantItem(60).AlignRight().Text("CUPÓN SOCIO")
                                             .Bold()
                                             .FontSize(7.5f)
                                             .FontColor(Colors.Grey.Darken1);
@@ -94,17 +108,22 @@ namespace APIClub.Application.Services
 
                                     cup.Item().PaddingVertical(3).LineHorizontal(0.5f).LineColor(Colors.Grey.Lighten2);
 
-                                    // Datos del Socio apilados verticalmente para evitar que se apriete
-                                    cup.Item().Text(t =>
+                                    // Datos del Socio
+                                    cup.Item().Row(r =>
                                     {
-                                        t.Span("Socio: ").Bold().FontSize(8.5f);
-                                        t.Span($"{socio.Apellido}, {socio.Nombre}").FontSize(8.5f);
-                                    });
+                                        r.RelativeItem().Text(t =>
+                                        {
+                                            t.Span("Socio: ").Bold().FontSize(8.5f);
+                                            t.Span($"{socio.Apellido}, {socio.Nombre}").FontSize(8.5f);
+                                        });
 
-                                    cup.Item().PaddingTop(1).Text(t =>
-                                    {
-                                        t.Span("DNI: ").Bold().FontSize(8.5f);
-                                        t.Span(socio.Dni ?? "—").FontSize(8.5f);
+                                        if (esGrupoFamiliar)
+                                        {
+                                            r.AutoItem().Background(Colors.Teal.Lighten5).PaddingHorizontal(4).PaddingVertical(1).Text("GRUPO FAMILIAR")
+                                                .Bold()
+                                                .FontSize(6f)
+                                                .FontColor(Colors.Teal.Darken4);
+                                        }
                                     });
 
                                     cup.Item().PaddingTop(1).Text(t =>
@@ -120,7 +139,6 @@ namespace APIClub.Application.Services
                                     });
 
                                     // Períodos Adeudados
-                                    var periodosAdeudadosStr = string.Join(", ", socio.PeriodosAdeudados.Select(p => $"{p.Anio}-S{p.Semestre}"));
                                     cup.Item().PaddingTop(3).Text(t =>
                                     {
                                         t.Span("Períodos: ").Bold().FontSize(8.5f);
@@ -128,9 +146,82 @@ namespace APIClub.Application.Services
                                     });
 
                                     // Destacado: Total a Pagar
-                                    var cantidadCuotas = socio.PeriodosAdeudados.Count;
-                                    var totalAPagar = cantidadCuotas * valorCuota;
+                                    cup.Item().PaddingTop(6).Background(Colors.Grey.Lighten3).Padding(6).Column(totCol =>
+                                    {
+                                        totCol.Item().Text(t =>
+                                        {
+                                            t.Span("TOTAL: ").Bold().FontSize(9).FontColor(Colors.Grey.Darken4);
+                                            t.Span($" ${totalAPagar:N2}").Bold().FontSize(10).FontColor(Colors.Teal.Darken4);
+                                        });
 
+                                        totCol.Item().Text($"({cantidadCuotas} cuotas × ${valorCuota:N2})")
+                                            .Italic()
+                                            .FontSize(7.5f)
+                                            .FontColor(Colors.Grey.Darken3);
+                                    });
+                                });
+                            });
+
+                            // 2. CUPÓN PARA EL COBRADOR (Derecha)
+                            grid.Item().ShowEntire().Column(cupItem =>
+                            {
+                                // Contenedor del Cupón (Borde gris, fondo blanco)
+                                cupItem.Item().Border(1).BorderColor(Colors.Grey.Lighten1).Background(Colors.White).Padding(10).Column(cup =>
+                                {
+                                    // Encabezado del Cupón
+                                    cup.Item().Row(row =>
+                                    {
+                                        row.RelativeItem().Text("CASA DEL JUBILADO")
+                                            .Bold()
+                                            .FontSize(9)
+                                            .FontColor(Colors.Teal.Darken3);
+
+                                        row.ConstantItem(60).AlignRight().Text("COBRADOR")
+                                            .Bold()
+                                            .FontSize(7.5f)
+                                            .FontColor(Colors.Grey.Darken1);
+                                    });
+
+                                    cup.Item().PaddingVertical(3).LineHorizontal(0.5f).LineColor(Colors.Grey.Lighten2);
+
+                                    // Datos del Socio para el Cobrador
+                                    cup.Item().Row(r =>
+                                    {
+                                        r.RelativeItem().Text(t =>
+                                        {
+                                            t.Span("Socio: ").Bold().FontSize(8.5f);
+                                            t.Span($"{socio.Apellido}, {socio.Nombre}").FontSize(8.5f);
+                                        });
+
+                                        if (esGrupoFamiliar)
+                                        {
+                                            r.AutoItem().Background(Colors.Teal.Lighten5).PaddingHorizontal(4).PaddingVertical(1).Text("GRUPO FAMILIAR")
+                                                .Bold()
+                                                .FontSize(6f)
+                                                .FontColor(Colors.Teal.Darken4);
+                                        }
+                                    });
+
+                                    cup.Item().PaddingTop(1).Text(t =>
+                                    {
+                                        t.Span("DNI: ").Bold().FontSize(8.5f);
+                                        t.Span(socio.Dni ?? "—").FontSize(8.5f);
+                                    });
+
+                                    cup.Item().PaddingTop(1).Text(t =>
+                                    {
+                                        t.Span("Dirección: ").Bold().FontSize(8.5f);
+                                        t.Span(socio.Direcccion ?? "No registrada").FontSize(8.5f);
+                                    });
+
+                                    // Períodos Adeudados
+                                    cup.Item().PaddingTop(3).Text(t =>
+                                    {
+                                        t.Span("Períodos: ").Bold().FontSize(8.5f);
+                                        t.Span(periodosAdeudadosStr).FontSize(8.5f);
+                                    });
+
+                                    // Destacado: Total a Pagar
                                     cup.Item().PaddingTop(6).Background(Colors.Grey.Lighten3).Padding(6).Column(totCol =>
                                     {
                                         totCol.Item().Text(t =>

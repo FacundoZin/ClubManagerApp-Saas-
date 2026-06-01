@@ -163,6 +163,13 @@ namespace APIClub.Application.Services
                 if (todosLosSocios.Count == 0)
                     return Result<byte[]>.Error("No hay socios deudores en este lote", 404);
 
+                // Ordenar socios por Dirección para agrupar grupos familiares y optimizar recorrido
+                todosLosSocios = todosLosSocios
+                    .OrderBy(s => s.Direcccion ?? string.Empty)
+                    .ThenBy(s => s.Apellido)
+                    .ThenBy(s => s.Nombre)
+                    .ToList();
+
                 // 4. Armar DTO del lote para el PDF
                 var lotePreview = new PreviewLote
                 {
