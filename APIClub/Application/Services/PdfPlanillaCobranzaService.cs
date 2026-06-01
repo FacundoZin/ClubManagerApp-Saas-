@@ -65,94 +65,86 @@ namespace APIClub.Application.Services
                         headerCol.Item().PaddingVertical(5).LineHorizontal(1.5f).LineColor(Colors.Teal.Darken3);
                     });
 
-                    // CONTENIDO: Cupones de pago recortables
-                    page.Content().PaddingTop(10).Column(column =>
+                    // CONTENIDO: Cupones de pago recortables organizados en dos columnas
+                    page.Content().PaddingTop(10).Grid(grid =>
                     {
-                        for (int i = 0; i < socios.Count; i++)
-                        {
-                            var socio = socios[i];
+                        grid.Columns(2); // 2 columnas por fila
 
+                        foreach (var socio in socios)
+                        {
                             // ShowEntire() evita que el cupón se divida a la mitad entre dos páginas
-                            column.Item().ShowEntire().Column(cupItem =>
+                            grid.Item().ShowEntire().Column(cupItem =>
                             {
                                 // Contenedor del Cupón (Borde gris, fondo blanco)
-                                cupItem.Item().Border(1).BorderColor(Colors.Grey.Lighten1).Background(Colors.White).Padding(12).Column(cup =>
+                                cupItem.Item().Border(1).BorderColor(Colors.Grey.Lighten1).Background(Colors.White).Padding(10).Column(cup =>
                                 {
                                     // Encabezado del Cupón
                                     cup.Item().Row(row =>
                                     {
-                                        row.RelativeItem().Text("ASOCIACIÓN CIVIL CASA DEL JUBILADO")
+                                        row.RelativeItem().Text("CASA DEL JUBILADO")
                                             .Bold()
-                                            .FontSize(11)
+                                            .FontSize(9)
                                             .FontColor(Colors.Teal.Darken3);
 
-                                        row.ConstantItem(100).AlignRight().Text("CUPÓN DE COBRO")
+                                        row.ConstantItem(60).AlignRight().Text("CUPÓN")
                                             .Bold()
-                                            .FontSize(8)
+                                            .FontSize(7.5f)
                                             .FontColor(Colors.Grey.Darken1);
                                     });
 
-                                    cup.Item().PaddingVertical(4).LineHorizontal(0.5f).LineColor(Colors.Grey.Lighten2);
+                                    cup.Item().PaddingVertical(3).LineHorizontal(0.5f).LineColor(Colors.Grey.Lighten2);
 
-                                    // Fila 1: Datos del Socio
-                                    cup.Item().Row(row =>
+                                    // Datos del Socio apilados verticalmente para evitar que se apriete
+                                    cup.Item().Text(t =>
                                     {
-                                        row.RelativeItem().Text(t =>
-                                        {
-                                            t.Span("Socio: ").Bold();
-                                            t.Span($"{socio.Apellido}, {socio.Nombre}");
-                                        });
-
-                                        row.RelativeItem().Text(t =>
-                                        {
-                                            t.Span("DNI: ").Bold();
-                                            t.Span(socio.Dni ?? "—");
-                                        });
+                                        t.Span("Socio: ").Bold().FontSize(8.5f);
+                                        t.Span($"{socio.Apellido}, {socio.Nombre}").FontSize(8.5f);
                                     });
 
-                                    // Fila 2: Dirección y Teléfono
-                                    cup.Item().PaddingTop(2).Row(row =>
+                                    cup.Item().PaddingTop(1).Text(t =>
                                     {
-                                        row.RelativeItem().Text(t =>
-                                        {
-                                            t.Span("Dirección: ").Bold();
-                                            t.Span(socio.Direcccion ?? "No registrada");
-                                        });
-
-                                        row.RelativeItem().Text(t =>
-                                        {
-                                            t.Span("Teléfono: ").Bold();
-                                            t.Span(socio.Telefono ?? "—");
-                                        });
+                                        t.Span("DNI: ").Bold().FontSize(8.5f);
+                                        t.Span(socio.Dni ?? "—").FontSize(8.5f);
                                     });
 
-                                    // Fila 3: Períodos Adeudados
+                                    cup.Item().PaddingTop(1).Text(t =>
+                                    {
+                                        t.Span("Dirección: ").Bold().FontSize(8.5f);
+                                        t.Span(socio.Direcccion ?? "No registrada").FontSize(8.5f);
+                                    });
+
+                                    cup.Item().PaddingTop(1).Text(t =>
+                                    {
+                                        t.Span("Teléfono: ").Bold().FontSize(8.5f);
+                                        t.Span(socio.Telefono ?? "—").FontSize(8.5f);
+                                    });
+
+                                    // Períodos Adeudados
                                     var periodosAdeudadosStr = string.Join(", ", socio.PeriodosAdeudados.Select(p => $"{p.Anio}-S{p.Semestre}"));
-                                    cup.Item().PaddingTop(4).Text(t =>
+                                    cup.Item().PaddingTop(3).Text(t =>
                                     {
-                                        t.Span("Períodos adeudados: ").Bold();
-                                        t.Span(periodosAdeudadosStr);
+                                        t.Span("Períodos: ").Bold().FontSize(8.5f);
+                                        t.Span(periodosAdeudadosStr).FontSize(8.5f);
                                     });
 
                                     // Destacado: Total a Pagar
                                     var cantidadCuotas = socio.PeriodosAdeudados.Count;
                                     var totalAPagar = cantidadCuotas * valorCuota;
 
-                                    cup.Item().PaddingTop(8).Background(Colors.Grey.Lighten3).Padding(8).Row(row =>
+                                    cup.Item().PaddingTop(6).Background(Colors.Grey.Lighten3).Padding(6).Column(totCol =>
                                     {
-                                        row.RelativeItem().Text(t =>
+                                        totCol.Item().Text(t =>
                                         {
-                                            t.Span("TOTAL A PAGAR: ").Bold().FontSize(11).FontColor(Colors.Grey.Darken4);
-                                            t.Span($" ${totalAPagar:N2}").Bold().FontSize(12).FontColor(Colors.Teal.Darken4);
+                                            t.Span("TOTAL: ").Bold().FontSize(9).FontColor(Colors.Grey.Darken4);
+                                            t.Span($" ${totalAPagar:N2}").Bold().FontSize(10).FontColor(Colors.Teal.Darken4);
                                         });
 
-                                        row.RelativeItem().AlignRight().Text($"({cantidadCuotas} cuotas × ${valorCuota:N2})")
+                                        totCol.Item().Text($"({cantidadCuotas} cuotas × ${valorCuota:N2})")
                                             .Italic()
-                                            .FontSize(9)
+                                            .FontSize(7.5f)
                                             .FontColor(Colors.Grey.Darken3);
                                     });
                                 });
-
                             });
                         }
                     });

@@ -104,51 +104,6 @@ defineExpose({
           @change="buscarSocios()"
         />
         <LoteInfoCard :lote="currentLote" />
-        <button
-          v-if="selectedLote && socios.length > 0"
-          @click="descargarPlanilla"
-          :disabled="downloadingPdf"
-          class="lg:ml-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 disabled:from-slate-400 disabled:to-slate-500 text-white font-semibold rounded-xl shadow-sm hover:shadow-md disabled:shadow-none transition-all duration-200"
-        >
-          <!-- Spinner when loading -->
-          <svg
-            v-if="downloadingPdf"
-            class="animate-spin h-5 w-5 text-white"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              class="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              stroke-width="4"
-            ></circle>
-            <path
-              class="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
-          <!-- PDF icon when not loading -->
-          <svg
-            v-else
-            class="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            />
-          </svg>
-          <span>{{ downloadingPdf ? 'Generando PDF...' : 'Descargar Planilla PDF' }}</span>
-        </button>
       </div>
     </div>
 
@@ -194,6 +149,73 @@ defineExpose({
 
     <!-- Lista de Socios -->
     <div v-else-if="socios.length > 0">
+      <!-- Encabezado de Resultados y Acciones -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 mt-2 sm:pb-4 sm:border-b sm:border-slate-100">
+        <div class="hidden sm:block">
+          <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+            <svg class="h-5 w-5 text-cyan-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+              />
+            </svg>
+            <span>Socios Asignados</span>
+            <span class="px-2.5 py-0.5 text-xs font-bold bg-cyan-50 text-cyan-700 rounded-full border border-cyan-100">
+              {{ totalCount }}
+            </span>
+          </h3>
+          <p class="text-xs text-slate-400 mt-1">Listado de socios deudores pertenecientes al lote seleccionado.</p>
+        </div>
+
+        <button
+          v-if="selectedLote && socios.length > 0"
+          @click="descargarPlanilla"
+          :disabled="downloadingPdf"
+          class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 disabled:from-slate-400 disabled:to-slate-500 text-white font-semibold rounded-xl shadow-sm hover:shadow-md disabled:shadow-none transition-all duration-200 sm:w-auto w-full"
+        >
+          <!-- Spinner when loading -->
+          <svg
+            v-if="downloadingPdf"
+            class="animate-spin h-5 w-5 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+          <!-- PDF icon when not loading -->
+          <svg
+            v-else
+            class="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
+          <span>{{ downloadingPdf ? 'Generando PDF...' : 'Descargar Planilla PDF' }}</span>
+        </button>
+      </div>
+
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <CobradorSocioCard
           v-for="socio in socios"
