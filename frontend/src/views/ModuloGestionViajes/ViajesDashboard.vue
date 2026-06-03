@@ -5,7 +5,6 @@ import InscripcionConfirmModal from '../../components/ModuloGestionViajes/Inscri
 import VarianteFormModal from '../../components/ModuloGestionViajes/VarianteFormModal.vue'
 import ViajeCard from '../../components/ModuloGestionViajes/ViajeCard.vue'
 import ViajeFormModal from '../../components/ModuloGestionViajes/ViajeFormModal.vue'
-import SociosService from '../../services/SociosService'
 import ViajesService from '../../services/viajesService'
 
 const router = useRouter()
@@ -19,10 +18,6 @@ const expandedViajeVariantes = ref([])
 const isLoadingVariantes = ref(false)
 
 // Inscription Flow State
-const searchDni = ref('')
-const selectedSocio = ref(null)
-const isSearchingSocio = ref(false)
-const searchError = ref('')
 const comboViajes = ref([])
 const selectedViajeId = ref(null)
 
@@ -68,8 +63,8 @@ const actions = [
   },
   {
     id: 'inscribir',
-    title: 'Inscribir socio a viaje',
-    description: 'Registrar a un socio en una variante de viaje.',
+    title: 'Inscribir persona a viaje',
+    description: 'Registrar una o más personas en un viaje.',
     icon: 'M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z',
     color: 'text-blue-600',
     bg: 'bg-blue-50',
@@ -84,7 +79,7 @@ const selectAction = async (actionId) => {
   } else if (actionId === 'list') {
     fetchViajes()
   } else if (actionId === 'inscribir') {
-    resetInscriptionFlow()
+    fetchComboViajes()
   }
 }
 
@@ -143,30 +138,11 @@ const viewDetail = (viajeId) => {
 }
 
 // Inscription Flow
-const resetInscriptionFlow = () => {
-  searchDni.value = ''
-  selectedSocio.ref = null
-  selectedSocio.value = null
-  selectedViajeId.value = null
-  comboViajes.value = []
-  searchError.value = ''
-}
-
-const handleSearchSocio = async () => {
-  if (!searchDni.value) return
-  isSearchingSocio.value = true
-  searchError.value = ''
-  selectedSocio.value = null
-
+const fetchComboViajes = async () => {
   try {
-    const socio = await SociosService.getByDni(searchDni.value)
-    selectedSocio.value = socio
-    // Load travels for step 2
     comboViajes.value = await ViajesService.getComboBoxViajes()
   } catch (error) {
-    searchError.value = 'Socio no encontrado o error en la búsqueda.'
-  } finally {
-    isSearchingSocio.value = false
+    showToast(error.message, 'error')
   }
 }
 
@@ -175,11 +151,16 @@ const confirmInscripcion = () => {
   isInscripcionModalOpen.value = true
 }
 
+const resetInscriptionFlow = () => {
+  selectedViajeId.value = null
+  comboViajes.value = []
+}
+
 const handleFinishInscripcion = () => {
   isInscripcionModalOpen.value = false
   showToast('Inscripción realizada con éxito')
   resetInscriptionFlow()
-  currentAction.value = 'none'
+  fetchComboViajes()
 }
 
 onMounted(() => {
@@ -347,88 +328,46 @@ onMounted(() => {
               class="max-w-3xl mx-auto py-4 animate-in fade-in slide-in-from-right-4 duration-500">
               <h3 class="text-xl font-bold text-slate-900 mb-8 flex items-center">
                 <span
-                  class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 text-sm mr-3">3</span>
-                Inscripción de Socio
+                  class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 text-sm mr-3">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                  </svg>
+                </span>
+                Inscribir Persona a Viaje
               </h3>
-              <!-- ... resto del flujo de inscripción se mantiene igual ... -->
+
+              <!-- Paso único: Seleccionar Viaje -->
               <div class="mb-10 p-6 bg-slate-50 rounded-2xl border border-slate-200">
-                <h4 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Paso 1: Identificar Socio
+                <h4 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">
+                  Seleccione el viaje
                 </h4>
-                <div class="flex gap-3">
-                  <div class="relative flex-grow">
-                    <input type="text" v-model="searchDni" @keyup.enter="handleSearchSocio"
-                      placeholder="Ingrese DNI del socio"
-                      class="block w-full pl-4 pr-10 py-3 border border-slate-300 rounded-xl leading-5 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
-                    <div v-if="isSearchingSocio" class="absolute inset-y-0 right-3 flex items-center">
-                      <svg class="animate-spin h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
-                        </circle>
-                        <path class="opacity-75" fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                        </path>
+                <p class="text-sm text-slate-500 mb-4">
+                  Elija el destino al que desea inscribir personas. Luego se abrirá el formulario
+                  para cargar los datos de los inscriptos, seleccionar la variante y registrar la entrega inicial.
+                </p>
+                <div class="space-y-4">
+                  <label class="block text-sm font-medium text-slate-700">Viaje disponible</label>
+                  <select v-model="selectedViajeId"
+                    class="block w-full px-4 py-3 border border-slate-300 rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    <option :value="null" disabled>Seleccione un viaje...</option>
+                    <option v-for="v in comboViajes" :key="v.idViaje" :value="v.idViaje">
+                      {{ v.nombreViaje }}
+                    </option>
+                  </select>
+
+                  <div class="flex justify-end mt-6">
+                    <button @click="confirmInscripcion" :disabled="!selectedViajeId"
+                      class="px-8 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all disabled:opacity-50 flex items-center">
+                      Continuar a Inscripción
+                      <svg class="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M14 5l7 7m0 0l-7 7m7-7H3" />
                       </svg>
-                    </div>
+                    </button>
                   </div>
-                  <button @click="handleSearchSocio" :disabled="isSearchingSocio || !searchDni"
-                    class="px-6 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all disabled:opacity-50">Buscar</button>
-                </div>
-
-                <div v-if="searchError"
-                  class="mt-4 text-sm text-red-600 font-medium bg-red-50 p-3 rounded-lg border border-red-100">
-                  {{ searchError }}
-                </div>
-
-                <div v-if="selectedSocio"
-                  class="mt-6 flex items-center p-4 bg-white rounded-xl border border-blue-100 shadow-sm animate-in fade-in slide-in-from-top-2">
-                  <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 mr-4">
-                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg></div>
-                  <div>
-                    <p class="text-xs text-slate-400 font-bold uppercase">Socio Encontrado</p>
-                    <p class="text-lg font-bold text-slate-900">{{ selectedSocio.nombre }} {{ selectedSocio.apellido }}
-                    </p>
-                    <p class="text-sm text-slate-500">DNI: {{ selectedSocio.dni }}</p>
-                  </div>
-                  <button @click="resetInscriptionFlow" class="ml-auto p-2 text-slate-400 hover:text-red-500">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
                 </div>
               </div>
-
-              <!-- Step 2: Seleccionar Viaje -->
-              <Transition enter-active-class="transition duration-300 ease-out"
-                enter-from-class="opacity-0 translate-y-4" enter-to-class="opacity-100 translate-y-0">
-                <div v-if="selectedSocio" class="mb-10 p-6 bg-slate-50 rounded-2xl border border-slate-200">
-                  <h4 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">
-                    Paso 2: Elegir Destino
-                  </h4>
-                  <div class="space-y-4">
-                    <label class="block text-sm font-medium text-slate-700">Viaje disponible</label>
-                    <select v-model="selectedViajeId"
-                      class="block w-full px-4 py-3 border border-slate-300 rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                      <option :value="null" disabled>Seleccione un viaje...</option>
-                      <option v-for="v in comboViajes" :key="v.idViaje" :value="v.idViaje">
-                        {{ v.nombreViaje }}
-                      </option>
-                    </select>
-
-                    <div class="flex justify-end mt-6">
-                      <button @click="confirmInscripcion" :disabled="!selectedViajeId"
-                        class="px-8 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all disabled:opacity-50 flex items-center">
-                        Continuar a Variantes
-                        <svg class="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </Transition>
             </div>
           </div>
         </div>
@@ -441,7 +380,7 @@ onMounted(() => {
     <VarianteFormModal :is-open="isVarianteModalOpen" :id-viaje="targetViajeId" @close="isVarianteModalOpen = false"
       @save="handleSaveVariante" />
 
-    <InscripcionConfirmModal v-if="isInscripcionModalOpen" :is-open="isInscripcionModalOpen" :socio="selectedSocio"
+    <InscripcionConfirmModal v-if="isInscripcionModalOpen" :is-open="isInscripcionModalOpen"
       :id-viaje="selectedViajeId" @close="isInscripcionModalOpen = false" @save="handleFinishInscripcion" />
 
     <!-- Toast Notification -->

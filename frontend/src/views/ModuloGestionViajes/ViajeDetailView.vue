@@ -6,6 +6,7 @@ import DataTable from '../../components/Common/DataTable.vue'
 import InscripcionConfirmModal from '../../components/ModuloGestionViajes/InscripcionConfirmModal.vue'
 import PagoViajeModal from '../../components/ModuloGestionViajes/PagoViajeModal.vue'
 import VarianteFormModal from '../../components/ModuloGestionViajes/VarianteFormModal.vue'
+import HistorialPagosModal from '../../components/ModuloGestionViajes/HistorialPagosModal.vue'
 import ViajesService from '../../services/viajesService'
 
 const route = useRoute()
@@ -32,6 +33,14 @@ const toast = ref({
   message: '',
   type: 'success',
 })
+
+const isHistorialModalOpen = ref(false)
+const selectedInscriptoParaHistorial = ref(null)
+
+const openHistorialModal = (inscripto) => {
+  selectedInscriptoParaHistorial.value = inscripto
+  isHistorialModalOpen.value = true
+}
 
 const showToast = (message, type = 'success') => {
   toast.value = { show: true, message, type }
@@ -217,7 +226,7 @@ const goBack = () => {
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                 </svg>
-                Inscribir Socio
+                Inscribir Persona
               </button>
             </div>
           </div>
@@ -322,79 +331,87 @@ const goBack = () => {
             </div>
 
             <!-- Inscriptos Table -->
-            <DataTable :headers="[
-              { label: 'Socio', key: 'socio' },
-              { label: 'DNI', key: 'dniSocio' },
-              { label: 'Teléfono', key: 'telefonoSocio' },
-              {
-                label: 'Abonado',
-                key: 'montoAbonado',
-                textRight: true,
-                class: 'font-bold text-emerald-600',
-              },
-              {
-                label: 'Pendiente',
-                key: 'montoPendiente',
-                textRight: true,
-                class: 'font-bold text-rose-600',
-              },
-              { label: 'Estado', key: 'estado' },
-              { label: 'Acciones', key: 'acciones', textRight: true },
-            ]" :items="variante.inscriptos" emptyMessage="Aún no hay socios inscriptos en esta variante.">
-              <template #cell(socio)="{ item }">
-                <span class="font-bold text-slate-700" :class="{ 'opacity-50 grayscale': item.cancelado }">{{
-                  item.nombreSocio }}</span>
-              </template>
-              <template #cell(dniSocio)="{ item }">
-                <span class="text-xs font-medium text-slate-600" :class="{ 'opacity-50 grayscale': item.cancelado }">
-                  {{ item.dniSocio }}
-                </span>
-              </template>
-              <template #cell(telefonoSocio)="{ item }">
-                <span class="text-xs text-slate-600 font-medium" :class="{ 'opacity-50 grayscale': item.cancelado }">
-                  {{ item.telefonoSocio || 'S/T' }}
-                </span>
-              </template>
-              <template #cell(montoAbonado)="{ item }">
-                <span :class="{ 'opacity-50 grayscale': item.cancelado }">
-                  {{ formatCurrency(item.montoAbonado) }}
-                </span>
-              </template>
-              <template #cell(montoPendiente)="{ item }">
-                <span :class="{ 'opacity-50 grayscale': item.cancelado }">
-                  {{ formatCurrency(item.montoPendiente) }}
-                </span>
-              </template>
-              <template #cell(estado)="{ item }">
-                <div :class="{ 'opacity-50 grayscale': item.cancelado }">
-                  <span v-if="item.cancelado"
-                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-red-100 text-red-700">Cancelado</span>
-                  <span v-else-if="item.montoPendiente === 0"
-                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-emerald-100 text-emerald-700">Saldado</span>
-                  <span v-else
-                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-blue-100 text-blue-700">Activo</span>
-                </div>
-              </template>
-              <template #cell(acciones)="{ item }">
-                <div v-if="!item.cancelado" class="flex justify-end gap-2">
-                  <button v-if="item.montoPendiente > 0" @click="handleOpenPago(item)"
-                    class="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
-                    title="Registrar Pago">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </button>
-                  <button @click="handleOpenCancel(item.id)"
-                    class="p-2 text-red-400 hover:bg-red-50 rounded-lg transition-colors" title="Cancelar Inscripción">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </button>
-                </div>
-              </template>
-            </DataTable>
+            <div v-if="variante.inscriptos.length === 0" class="p-8 text-center text-slate-500 border-t border-slate-100 italic">
+              Aún no hay personas inscriptas en esta variante.
+            </div>
+            <div v-else class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-slate-200">
+                <thead class="bg-slate-50/75">
+                  <tr>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">File</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Apellido y Nombre</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Teléfono</th>
+                    <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Abonado</th>
+                    <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Pendiente</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Estado</th>
+                    <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-slate-100">
+                  <template v-for="(item, idx) in variante.inscriptos" :key="item.id">
+                    <!-- Check if we should render a separator/header for group changes -->
+                    <tr v-if="idx === 0 || item.numeroFile !== variante.inscriptos[idx - 1].numeroFile" class="bg-slate-50/40 border-t border-slate-200/60">
+                      <td colspan="7" class="px-6 py-1.5 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                        Grupo de File: <span class="text-blue-600 font-extrabold">{{ item.numeroFile }}</span>
+                      </td>
+                    </tr>
+                    
+                    <tr class="hover:bg-slate-50/50 transition-colors" :class="{ 'bg-red-50/10': item.cancelado }">
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 font-medium">
+                        <span class="px-2.5 py-1 text-xs font-bold bg-slate-100 text-slate-700 rounded-lg">#{{ item.numeroFile }}</span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900 font-semibold" :class="{ 'opacity-50 line-through': item.cancelado }">
+                        {{ item.apellido }} {{ item.nombre }}
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500 font-medium" :class="{ 'opacity-50': item.cancelado }">
+                        {{ item.telefono || 'S/T' }}
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold text-emerald-600" :class="{ 'opacity-50 grayscale': item.cancelado }">
+                        {{ formatCurrency(item.montoAbonado) }}
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold text-rose-600" :class="{ 'opacity-50 grayscale': item.cancelado }">
+                        {{ formatCurrency(item.montoPendiente) }}
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <span v-if="item.cancelado" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-red-100 text-red-700">Cancelado</span>
+                        <span v-else-if="item.montoPendiente === 0" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-emerald-100 text-emerald-700">Saldado</span>
+                        <span v-else class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-blue-100 text-blue-700">Activo</span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-right">
+                        <div class="flex justify-end gap-1">
+                          <button @click="openHistorialModal(item)"
+                            class="p-1.5 text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                            title="Ver Historial de Pagos">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                            </svg>
+                          </button>
+                          <template v-if="!item.cancelado">
+                            <button v-if="item.montoPendiente > 0" @click="handleOpenPago(item)"
+                              class="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                              title="Registrar Pago">
+                              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            </button>
+                            <button @click="handleOpenCancel(item.id)"
+                              class="p-1.5 text-red-400 hover:bg-red-50 rounded-lg transition-colors" title="Cancelar Inscripción">
+                              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            </button>
+                          </template>
+                        </div>
+                      </td>
+                    </tr>
+                    
+
+                  </template>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -411,9 +428,12 @@ const goBack = () => {
       @close="isPagoModalOpen = false" @save="handleSaveAction" />
 
     <ConfirmModal :is-open="isConfirmCancelOpen" title="Cancelar Inscripción"
-      message="¿Está seguro que desea cancelar esta inscripción? Esta acción no se puede deshacer y el socio dejará de figurar como activo en el viaje."
+      message="¿Está seguro que desea cancelar esta inscripción? Al cancelar, se registrará automáticamente el pago completo del viaje. El monto total quedará como recaudado."
       confirm-text="Confirmar Cancelación" type="danger" @close="isConfirmCancelOpen = false"
       @confirm="confirmCancelInscripcion" />
+
+    <HistorialPagosModal :is-open="isHistorialModalOpen" :inscripto="selectedInscriptoParaHistorial"
+      @close="isHistorialModalOpen = false" />
 
     <!-- Toast Notification -->
     <Transition enter-active-class="transform ease-out duration-300 transition"

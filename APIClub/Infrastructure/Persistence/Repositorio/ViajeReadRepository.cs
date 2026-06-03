@@ -36,7 +36,7 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
             return await _dbContext.Viajes
                 .Include(v => v.Variantes)
                     .ThenInclude(vv => vv.Inscriptos)
-                        .ThenInclude(i => i.Socio)
+                        .ThenInclude(i => i.HistorialPagos)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(v => v.Id == id);
         }
@@ -104,18 +104,12 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
                 }).ToListAsync();
         }
 
-        public async Task<bool> EstaInscripto(int socioId, int varianteViajeId)
+        public async Task<InscriptoViaje?> GetInscriptoWithPagos(int id)
         {
-            // buscamos el viaje al que pertenece la variante 
-            var variante = await _dbContext.VariantesViaje
-                .AsNoTracking()
-                .FirstOrDefaultAsync(vv => vv.Id == varianteViajeId);
-
-            if (variante == null) return false;
-
-            // verificamos si el socio ya esta en cualquier variante de ese mismo viaje
             return await _dbContext.Inscriptos
-                .AnyAsync(i => i.SocioId == socioId && i.Variante.IdViaje == variante.IdViaje && !i.cancelado);
+                .Include(i => i.HistorialPagos)
+                .Include(i => i.Variante)
+                .FirstOrDefaultAsync(i => i.Id == id);
         }
     }
 }

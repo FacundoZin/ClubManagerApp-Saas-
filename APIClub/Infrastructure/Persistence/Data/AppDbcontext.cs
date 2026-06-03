@@ -1,4 +1,4 @@
-﻿using APIClub.Domain.AlquilerArticulos.Models;
+using APIClub.Domain.AlquilerArticulos.Models;
 using APIClub.Domain.Auth.Models;
 using APIClub.Domain.Enums;
 using APIClub.Domain.GestionSocios.Models;
@@ -35,6 +35,7 @@ namespace APIClub.Infrastructure.Persistence.Data
         public DbSet<Viaje> Viajes { get; set; }
         public DbSet<InscriptoViaje> Inscriptos { get; set; }
         public DbSet<VarianteViaje> VariantesViaje { get; set; }
+        public DbSet<PagoInscriptoViaje> PagosInscriptosViaje { get; set; }
 
 
 
@@ -233,7 +234,11 @@ namespace APIClub.Infrastructure.Persistence.Data
 
             modelBuilder.Entity<InscriptoViaje>(entity =>
             {
-                entity.Property(iv => iv.montoAbonado).HasColumnType("decimal(18,2)");
+                entity.Property(iv => iv.Nombre).IsRequired().HasMaxLength(100);
+                entity.Property(iv => iv.Apellido).IsRequired().HasMaxLength(100);
+                entity.Property(iv => iv.Telefono).HasMaxLength(50);
+                entity.Property(iv => iv.NumeroFile).IsRequired().HasMaxLength(50);
+                entity.Property(iv => iv.MontoAbonado).HasColumnType("decimal(18,2)");
                 entity.Property(iv => iv.MontoPendiente).HasColumnType("decimal(18,2)");
 
                 entity.HasOne(iv => iv.Variante)
@@ -241,10 +246,20 @@ namespace APIClub.Infrastructure.Persistence.Data
                       .HasForeignKey(iv => iv.VarianteViajeId)
                       .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne(iv => iv.Socio)
-                      .WithMany()
-                      .HasForeignKey(iv => iv.SocioId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                entity.HasMany(iv => iv.HistorialPagos)
+                      .WithOne()
+                      .HasForeignKey(p => p.InscriptoViajeId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<PagoInscriptoViaje>(entity =>
+            {
+                entity.Property(p => p.Monto).HasColumnType("decimal(18,2)");
+                entity.Property(p => p.NumeroRecibo).IsRequired().HasMaxLength(100);
+                entity.Property(p => p.FechaPago)
+                      .HasConversion(
+                          v => v.ToDateTime(new TimeOnly(0, 0)),
+                          v => DateOnly.FromDateTime(v));
             });
 
             // 0) Usuarios (SuperAdmin)

@@ -17,6 +17,6 @@ namespace APIClub.Domain.ModuloGestionViajes.Repositories
         Task<bool> VarianteExists(int id);
         Task<List<ComboBoxViajes>> GetComboBoxViajes();
         Task<List<ComboBoxVariantesViaje>> GetComboBoxVariantesDeViaje(int idViajeBase);
-        Task<bool> EstaInscripto(int socioId, int varianteViajeId);
+        Task<InscriptoViaje?> GetInscriptoWithPagos(int id);
     }
 }

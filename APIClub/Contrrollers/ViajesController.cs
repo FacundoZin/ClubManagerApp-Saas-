@@ -1,4 +1,4 @@
-﻿using APIClub.Application.Dtos.Viajes.Create;
+using APIClub.Application.Dtos.Viajes.Create;
 using APIClub.Application.Dtos.Viajes.Update;
 using APIClub.Domain.ModuloGestionViajes.Repositories;
 using APIClub.Domain.ModuloGestionViajes.useCases;
@@ -81,11 +81,11 @@ namespace APIClub.Contrrollers
         }
 
         [HttpPost("inscribir")]
-        public async Task<IActionResult> InscribirSocioToViaje([FromBody] InsertInscriptoViajeDto dto)
+        public async Task<IActionResult> InscribirPersonasAlViaje([FromBody] InsertInscriptoViajeDto dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            var result = await _viajesService.InscriptSocioToViaje(dto);
+ 
+            var result = await _viajesService.InscribirPersonasAlViaje(dto);
             if (!result.Exit)
             {
                 return StatusCode(result.Errorcode, result.Errormessage);
@@ -97,8 +97,8 @@ namespace APIClub.Contrrollers
         public async Task<IActionResult> ActualizarPagoDeViaje([FromBody] UpdatePagoViajeDto dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            var result = await _viajesService.ActualizarPagoDeViaje(dto.IdInscripto, dto.MontoAbonado);
+ 
+            var result = await _viajesService.ActualizarPagoDeViaje(dto.IdInscripto, dto.MontoAbonado, dto.NumeroRecibo);
             if (!result.Exit)
             {
                 return StatusCode(result.Errorcode, result.Errormessage);
@@ -107,9 +107,9 @@ namespace APIClub.Contrrollers
         }
 
         [HttpDelete("inscripcion/{idInscripto}")]
-        public async Task<IActionResult> CancelarViajeDeSocio(int idInscripto)
+        public async Task<IActionResult> CancelarInscripcionDeViaje(int idInscripto)
         {
-            var result = await _viajesService.CancelarViajeDeSocio(idInscripto);
+            var result = await _viajesService.CancelarInscripcionDeViaje(idInscripto);
             if (!result.Exit)
             {
                 return StatusCode(result.Errorcode, result.Errormessage);

@@ -518,17 +518,30 @@ namespace APIClub.Infrastructure.Persistence.Data
                     var socio = socios[_random.Next(socios.Count)];
 
                     // Evitar duplicados simples para el seed
-                    if (inscriptos.Any(ins => ins.SocioId == socio.Id && ins.VarianteViajeId == variante.Id)) continue;
-
+                    if (inscriptos.Any(ins => ins.Nombre == socio.Nombre && ins.Apellido == socio.Apellido && ins.VarianteViajeId == variante.Id)) continue;
+ 
                     var montoAbonado = _random.Next(0, (int)variante.ValorViaje / 2);
-                    inscriptos.Add(new InscriptoViaje
+                    var ins = new InscriptoViaje
                     {
                         VarianteViajeId = variante.Id,
-                        SocioId = socio.Id,
-                        montoAbonado = montoAbonado,
+                        Nombre = socio.Nombre,
+                        Apellido = socio.Apellido,
+                        Telefono = socio.Telefono ?? string.Empty,
+                        NumeroFile = $"SEED-{_random.Next(1000, 9999)}",
+                        MontoAbonado = montoAbonado,
                         MontoPendiente = variante.ValorViaje - montoAbonado,
-                        cancelado = false
-                    });
+                        Cancelado = false
+                    };
+                    if (montoAbonado > 0)
+                    {
+                        ins.HistorialPagos.Add(new PagoInscriptoViaje
+                        {
+                            Monto = montoAbonado,
+                            FechaPago = DateOnly.FromDateTime(DateTime.Now),
+                            NumeroRecibo = "SEED-PAGO"
+                        });
+                    }
+                    inscriptos.Add(ins);
                 }
             }
 

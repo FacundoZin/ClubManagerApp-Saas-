@@ -74,7 +74,7 @@ export default {
     }
   },
 
-  async inscribirSocio(dto) {
+  async inscribirPersonas(dto) {
     const response = await fetch(`${API_URL}/inscribir`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -82,7 +82,7 @@ export default {
       body: JSON.stringify(dto),
     });
     if (!response.ok) {
-      const msg = await handleError(response, "Error al inscribir al socio");
+      const msg = await handleError(response, "Error al inscribir personas al viaje");
       throw new Error(msg);
     }
   },

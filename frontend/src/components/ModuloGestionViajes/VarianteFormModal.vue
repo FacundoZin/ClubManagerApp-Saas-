@@ -186,7 +186,7 @@ const regimenOptions = [
 
             <div class="space-y-1">
               <label for="tipoDeButaca" class="block text-sm font-bold text-slate-700"
-                >Tipo de Butaca / Transporte</label
+                >Tipo de Butaca</label
               >
               <input
                 type="text"

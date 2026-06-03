@@ -13,6 +13,7 @@ const props = defineProps({
 const emit = defineEmits(['close', 'save'])
 
 const montoAbonar = ref(null)
+const numeroRecibo = ref('')
 const isSubmitting = ref(false)
 const errorMessage = ref('')
 
@@ -28,6 +29,10 @@ const handleSubmit = async () => {
     errorMessage.value = `El monto debe ser mayor a 0 y no superar ${formatCurrency(props.inscripto.montoPendiente)}`
     return
   }
+  if (!numeroRecibo.value.trim()) {
+    errorMessage.value = 'El número de recibo es obligatorio'
+    return
+  }
 
   isSubmitting.value = true
   errorMessage.value = ''
@@ -36,6 +41,7 @@ const handleSubmit = async () => {
     await ViajesService.actualizarPago({
       idInscripto: props.inscripto.id,
       montoAbonado: montoAbonar.value,
+      numeroRecibo: numeroRecibo.value.trim(),
     })
     emit('save')
   } catch (error) {
@@ -89,8 +95,8 @@ const handleSubmit = async () => {
             <!-- Read-only info -->
             <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
               <div>
-                <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Socio</p>
-                <p class="text-sm font-bold text-slate-700">{{ inscripto.nombreSocio }}</p>
+                <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Inscripto</p>
+                <p class="text-sm font-bold text-slate-700">{{ inscripto.apellido }} {{ inscripto.nombre }}</p>
               </div>
               <div class="grid grid-cols-2 gap-4">
                 <div>
@@ -130,6 +136,20 @@ const handleSubmit = async () => {
                   @input="montoAbonar = $event.target.value.replace(/[^0-9.]/g, '')"
                 />
               </div>
+            </div>
+
+            <div>
+              <label for="nroRecibo" class="block text-sm font-medium text-slate-700 mb-2"
+                >Número de Recibo</label
+              >
+              <input
+                type="text"
+                id="nroRecibo"
+                v-model="numeroRecibo"
+                required
+                placeholder="Ej: REC-000123"
+                class="block w-full px-4 py-3 border border-slate-300 rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 sm:text-sm text-slate-900"
+              />
             </div>
           </div>
 

@@ -1,4 +1,4 @@
-﻿using APIClub.Application.Common;
+using APIClub.Application.Common;
 using APIClub.Application.Dtos.Viajes.Create;
 using APIClub.Application.Dtos.Viajes.Views;
 using APIClub.Domain.ModuloGestionViajes.Models;
@@ -82,39 +82,66 @@ namespace APIClub.Application.Services
         }
 
 
-        public async Task<Result<object?>> InscriptSocioToViaje(InsertInscriptoViajeDto dto)
+        public async Task<Result<object?>> InscribirPersonasAlViaje(InsertInscriptoViajeDto dto)
         {
-            var viaje = await _viajeReadRepository.GetVarianteById(dto.ViajeVarianteId);
-
-            if (viaje == null)
-                return Result<object?>.Error("Lo sentimos el viaje al que se quiere inscribir el socio no existe en el sistema", 404);
-
-            var Inscripto = await _viajeReadRepository.EstaInscripto(dto.SocioId, dto.ViajeVarianteId);
-
-            if (Inscripto)
-                return Result<object?>.Error("El socio ya se encuentra inscripto en este viaje.", 400);
-
-            if (dto.MontoAbonado < viaje.ValorSeña)
-                return Result<object?>.Error("el monto abonado por el socio debe igual o mayor a la seña del viaje", 400);
-            if (dto.MontoAbonado > viaje.ValorViaje)
-                return Result<object?>.Error("el monto abonado por el socio no puede ser mayor al valor del viaje", 400);
-
-            var montoPendiente = viaje.ValorViaje - dto.MontoAbonado;
-
-            viaje.Inscriptos.Add(new InscriptoViaje
+            try
             {
-                montoAbonado = dto.MontoAbonado,
-                MontoPendiente = montoPendiente,
-                SocioId = dto.SocioId,
-                VarianteViajeId = dto.ViajeVarianteId
-            });
+                // Validar cada inscripto
+                foreach (var item in dto.Inscriptos)
+                {
+                    var variante = await _viajeReadRepository.GetVarianteById(item.VarianteViajeId);
+                    if (variante == null)
+                        return Result<object?>.Error(
+                            $"La variante seleccionada para {item.Nombre} {item.Apellido} no existe.", 404);
 
-            bool succes = await _unitOfWork.SaveChangesAsync();
+                    if (item.MontoAbonado < variante.ValorSeña)
+                        return Result<object?>.Error(
+                            $"El monto para {item.Nombre} {item.Apellido} debe ser al menos igual a la seña ({variante.ValorSeña}).", 400);
 
-            if (!succes)
-                return Result<object?>.Error("lo sentimos, algo salio mal al inscribir al socio", 500);
+                    if (item.MontoAbonado > variante.ValorViaje)
+                        return Result<object?>.Error(
+                            $"El monto para {item.Nombre} {item.Apellido} no puede superar el valor del viaje ({variante.ValorViaje}).", 400);
+                }
 
-            return Result<object?>.Exito(null);
+                // Crear inscriptos
+                foreach (var item in dto.Inscriptos)
+                {
+                    var variante = await _viajeReadRepository.GetVarianteById(item.VarianteViajeId);
+                    var montoPendiente = variante!.ValorViaje - item.MontoAbonado;
+
+                    var inscripto = new InscriptoViaje
+                    {
+                        Nombre = item.Nombre,
+                        Apellido = item.Apellido,
+                        Telefono = item.Telefono,
+                        NumeroFile = dto.NumeroFile,
+                        VarianteViajeId = item.VarianteViajeId,
+                        MontoAbonado = item.MontoAbonado,
+                        MontoPendiente = montoPendiente,
+                    };
+
+                    // La entrega inicial también cuenta como pago registrado
+                    inscripto.HistorialPagos.Add(new PagoInscriptoViaje
+                    {
+                        Monto = item.MontoAbonado,
+                        FechaPago = DateOnly.FromDateTime(DateTime.Now),
+                        NumeroRecibo = item.NumeroRecibo
+                    });
+
+                    variante.Inscriptos.Add(inscripto);
+                }
+
+                bool success = await _unitOfWork.SaveChangesAsync();
+
+                if (!success)
+                    return Result<object?>.Error("Hubo un error al inscribir a las personas.", 500);
+
+                return Result<object?>.Exito(null);
+            }
+            catch (Exception)
+            {
+                return Result<object?>.Error("Lo sentimos, ocurrió un error inesperado al realizar la inscripción.", 500);
+            }
         }
 
         public async Task<Result<List<PreviewVarianteViajeDto>>> ListarVariantesDeViaje(int IdViajeBase)
@@ -178,12 +205,13 @@ namespace APIClub.Application.Services
 
                 var todosLosInscriptos = viaje.Variantes.SelectMany(v => v.Inscriptos).ToList();
 
-                var inscriptosActivos = todosLosInscriptos.Where(i => !i.cancelado).ToList();
-                var totalInscriptos = inscriptosActivos.Count;
-                var totalCancelados = todosLosInscriptos.Count(i => i.cancelado);
+                var totalInscriptos = todosLosInscriptos.Count(i => !i.Cancelado);
+                var totalCancelados = todosLosInscriptos.Count(i => i.Cancelado);
 
-                var totalRecaudado = inscriptosActivos.Sum(i => i.montoAbonado);
-                var totalPendiente = inscriptosActivos.Sum(i => i.MontoPendiente);
+                // El recaudado incluye TODOS los inscriptos (activos + cancelados con pago completo)
+                var totalRecaudado = todosLosInscriptos.Sum(i => i.MontoAbonado);
+                // El pendiente solo considera los activos (los cancelados ya tienen MontoPendiente = 0)
+                var totalPendiente = todosLosInscriptos.Where(i => !i.Cancelado).Sum(i => i.MontoPendiente);
 
                 var montoComision = totalRecaudado * (viaje.PorcentajeComision / 100);
                 var montoParaAgencia = totalRecaudado - montoComision;
@@ -220,17 +248,28 @@ namespace APIClub.Application.Services
                         Regimen = vv.Regimen,
                         TipoDeButaca = vv.TipoDeButaca,
                         Inscriptos = vv.Inscriptos
-                            .OrderBy(i => i.Socio.Apellido)
-                            .ThenBy(i => i.Socio.Nombre)
+                            .OrderBy(i => i.NumeroFile)
+                            .ThenBy(i => i.Apellido)
+                            .ThenBy(i => i.Nombre)
                             .Select(i => new InscriptosDto
                             {
                                 Id = i.Id,
-                                NombreSocio = $"{i.Socio.Apellido} {i.Socio.Nombre}",
-                                DniSocio = i.Socio.Dni,
-                                TelefonoSocio = i.Socio.Telefono ?? string.Empty,
-                                MontoAbonado = i.montoAbonado,
+                                Nombre = i.Nombre,
+                                Apellido = i.Apellido,
+                                Telefono = i.Telefono,
+                                NumeroFile = i.NumeroFile,
+                                MontoAbonado = i.MontoAbonado,
                                 MontoPendiente = i.MontoPendiente,
-                                Cancelado = i.cancelado
+                                Cancelado = i.Cancelado,
+                                HistorialPagos = i.HistorialPagos
+                                    .OrderByDescending(p => p.FechaPago)
+                                    .Select(p => new PagoInscriptoDto
+                                    {
+                                        Id = p.Id,
+                                        Monto = p.Monto,
+                                        FechaPago = p.FechaPago,
+                                        NumeroRecibo = p.NumeroRecibo
+                                    }).ToList()
                             }).ToList()
                     }).ToList()
                 };
@@ -243,20 +282,28 @@ namespace APIClub.Application.Services
             }
         }
 
-        public async Task<Result<object?>> ActualizarPagoDeViaje(int IdInscripto, decimal montoAbonado)
+        public async Task<Result<object?>> ActualizarPagoDeViaje(int IdInscripto, decimal montoAbonado, string numeroRecibo)
         {
             try
             {
-                var inscripto = await _viajeReadRepository.GetInscriptoById(IdInscripto);
+                var inscripto = await _viajeReadRepository.GetInscriptoWithPagos(IdInscripto);
 
                 if (inscripto == null)
-                    return Result<object?>.NotFound("Lo sentimos, no se encontró el socio inscripto al viaje.");
+                    return Result<object?>.NotFound("Lo sentimos, no se encontró el inscripto.");
 
                 if (montoAbonado > inscripto.MontoPendiente)
                     return Result<object?>.Error($"El monto a abonar (${montoAbonado}) no puede ser mayor al saldo pendiente (${inscripto.MontoPendiente}).", 400);
 
-                inscripto.montoAbonado += montoAbonado;
+                inscripto.MontoAbonado += montoAbonado;
                 inscripto.MontoPendiente -= montoAbonado;
+
+                // Registrar el pago en el historial
+                inscripto.HistorialPagos.Add(new PagoInscriptoViaje
+                {
+                    Monto = montoAbonado,
+                    FechaPago = DateOnly.FromDateTime(DateTime.Now),
+                    NumeroRecibo = numeroRecibo
+                });
 
                 bool success = await _unitOfWork.SaveChangesAsync();
 
@@ -271,16 +318,36 @@ namespace APIClub.Application.Services
             }
         }
 
-        public async Task<Result<object?>> CancelarViajeDeSocio(int idInscripto)
+        public async Task<Result<object?>> CancelarInscripcionDeViaje(int idInscripto)
         {
             try
             {
-                var inscripto = await _viajeReadRepository.GetInscriptoById(idInscripto);
+                var inscripto = await _viajeReadRepository.GetInscriptoWithPagos(idInscripto);
 
                 if (inscripto == null)
                     return Result<object?>.NotFound("Lo sentimos no se pudo encontrar el inscripto");
 
-                inscripto.cancelado = true;
+                if (inscripto.Cancelado)
+                    return Result<object?>.Error("Este inscripto ya fue cancelado.", 400);
+
+                // Si tiene saldo pendiente, registrar un pago automático por el total pendiente
+                if (inscripto.MontoPendiente > 0)
+                {
+                    var saldoPendiente = inscripto.MontoPendiente;
+
+                    inscripto.HistorialPagos.Add(new PagoInscriptoViaje
+                    {
+                        Monto = saldoPendiente,
+                        FechaPago = DateOnly.FromDateTime(DateTime.Now),
+                        NumeroRecibo = "CANCELACION-PAGO-COMPLETO"
+                    });
+
+                    inscripto.MontoAbonado += saldoPendiente;
+                    inscripto.MontoPendiente = 0;
+                }
+
+                inscripto.Cancelado = true;
+
                 bool success = await _unitOfWork.SaveChangesAsync();
 
                 if (!success)
