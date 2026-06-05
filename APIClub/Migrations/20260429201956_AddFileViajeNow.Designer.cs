@@ -3,6 +3,7 @@ using System;
 using APIClub.Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace APIClub.Migrations
 {
     [DbContext(typeof(AppDbcontext))]
-    partial class AppDbcontextModelSnapshot : ModelSnapshot
+    [Migration("20260429201956_AddFileViajeNow")]
+    partial class AddFileViajeNow
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,7 +50,7 @@ namespace APIClub.Migrations
 
                     b.HasIndex("IdSocio");
 
-                    b.ToTable("alquileresArticulos", (string)null);
+                    b.ToTable("alquileresArticulos");
                 });
 
             modelBuilder.Entity("APIClub.Domain.AlquilerArticulos.Models.Articulo", b =>
@@ -68,7 +71,7 @@ namespace APIClub.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Articulos", (string)null);
+                    b.ToTable("Articulos");
                 });
 
             modelBuilder.Entity("APIClub.Domain.AlquilerArticulos.Models.ItemAlquiler", b =>
@@ -94,7 +97,7 @@ namespace APIClub.Migrations
 
                     b.HasIndex("ArticuloId");
 
-                    b.ToTable("ItemALquiler", (string)null);
+                    b.ToTable("ItemALquiler");
                 });
 
             modelBuilder.Entity("APIClub.Domain.AlquilerArticulos.Models.PagoAlquilerDeArticulos", b =>
@@ -122,7 +125,7 @@ namespace APIClub.Migrations
                     b.HasIndex("IdAlquiler", "Anio", "Mes")
                         .IsUnique();
 
-                    b.ToTable("PagosAlquilerDeArticulos", (string)null);
+                    b.ToTable("PagosAlquilerDeArticulos");
                 });
 
             modelBuilder.Entity("APIClub.Domain.Auth.Models.Usuario", b =>
@@ -156,7 +159,7 @@ namespace APIClub.Migrations
                     b.HasIndex("NombreUsuario")
                         .IsUnique();
 
-                    b.ToTable("Usuarios", (string)null);
+                    b.ToTable("Usuarios");
 
                     b.HasData(
                         new
@@ -220,7 +223,7 @@ namespace APIClub.Migrations
 
                     b.HasIndex("LoteId");
 
-                    b.ToTable("Socios", (string)null);
+                    b.ToTable("Socios");
                 });
 
             modelBuilder.Entity("APIClub.Domain.ModuloGestionCobradores.Models.Lote", b =>
@@ -257,7 +260,7 @@ namespace APIClub.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Lotes", (string)null);
+                    b.ToTable("Lotes");
                 });
 
             modelBuilder.Entity("APIClub.Domain.ModuloGestionCobradores.Models.RegistroCobrador", b =>
@@ -283,7 +286,7 @@ namespace APIClub.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RegistroCobradores", (string)null);
+                    b.ToTable("RegistroCobradores");
                 });
 
             modelBuilder.Entity("APIClub.Domain.ModuloGestionCuotas.Models.Cuota", b =>
@@ -316,7 +319,7 @@ namespace APIClub.Migrations
 
                     b.HasIndex("SocioId");
 
-                    b.ToTable("Cuotas", (string)null);
+                    b.ToTable("Cuotas");
                 });
 
             modelBuilder.Entity("APIClub.Domain.ModuloGestionCuotas.Models.MontoCuota", b =>
@@ -335,7 +338,7 @@ namespace APIClub.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MontoCuota", (string)null);
+                    b.ToTable("MontoCuota");
                 });
 
             modelBuilder.Entity("APIClub.Domain.ModuloGestionViajes.Models.InscriptoViaje", b =>
@@ -367,7 +370,7 @@ namespace APIClub.Migrations
 
                     b.HasIndex("VarianteViajeId");
 
-                    b.ToTable("Inscriptos", (string)null);
+                    b.ToTable("Inscriptos");
                 });
 
             modelBuilder.Entity("APIClub.Domain.ModuloGestionViajes.Models.VarianteViaje", b =>
@@ -403,7 +406,7 @@ namespace APIClub.Migrations
 
                     b.HasIndex("IdViaje");
 
-                    b.ToTable("VariantesViaje", (string)null);
+                    b.ToTable("VariantesViaje");
                 });
 
             modelBuilder.Entity("APIClub.Domain.ModuloGestionViajes.Models.Viaje", b =>
@@ -439,7 +442,7 @@ namespace APIClub.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Viajes", (string)null);
+                    b.ToTable("Viajes");
                 });
 
             modelBuilder.Entity("APIClub.Domain.PaymentsOnline.Modelos.PaymentToken", b =>
@@ -481,7 +484,7 @@ namespace APIClub.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PaymentTokens", (string)null);
+                    b.ToTable("PaymentTokens");
                 });
 
             modelBuilder.Entity("APIClub.Domain.ReservasSalones.Models.PagoReservaSalon", b =>
@@ -505,7 +508,7 @@ namespace APIClub.Migrations
 
                     b.HasIndex("ReservaSalonId");
 
-                    b.ToTable("pagoReservaSalon", (string)null);
+                    b.ToTable("pagoReservaSalon");
                 });
 
             modelBuilder.Entity("APIClub.Domain.ReservasSalones.Models.ReservaSalon", b =>
@@ -544,7 +547,7 @@ namespace APIClub.Migrations
 
                     b.HasIndex("SocioId");
 
-                    b.ToTable("ReservasSalones", (string)null);
+                    b.ToTable("ReservasSalones");
                 });
 
             modelBuilder.Entity("APIClub.Domain.ReservasSalones.Models.Salon", b =>
@@ -567,7 +570,7 @@ namespace APIClub.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Salones", (string)null);
+                    b.ToTable("Salones");
 
                     b.HasData(
                         new

@@ -102,6 +102,8 @@ builder.Services.AddScoped<UnitOfWork>();
 builder.Services.AddScoped<ISocioIntegrityValidator, SocioIntegrityValidator>();
 builder.Services.AddScoped<IPagoCuotaValidator, PagoCuotaValidator>();
 builder.Services.AddScoped<IDataSeeder, DatabaseSeeder>();
+builder.Services.AddScoped<FileViajeService>();
+
 
 
 // registrar repositorios

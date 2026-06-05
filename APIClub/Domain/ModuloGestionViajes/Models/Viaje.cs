@@ -14,5 +14,6 @@ namespace APIClub.Domain.ModuloGestionViajes.Models
         public decimal ValorBase { get; set; }
 
         public List<VarianteViaje> Variantes { get; set; } = new List<VarianteViaje>();
+        public ICollection<FileViaje> FilesViaje { get; set; } = new List<FileViaje>();
     }
 }

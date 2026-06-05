@@ -35,6 +35,7 @@ namespace APIClub.Infrastructure.Persistence.Data
         public DbSet<Viaje> Viajes { get; set; }
         public DbSet<InscriptoViaje> Inscriptos { get; set; }
         public DbSet<VarianteViaje> VariantesViaje { get; set; }
+        public DbSet<FileViaje> FileViajes { get; set; }
 
 
 
@@ -231,21 +232,59 @@ namespace APIClub.Infrastructure.Persistence.Data
                       .OnDelete(DeleteBehavior.Cascade);
             });
 
+            // ---------------------------
+            // InscriptoViaje
+            // ---------------------------
             modelBuilder.Entity<InscriptoViaje>(entity =>
             {
-                entity.Property(iv => iv.montoAbonado).HasColumnType("decimal(18,2)");
-                entity.Property(iv => iv.MontoPendiente).HasColumnType("decimal(18,2)");
+                entity.Property(iv => iv.montoAbonado)
+                    .HasColumnType("decimal(18,2)");
+
+                entity.Property(iv => iv.MontoPendiente)
+                    .HasColumnType("decimal(18,2)");
 
                 entity.HasOne(iv => iv.Variante)
-                      .WithMany(vv => vv.Inscriptos)
-                      .HasForeignKey(iv => iv.VarianteViajeId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                    .WithMany(vv => vv.Inscriptos)
+                    .HasForeignKey(iv => iv.VarianteViajeId)
+                    .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(iv => iv.Socio)
-                      .WithMany()
-                      .HasForeignKey(iv => iv.SocioId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                    .WithMany()
+                    .HasForeignKey(iv => iv.SocioId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(iv => iv.FileViaje)
+                    .WithMany(f => f.Inscriptos)
+                    .HasForeignKey(iv => iv.FileViajeId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
+
+
+            // ---------------------------
+            // FileViaje
+            // ---------------------------
+         modelBuilder.Entity<FileViaje>(entity =>
+{
+                entity.HasKey(f => f.Id);
+
+                entity.Property(f => f.NumeroFile)
+                      .IsRequired()
+                      .HasMaxLength(100);
+
+                entity.HasIndex(f => new { f.NumeroFile, f.ViajeId })
+                      .IsUnique();
+
+                entity.HasOne(f => f.Viaje)
+                      .WithMany(v => v.FilesViaje)
+                      .HasForeignKey(f => f.ViajeId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasMany(f => f.Inscriptos)
+                      .WithOne(iv => iv.FileViaje)
+                      .HasForeignKey(iv => iv.FileViajeId)
+                      .OnDelete(DeleteBehavior.Restrict);
+});
+       
 
             // 0) Usuarios (SuperAdmin)
             // Password: "Admin123!" hasheado con BCrypt (Placeholder, se debe generar uno real al ejecutar)
@@ -258,7 +297,7 @@ namespace APIClub.Infrastructure.Persistence.Data
                 {
                     Id = 1,
                     NombreUsuario = "admin",
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123!"), // Hash generado para "Admin123!"
+                   PasswordHash = "$2a$11$PJ/VDuj.psU2nF6qkk.wr.pQKXWrcHCbPtE7QxnN/pbbhFUcvcKPK", // Hash generado para "Admin123!"
                     Rol = RolUsuario.SuperAdmin,
                     FechaCreacion = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                     UltimoAcceso = null

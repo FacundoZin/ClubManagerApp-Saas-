@@ -6,16 +6,20 @@ namespace APIClub.Domain.ModuloGestionViajes.Models
     {
         public int Id { get; set; }
 
-        public int VarianteViajeId { get; set; }
-        public VarianteViaje Variante { get; set; } = null!;
-
         public int SocioId { get; set; }
-        public Socio Socio { get; set; } = null!;
+        public Socio Socio { get; set; }
 
-        //metadata 
+        public int VarianteViajeId { get; set; }
+        public VarianteViaje Variante { get; set; }
+
         public decimal montoAbonado { get; set; }
         public decimal MontoPendiente { get; set; }
-        public bool cancelado { get; set; } = false;
 
+        public bool cancelado { get; set; }
+
+        public int? FileViajeId { get; set; }
+        public FileViaje? FileViaje { get; set; }
+
+        
     }
 }
