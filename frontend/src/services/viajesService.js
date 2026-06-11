@@ -100,6 +100,19 @@ export default {
     }
   },
 
+  async editarPago(dto) {
+    const response = await fetch(`${API_URL}/pago/editar`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(dto),
+    });
+    if (!response.ok) {
+      const msg = await handleError(response, "Error al editar el pago");
+      throw new Error(msg);
+    }
+  },
+
   async cancelarInscripcion(idInscripto) {
     const response = await fetch(`${API_URL}/inscripcion/${idInscripto}`, {
       method: 'DELETE',

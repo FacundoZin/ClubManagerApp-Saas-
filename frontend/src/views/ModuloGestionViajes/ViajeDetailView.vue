@@ -5,6 +5,7 @@ import ConfirmModal from '../../components/Common/ConfirmModal.vue'
 import DataTable from '../../components/Common/DataTable.vue'
 import InscripcionConfirmModal from '../../components/ModuloGestionViajes/InscripcionConfirmModal.vue'
 import PagoViajeModal from '../../components/ModuloGestionViajes/PagoViajeModal.vue'
+import EditarPagoViajeModal from '../../components/ModuloGestionViajes/EditarPagoViajeModal.vue'
 import VarianteFormModal from '../../components/ModuloGestionViajes/VarianteFormModal.vue'
 import HistorialPagosModal from '../../components/ModuloGestionViajes/HistorialPagosModal.vue'
 import ViajesService from '../../services/viajesService'
@@ -26,6 +27,8 @@ const isConfirmCancelOpen = ref(false)
 
 const selectedInscripto = ref(null)
 const selectedInscriptoId = ref(null)
+const selectedVarianteParaEdicion = ref(null)
+const isEditarPagoModalOpen = ref(false)
 
 // Toast state (using simple approach consistent with Dashboard)
 const toast = ref({
@@ -40,6 +43,12 @@ const selectedInscriptoParaHistorial = ref(null)
 const openHistorialModal = (inscripto) => {
   selectedInscriptoParaHistorial.value = inscripto
   isHistorialModalOpen.value = true
+}
+
+const handleOpenEditarPago = (inscripto, variante) => {
+  selectedInscripto.value = inscripto
+  selectedVarianteParaEdicion.value = variante
+  isEditarPagoModalOpen.value = true
 }
 
 const showToast = (message, type = 'success') => {
@@ -108,6 +117,7 @@ const handleSaveAction = () => {
   isVarianteModalOpen.value = false
   isInscripcionModalOpen.value = false
   isPagoModalOpen.value = false
+  isEditarPagoModalOpen.value = false
   showToast('Operación realizada con éxito')
   fetchViajeCompleto()
 }
@@ -387,6 +397,14 @@ const goBack = () => {
                             </svg>
                           </button>
                           <template v-if="!item.cancelado">
+                            <button @click="handleOpenEditarPago(item, variante)"
+                              class="p-1.5 text-sky-600 hover:bg-sky-50 rounded-lg transition-colors"
+                              title="Editar Seña">
+                              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5m-7-7l7 7-7 7M4 4l16 16" />
+                              </svg>
+                            </button>
                             <button v-if="item.montoPendiente > 0" @click="handleOpenPago(item)"
                               class="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
                               title="Registrar Pago">
@@ -426,6 +444,9 @@ const goBack = () => {
 
     <PagoViajeModal v-if="isPagoModalOpen" :is-open="isPagoModalOpen" :inscripto="selectedInscripto"
       @close="isPagoModalOpen = false" @save="handleSaveAction" />
+
+    <EditarPagoViajeModal v-if="isEditarPagoModalOpen" :is-open="isEditarPagoModalOpen" :inscripto="selectedInscripto"
+      :variante="selectedVarianteParaEdicion" @close="isEditarPagoModalOpen = false" @save="handleSaveAction" />
 
     <ConfirmModal :is-open="isConfirmCancelOpen" title="Cancelar Inscripción"
       message="¿Está seguro que desea cancelar esta inscripción? Al cancelar, se registrará automáticamente el pago completo del viaje. El monto total quedará como recaudado."
