@@ -269,6 +269,19 @@ namespace APIClub.Application.Services
                                         Monto = p.Monto,
                                         FechaPago = p.FechaPago,
                                         NumeroRecibo = p.NumeroRecibo
+                                    }).ToList(),
+                                HistorialModificaciones = i.HistorialModificaciones
+                                    .OrderByDescending(m => m.FechaHora)
+                                    .Select(m => new PagoInscriptoModificacionDto
+                                    {
+                                        Id = m.Id,
+                                        UsuarioId = m.UsuarioId,
+                                        UsuarioNombre = m.UsuarioNombre,
+                                        FechaHora = m.FechaHora,
+                                        MontoAnterior = m.MontoAnterior,
+                                        MontoNuevo = m.MontoNuevo,
+                                        Diferencia = m.Diferencia,
+                                        Motivo = m.Motivo
                                     }).ToList()
                             }).ToList()
                     }).ToList()
@@ -315,6 +328,61 @@ namespace APIClub.Application.Services
             catch (Exception)
             {
                 return Result<object?>.Error("Lo sentimos, hubo un error inesperado al actualizar el pago.", 500);
+            }
+        }
+
+        public async Task<Result<object?>> EditarPagoDeViaje(int IdInscripto, decimal nuevoMontoAbonado, string motivoModificacion, int usuarioId, string usuarioNombre)
+        {
+            try
+            {
+                var inscripto = await _viajeReadRepository.GetInscriptoWithPagos(IdInscripto);
+
+                if (inscripto == null)
+                    return Result<object?>.NotFound("Lo sentimos, no se encontró el inscripto.");
+
+                if (inscripto.Cancelado)
+                    return Result<object?>.Error("No se puede editar el pago de un inscripto cancelado.", 400);
+
+                var variante = inscripto.Variante;
+                if (variante == null)
+                    return Result<object?>.Error("No se encontró la variante asociada al inscripto.", 400);
+
+                if (nuevoMontoAbonado < 0)
+                    return Result<object?>.Error("El nuevo importe no puede ser negativo.", 400);
+
+                if (nuevoMontoAbonado > variante.ValorViaje)
+                    return Result<object?>.Error($"El nuevo importe no puede ser mayor al valor total del viaje ({variante.ValorViaje}).", 400);
+
+                if (nuevoMontoAbonado == inscripto.MontoAbonado)
+                    return Result<object?>.Error("El nuevo importe debe ser distinto al importe actual.", 400);
+
+                var montoAnterior = inscripto.MontoAbonado;
+                var diferencia = nuevoMontoAbonado - montoAnterior;
+
+                inscripto.MontoAbonado = nuevoMontoAbonado;
+                inscripto.MontoPendiente = variante.ValorViaje - nuevoMontoAbonado;
+
+                inscripto.HistorialModificaciones.Add(new PagoInscriptoViajeAudit
+                {
+                    UsuarioId = usuarioId,
+                    UsuarioNombre = usuarioNombre,
+                    FechaHora = DateTime.UtcNow,
+                    MontoAnterior = montoAnterior,
+                    MontoNuevo = nuevoMontoAbonado,
+                    Diferencia = diferencia,
+                    Motivo = motivoModificacion?.Trim() ?? string.Empty
+                });
+
+                bool success = await _unitOfWork.SaveChangesAsync();
+
+                if (!success)
+                    return Result<object?>.Error("Hubo un error al guardar la corrección del pago.", 500);
+
+                return Result<object?>.Exito(null);
+            }
+            catch (Exception)
+            {
+                return Result<object?>.Error("Lo sentimos, hubo un error inesperado al editar el pago.", 500);
             }
         }
 

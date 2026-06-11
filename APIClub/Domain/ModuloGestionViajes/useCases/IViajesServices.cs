@@ -15,6 +15,7 @@ namespace APIClub.Domain.ModuloGestionViajes.useCases
         Task<Result<FullViewViajeDto>> VerViajeCompleto(int IdViajeBase);
 
         Task<Result<object?>> ActualizarPagoDeViaje(int IdInscripto, decimal montoAbonado, string numeroRecibo);
+        Task<Result<object?>> EditarPagoDeViaje(int IdInscripto, decimal nuevoMontoAbonado, string motivoModificacion, int usuarioId, string usuarioNombre);
         Task<Result<object?>> CancelarInscripcionDeViaje(int idInscripto);
     }
 }

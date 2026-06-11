@@ -37,6 +37,9 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
                 .Include(v => v.Variantes)
                     .ThenInclude(vv => vv.Inscriptos)
                         .ThenInclude(i => i.HistorialPagos)
+                .Include(v => v.Variantes)
+                    .ThenInclude(vv => vv.Inscriptos)
+                        .ThenInclude(i => i.HistorialModificaciones)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(v => v.Id == id);
         }
@@ -108,6 +111,7 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
         {
             return await _dbContext.Inscriptos
                 .Include(i => i.HistorialPagos)
+                .Include(i => i.HistorialModificaciones)
                 .Include(i => i.Variante)
                 .FirstOrDefaultAsync(i => i.Id == id);
         }

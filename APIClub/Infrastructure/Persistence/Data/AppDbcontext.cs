@@ -262,6 +262,21 @@ namespace APIClub.Infrastructure.Persistence.Data
                           v => DateOnly.FromDateTime(v));
             });
 
+            modelBuilder.Entity<PagoInscriptoViajeAudit>(entity =>
+            {
+                entity.Property(p => p.UsuarioNombre).IsRequired().HasMaxLength(150);
+                entity.Property(p => p.FechaHora).HasColumnType("timestamp without time zone");
+                entity.Property(p => p.MontoAnterior).HasColumnType("decimal(18,2)");
+                entity.Property(p => p.MontoNuevo).HasColumnType("decimal(18,2)");
+                entity.Property(p => p.Diferencia).HasColumnType("decimal(18,2)");
+                entity.Property(p => p.Motivo).HasMaxLength(500);
+
+                entity.HasOne(p => p.InscriptoViaje)
+                      .WithMany(i => i.HistorialModificaciones)
+                      .HasForeignKey(p => p.InscriptoViajeId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
             // 0) Usuarios (SuperAdmin)
             // Password: "Admin123!" hasheado con BCrypt (Placeholder, se debe generar uno real al ejecutar)
             // Usaremos un hash real generado previamente para "Admin123!"
