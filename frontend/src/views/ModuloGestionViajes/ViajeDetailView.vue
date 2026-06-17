@@ -24,6 +24,9 @@ const isVarianteModalOpen = ref(false)
 const isInscripcionModalOpen = ref(false)
 const isPagoModalOpen = ref(false)
 const isConfirmCancelOpen = ref(false)
+const isViajeFormModalOpen = ref(false)
+const selectedVariante = ref(null)
+
 
 const selectedInscripto = ref(null)
 const selectedInscriptoId = ref(null)
@@ -115,12 +118,25 @@ const confirmCancelInscripcion = async () => {
 
 const handleSaveAction = () => {
   isVarianteModalOpen.value = false
+  isViajeFormModalOpen.value = false
   isInscripcionModalOpen.value = false
   isPagoModalOpen.value = false
   isEditarPagoModalOpen.value = false
+  selectedVariante.value = null
   showToast('Operación realizada con éxito')
   fetchViajeCompleto()
 }
+
+const handleEditVariante = (variante) => {
+  selectedVariante.value = variante
+  isVarianteModalOpen.value = true
+}
+
+const handleCloseVarianteModal = () => {
+  isVarianteModalOpen.value = false
+  selectedVariante.value = null
+}
+
 
 const goBack = () => {
   router.push('/viajes')
@@ -222,7 +238,16 @@ const goBack = () => {
               </div>
             </div>
             <div class="flex gap-2">
+              <button @click="isViajeFormModalOpen = true"
+                class="px-4 py-2 bg-white text-slate-600 font-bold rounded-xl border border-slate-200 hover:bg-slate-50 transition-all flex items-center shadow-sm text-sm">
+                <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5m-7-7l7 7-7 7M4 4l16 16" />
+                </svg>
+                Editar Viaje
+              </button>
               <button @click="isVarianteModalOpen = true"
+
                 class="px-4 py-2 bg-white text-teal-600 font-bold rounded-xl border border-teal-100 hover:border-teal-200 hover:bg-teal-50 transition-all flex items-center shadow-sm text-sm">
                 <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -324,7 +349,14 @@ const goBack = () => {
                   </p>
                 </div>
               </div>
-              <div class="flex gap-4">
+              <div class="flex items-center gap-4">
+                <button @click="handleEditVariante(variante)" class="p-2 text-slate-400 hover:text-teal-600 transition-colors">
+                   <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                   </svg>
+                </button>
+                <div class="flex gap-4">
+
                 <div class="text-right">
                   <p class="text-[10px] uppercase font-bold text-slate-400">Valor Viaje</p>
                   <p class="text-sm font-bold text-slate-700">
@@ -338,6 +370,7 @@ const goBack = () => {
                   </p>
                 </div>
               </div>
+            </div>
             </div>
 
             <!-- Inscriptos Table -->
@@ -436,8 +469,11 @@ const goBack = () => {
     </main>
 
     <!-- Modals -->
-    <VarianteFormModal :is-open="isVarianteModalOpen" :id-viaje="viajeId" @close="isVarianteModalOpen = false"
+    <ViajeFormModal :is-open="isViajeFormModalOpen" :viaje="viaje" @close="isViajeFormModalOpen = false" @save="handleSaveAction" />
+
+    <VarianteFormModal :is-open="isVarianteModalOpen" :id-viaje="viajeId" :variante="selectedVariante" @close="handleCloseVarianteModal"
       @save="handleSaveAction" />
+
 
     <InscripcionConfirmModal v-if="isInscripcionModalOpen" :is-open="isInscripcionModalOpen" :socio="null"
       :id-viaje="viajeId" @close="isInscripcionModalOpen = false" @save="handleSaveAction" />

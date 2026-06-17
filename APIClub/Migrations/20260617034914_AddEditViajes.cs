@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -6,8 +6,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace APIClub.Migrations
 {
-    public partial class AuditoriaEdicionPagosViaje : Migration
+    /// <inheritdoc />
+    public partial class AddEditViajes : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -36,16 +38,31 @@ namespace APIClub.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.UpdateData(
+                table: "Usuarios",
+                keyColumn: "Id",
+                keyValue: 1,
+                column: "PasswordHash",
+                value: "$2a$11$x7NRaxkTgH7batkORsKtaeIzvyEr1hfsrn1tgo9DUvmvKwJXaDjKu");
+
             migrationBuilder.CreateIndex(
                 name: "IX_PagosInscriptosViajeAudit_InscriptoViajeId",
                 table: "PagosInscriptosViajeAudit",
                 column: "InscriptoViajeId");
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
                 name: "PagosInscriptosViajeAudit");
+
+            migrationBuilder.UpdateData(
+                table: "Usuarios",
+                keyColumn: "Id",
+                keyValue: 1,
+                column: "PasswordHash",
+                value: "$2a$11$RZb.Qa3jBHj9Rcu3d2b1OO1V89nUz4nSQh4MUvGq7ANNe6GuTb1UC");
         }
     }
 }

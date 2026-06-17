@@ -19,9 +19,9 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
         public async Task<Viaje?> GetViajeById(int id)
         {
             return await _dbContext.Viajes
-                .AsNoTracking()
                 .FirstOrDefaultAsync(v => v.Id == id);
         }
+
 
         public async Task<Viaje?> GetViajeByIdWithVariantes(int id)
         {
@@ -47,8 +47,10 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
         public async Task<VarianteViaje?> GetVarianteById(int id)
         {
             return await _dbContext.VariantesViaje
+                .Include(v => v.Inscriptos)
                 .FirstOrDefaultAsync(v => v.Id == id);
         }
+
 
         public async Task<List<Viaje>> ListarViajesDisponibles()
         {

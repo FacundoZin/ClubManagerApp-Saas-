@@ -1,6 +1,8 @@
 using APIClub.Application.Common;
 using APIClub.Application.Dtos.Viajes.Create;
 using APIClub.Application.Dtos.Viajes.Views;
+using APIClub.Application.Dtos.Viajes.Update;
+
 
 namespace APIClub.Domain.ModuloGestionViajes.useCases
 {
@@ -17,5 +19,9 @@ namespace APIClub.Domain.ModuloGestionViajes.useCases
         Task<Result<object?>> ActualizarPagoDeViaje(int IdInscripto, decimal montoAbonado, string numeroRecibo);
         Task<Result<object?>> EditarPagoDeViaje(int IdInscripto, decimal nuevoMontoAbonado, string motivoModificacion, int usuarioId, string usuarioNombre);
         Task<Result<object?>> CancelarInscripcionDeViaje(int idInscripto);
+
+        Task<Result<object?>> UpdateViaje(UpdateViajeDto dto);
+        Task<Result<object?>> UpdateVarianteViaje(UpdateVarianteViajeDto dto);
     }
 }
+

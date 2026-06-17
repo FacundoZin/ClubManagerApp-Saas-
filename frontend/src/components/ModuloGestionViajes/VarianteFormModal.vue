@@ -5,11 +5,16 @@ import ViajesService from '../../services/viajesService'
 const props = defineProps({
   isOpen: Boolean,
   idViaje: Number,
+  variante: {
+    type: Object,
+    default: null
+  }
 })
 
 const emit = defineEmits(['close', 'save'])
 
 const form = reactive({
+  id: null,
   nombreVariante: null,
   valorViaje: null,
   valorSeña: null,
@@ -21,24 +26,37 @@ const isSubmitting = ref(false)
 const errorMessage = ref('')
 
 const resetForm = () => {
-  form.nombreVariante = null
-  form.valorViaje = null
-  form.valorSeña = null
-  form.regimen = null
-  form.tipoDeButaca = null
+  form.id = props.variante?.id || null
+  form.nombreVariante = props.variante?.nombreVariante || null
+  form.valorViaje = props.variante?.valorViaje || null
+  form.valorSeña = props.variante?.valorSeña || null
+  form.regimen = props.variante?.regimen ?? null
+  form.tipoDeButaca = props.variante?.tipoDeButaca || null
   errorMessage.value = ''
 }
+
+import { watch } from 'vue'
+watch(() => props.isOpen, (newVal) => {
+  if (newVal) {
+    resetForm()
+  }
+})
 
 const handleSubmit = async () => {
   isSubmitting.value = true
   errorMessage.value = ''
 
   try {
-    const data = await ViajesService.createVarianteViaje({
-      idViaje: props.idViaje,
-      ...form,
-    })
-    emit('save', data)
+    if (props.variante) {
+      await ViajesService.updateVarianteViaje(form)
+      emit('save')
+    } else {
+      const data = await ViajesService.createVarianteViaje({
+        idViaje: props.idViaje,
+        ...form,
+      })
+      emit('save', data)
+    }
     resetForm()
   } catch (error) {
     errorMessage.value = error.message
@@ -52,6 +70,7 @@ const regimenOptions = [
   { value: 1, label: 'Pensión Completa' },
 ]
 </script>
+
 
 <template>
   <div
@@ -91,8 +110,9 @@ const regimenOptions = [
             </div>
             <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
               <h3 class="text-xl font-bold leading-6 text-slate-900" id="modal-title">
-                Agregar Variante de Viaje
+                {{ variante ? 'Editar Variante de Viaje' : 'Agregar Variante de Viaje' }}
               </h3>
+
               <div class="mt-1">
                 <p class="text-sm font-medium text-slate-500">
                   Defina una variante específica (ej: Hotel A, Bus Semicama) para este viaje.
@@ -227,7 +247,8 @@ const regimenOptions = [
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 ></path>
               </svg>
-              {{ isSubmitting ? 'Guardando...' : 'Guardar Variante' }}
+              {{ isSubmitting ? 'Guardando...' : (variante ? 'Actualizar Variante' : 'Guardar Variante') }}
+
             </button>
             <button
               type="button"

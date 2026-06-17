@@ -264,6 +264,8 @@ namespace APIClub.Infrastructure.Persistence.Data
 
             modelBuilder.Entity<PagoInscriptoViajeAudit>(entity =>
             {
+                entity.ToTable("PagosInscriptosViajeAudit");
+
                 entity.Property(p => p.UsuarioNombre).IsRequired().HasMaxLength(150);
                 entity.Property(p => p.FechaHora).HasColumnType("timestamp without time zone");
                 entity.Property(p => p.MontoAnterior).HasColumnType("decimal(18,2)");

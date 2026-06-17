@@ -139,7 +139,34 @@ namespace APIClub.Contrrollers
             return Ok(result.Data);
         }
 
+        [HttpPut]
+        public async Task<IActionResult> UpdateViaje([FromBody] UpdateViajeDto dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var result = await _viajesService.UpdateViaje(dto);
+            if (!result.Exit)
+            {
+                return StatusCode(result.Errorcode, result.Errormessage);
+            }
+            return Ok(result.Data);
+        }
+
+        [HttpPut("variante")]
+        public async Task<IActionResult> UpdateVarianteViaje([FromBody] UpdateVarianteViajeDto dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var result = await _viajesService.UpdateVarianteViaje(dto);
+            if (!result.Exit)
+            {
+                return StatusCode(result.Errorcode, result.Errormessage);
+            }
+            return Ok(result.Data);
+        }
+
         [HttpGet("combobox")]
+
         public async Task<IActionResult> GetComboBoxViajes()
         {
             var viajes = await _viajeReadRepository.GetComboBoxViajes();
