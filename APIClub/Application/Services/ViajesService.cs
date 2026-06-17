@@ -1,5 +1,6 @@
 using APIClub.Application.Common;
 using APIClub.Application.Dtos.Viajes.Create;
+using APIClub.Application.Dtos.Viajes.Update;
 using APIClub.Application.Dtos.Viajes.Views;
 using APIClub.Domain.ModuloGestionViajes.Models;
 using APIClub.Domain.ModuloGestionViajes.Repositories;
@@ -269,6 +270,19 @@ namespace APIClub.Application.Services
                                         Monto = p.Monto,
                                         FechaPago = p.FechaPago,
                                         NumeroRecibo = p.NumeroRecibo
+                                    }).ToList(),
+                                HistorialModificaciones = i.HistorialModificaciones
+                                    .OrderByDescending(m => m.FechaHora)
+                                    .Select(m => new PagoInscriptoModificacionDto
+                                    {
+                                        Id = m.Id,
+                                        UsuarioId = m.UsuarioId,
+                                        UsuarioNombre = m.UsuarioNombre,
+                                        FechaHora = m.FechaHora,
+                                        MontoAnterior = m.MontoAnterior,
+                                        MontoNuevo = m.MontoNuevo,
+                                        Diferencia = m.Diferencia,
+                                        Motivo = m.Motivo
                                     }).ToList()
                             }).ToList()
                     }).ToList()
@@ -318,6 +332,61 @@ namespace APIClub.Application.Services
             }
         }
 
+        public async Task<Result<object?>> EditarPagoDeViaje(int IdInscripto, decimal nuevoMontoAbonado, string motivoModificacion, int usuarioId, string usuarioNombre)
+        {
+            try
+            {
+                var inscripto = await _viajeReadRepository.GetInscriptoWithPagos(IdInscripto);
+
+                if (inscripto == null)
+                    return Result<object?>.NotFound("Lo sentimos, no se encontró el inscripto.");
+
+                if (inscripto.Cancelado)
+                    return Result<object?>.Error("No se puede editar el pago de un inscripto cancelado.", 400);
+
+                var variante = inscripto.Variante;
+                if (variante == null)
+                    return Result<object?>.Error("No se encontró la variante asociada al inscripto.", 400);
+
+                if (nuevoMontoAbonado < 0)
+                    return Result<object?>.Error("El nuevo importe no puede ser negativo.", 400);
+
+                if (nuevoMontoAbonado > variante.ValorViaje)
+                    return Result<object?>.Error($"El nuevo importe no puede ser mayor al valor total del viaje ({variante.ValorViaje}).", 400);
+
+                if (nuevoMontoAbonado == inscripto.MontoAbonado)
+                    return Result<object?>.Error("El nuevo importe debe ser distinto al importe actual.", 400);
+
+                var montoAnterior = inscripto.MontoAbonado;
+                var diferencia = nuevoMontoAbonado - montoAnterior;
+
+                inscripto.MontoAbonado = nuevoMontoAbonado;
+                inscripto.MontoPendiente = variante.ValorViaje - nuevoMontoAbonado;
+
+                inscripto.HistorialModificaciones.Add(new PagoInscriptoViajeAudit
+                {
+                    UsuarioId = usuarioId,
+                    UsuarioNombre = usuarioNombre,
+                    FechaHora = DateTime.UtcNow,
+                    MontoAnterior = montoAnterior,
+                    MontoNuevo = nuevoMontoAbonado,
+                    Diferencia = diferencia,
+                    Motivo = motivoModificacion?.Trim() ?? string.Empty
+                });
+
+                bool success = await _unitOfWork.SaveChangesAsync();
+
+                if (!success)
+                    return Result<object?>.Error("Hubo un error al guardar la corrección del pago.", 500);
+
+                return Result<object?>.Exito(null);
+            }
+            catch (Exception)
+            {
+                return Result<object?>.Error("Lo sentimos, hubo un error inesperado al editar el pago.", 500);
+            }
+        }
+
         public async Task<Result<object?>> CancelarInscripcionDeViaje(int idInscripto)
         {
             try
@@ -360,5 +429,83 @@ namespace APIClub.Application.Services
                 return Result<object?>.Error("Lo sentimos hubo un error inesperado al cancelar la inscripción", 500);
             }
         }
+
+        public async Task<Result<object?>> UpdateViaje(UpdateViajeDto dto)
+        {
+            try
+            {
+                var viaje = await _viajeReadRepository.GetViajeById(dto.Id);
+                if (viaje == null) return Result<object?>.NotFound("El viaje no existe.");
+
+                viaje.Titulo = dto.Titulo;
+                viaje.Dias = dto.Dias;
+                viaje.Noches = dto.Noches;
+                viaje.Fechasalida = dto.FechaSalida;
+                viaje.VentasParaLiberado = dto.VentasParaLiberado;
+                viaje.ValorBase = dto.ValorBase;
+                viaje.PorcentajeComision = dto.PorcentajeComision;
+
+                bool success = await _unitOfWork.SaveChangesAsync();
+                if (!success) return Result<object?>.Error("Error al actualizar el viaje.", 500);
+
+                return Result<object?>.Exito(null);
+            }
+            catch (Exception)
+            {
+                return Result<object?>.Error("Error inesperado al actualizar el viaje.", 500);
+            }
+        }
+
+        public async Task<Result<object?>> UpdateVarianteViaje(UpdateVarianteViajeDto dto)
+        {
+            try
+            {
+                // Necesitamos incluir inscriptos para recalcular pendientes si cambia el valor
+                var variante = await _viajeReadRepository.GetVarianteById(dto.Id);
+                if (variante == null) return Result<object?>.NotFound("La variante no existe.");
+
+                if (dto.ValorSeña > dto.ValorViaje)
+                    return Result<object?>.Error("La seña no puede ser mayor al valor del viaje.", 400);
+
+                // Si el valor del viaje bajó, debemos verificar que ningún inscripto quede con monto negativo
+                // o si subió, debemos actualizar el monto pendiente de todos los inscriptos.
+                if (dto.ValorViaje != variante.ValorViaje)
+                {
+                    // Necesitamos cargar los inscriptos
+                    // Como GetVarianteById puede no traerlos, vamos a buscarlos si es necesario.
+                    // En este sistema, confiamos en que el repositorio los traiga o los cargamos.
+                    // Voy a asumir que necesitamos recalcular para cada inscripto activo.
+                    foreach (var inscripto in variante.Inscriptos)
+                    {
+                        if (!inscripto.Cancelado)
+                        {
+                            inscripto.MontoPendiente = dto.ValorViaje - inscripto.MontoAbonado;
+                            if (inscripto.MontoPendiente < 0)
+                            {
+                                // Si esto sucede, significa que el viaje ahora cuesta menos de lo que ya pagó.
+                                // Podríamos dejarlo en 0 y tal vez generar un saldo a favor en el futuro o simplemente avisar.
+                                inscripto.MontoPendiente = 0;
+                            }
+                        }
+                    }
+                }
+
+                variante.NombreVariante = dto.NombreVariante;
+                variante.ValorViaje = dto.ValorViaje;
+                variante.ValorSeña = dto.ValorSeña;
+                variante.Regimen = dto.Regimen;
+                variante.TipoDeButaca = dto.TipoDeButaca;
+
+                bool success = await _unitOfWork.SaveChangesAsync();
+                if (!success) return Result<object?>.Error("Error al actualizar la variante.", 500);
+
+                return Result<object?>.Exito(null);
+            }
+            catch (Exception)
+            {
+                return Result<object?>.Error("Error inesperado al actualizar la variante.", 500);
+            }
+        }
     }
 }
+

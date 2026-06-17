@@ -4,11 +4,16 @@ import ViajesService from '../../services/viajesService'
 
 const props = defineProps({
   isOpen: Boolean,
+  viaje: {
+    type: Object,
+    default: null
+  }
 })
 
 const emit = defineEmits(['close', 'save'])
 
 const form = reactive({
+  id: null,
   titulo: null,
   dias: null,
   noches: null,
@@ -22,23 +27,36 @@ const isSubmitting = ref(false)
 const errorMessage = ref('')
 
 const resetForm = () => {
-  form.titulo = null
-  form.dias = null
-  form.noches = null
-  form.fechaSalida = null
-  form.ventasParaLiberado = null
-  form.valorBase = null
-  form.porcentajeComision = null
+  form.id = props.viaje?.id || null
+  form.titulo = props.viaje?.titulo || null
+  form.dias = props.viaje?.dias || null
+  form.noches = props.viaje?.noches || null
+  form.fechaSalida = props.viaje?.fechasalida || null
+  form.ventasParaLiberado = props.viaje?.ventasParaLiberado || null
+  form.valorBase = props.viaje?.valorBase || null
+  form.porcentajeComision = props.viaje?.porcentajeComision || null
   errorMessage.value = ''
 }
+
+import { watch } from 'vue'
+watch(() => props.isOpen, (newVal) => {
+  if (newVal) {
+    resetForm()
+  }
+})
 
 const handleSubmit = async () => {
   isSubmitting.value = true
   errorMessage.value = ''
 
   try {
-    const data = await ViajesService.createViaje(form)
-    emit('save', data)
+    if (props.viaje) {
+      await ViajesService.updateViaje(form)
+      emit('save')
+    } else {
+      const data = await ViajesService.createViaje(form)
+      emit('save', data)
+    }
     resetForm()
   } catch (error) {
     errorMessage.value = error.message
@@ -82,17 +100,17 @@ const handleSubmit = async () => {
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
+                  d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
                 />
               </svg>
             </div>
             <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
               <h3 class="text-xl font-bold leading-6 text-slate-900" id="modal-title">
-                Crear Nuevo Viaje Base
+                {{ viaje ? 'Editar Viaje Base' : 'Crear Nuevo Viaje Base' }}
               </h3>
               <div class="mt-1">
                 <p class="text-sm font-medium text-slate-500">
-                  Defina los parámetros generales del viaje. Luego podrá agregar variantes.
+                   {{ viaje ? 'Actualice los parámetros generales del viaje.' : 'Defina los parámetros generales del viaje. Luego podrá agregar variantes.' }}
                 </p>
               </div>
             </div>
@@ -252,7 +270,8 @@ const handleSubmit = async () => {
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 ></path>
               </svg>
-              {{ isSubmitting ? 'Guardando...' : 'Crear Viaje' }}
+              {{ isSubmitting ? 'Guardando...' : (viaje ? 'Actualizar Viaje' : 'Crear Viaje') }}
+
             </button>
             <button
               type="button"

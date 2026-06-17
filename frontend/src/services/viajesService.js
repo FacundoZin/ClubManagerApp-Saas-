@@ -61,7 +61,21 @@ export default {
     }
   },
 
+  async updateViaje(dto) {
+    const response = await fetch(`${API_URL}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(dto),
+    });
+    if (!response.ok) {
+      const msg = await handleError(response, "Error al actualizar el viaje");
+      throw new Error(msg);
+    }
+  },
+
   async createVarianteViaje(dto) {
+
     const response = await fetch(`${API_URL}/variante`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -74,7 +88,21 @@ export default {
     }
   },
 
+  async updateVarianteViaje(dto) {
+    const response = await fetch(`${API_URL}/variante`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(dto),
+    });
+    if (!response.ok) {
+      const msg = await handleError(response, "Error al actualizar la variante de viaje");
+      throw new Error(msg);
+    }
+  },
+
   async inscribirPersonas(dto) {
+
     const response = await fetch(`${API_URL}/inscribir`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -96,6 +124,19 @@ export default {
     });
     if (!response.ok) {
       const msg = await handleError(response, "Error al actualizar el pago");
+      throw new Error(msg);
+    }
+  },
+
+  async editarPago(dto) {
+    const response = await fetch(`${API_URL}/pago/editar`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(dto),
+    });
+    if (!response.ok) {
+      const msg = await handleError(response, "Error al editar el pago");
       throw new Error(msg);
     }
   },

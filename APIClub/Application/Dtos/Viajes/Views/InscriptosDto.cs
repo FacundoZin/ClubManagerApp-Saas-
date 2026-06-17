@@ -13,5 +13,6 @@ namespace APIClub.Application.Dtos.Viajes.Views
         public decimal MontoPendiente { get; set; }
         public bool Cancelado { get; set; }
         public List<PagoInscriptoDto> HistorialPagos { get; set; } = new();
+        public List<PagoInscriptoModificacionDto> HistorialModificaciones { get; set; } = new();
     }
 }

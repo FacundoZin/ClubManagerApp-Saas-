@@ -23,5 +23,8 @@ namespace APIClub.Domain.ModuloGestionViajes.Models
 
         // Historial de pagos
         public List<PagoInscriptoViaje> HistorialPagos { get; set; } = new List<PagoInscriptoViaje>();
+
+        // Auditoría de modificaciones de pagos
+        public List<PagoInscriptoViajeAudit> HistorialModificaciones { get; set; } = new List<PagoInscriptoViajeAudit>();
     }
 }

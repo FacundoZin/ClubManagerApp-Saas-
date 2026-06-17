@@ -4,6 +4,7 @@ using APIClub.Domain.ModuloGestionViajes.Repositories;
 using APIClub.Domain.ModuloGestionViajes.useCases;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace APIClub.Contrrollers
 {
@@ -106,6 +107,27 @@ namespace APIClub.Contrrollers
             return Ok();
         }
 
+        [HttpPut("pago/editar")]
+        public async Task<IActionResult> EditarPagoDeViaje([FromBody] EditPagoViajeDto dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            var userNameClaim = User.FindFirst(ClaimTypes.Name);
+
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+                return Unauthorized();
+
+            var userName = userNameClaim?.Value ?? "Usuario desconocido";
+
+            var result = await _viajesService.EditarPagoDeViaje(dto.IdInscripto, dto.NuevoMontoAbonado, dto.MotivoModificacion, userId, userName);
+            if (!result.Exit)
+            {
+                return StatusCode(result.Errorcode, result.Errormessage);
+            }
+            return Ok();
+        }
+
         [HttpDelete("inscripcion/{idInscripto}")]
         public async Task<IActionResult> CancelarInscripcionDeViaje(int idInscripto)
         {
@@ -117,7 +139,34 @@ namespace APIClub.Contrrollers
             return Ok(result.Data);
         }
 
+        [HttpPut]
+        public async Task<IActionResult> UpdateViaje([FromBody] UpdateViajeDto dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var result = await _viajesService.UpdateViaje(dto);
+            if (!result.Exit)
+            {
+                return StatusCode(result.Errorcode, result.Errormessage);
+            }
+            return Ok(result.Data);
+        }
+
+        [HttpPut("variante")]
+        public async Task<IActionResult> UpdateVarianteViaje([FromBody] UpdateVarianteViajeDto dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var result = await _viajesService.UpdateVarianteViaje(dto);
+            if (!result.Exit)
+            {
+                return StatusCode(result.Errorcode, result.Errormessage);
+            }
+            return Ok(result.Data);
+        }
+
         [HttpGet("combobox")]
+
         public async Task<IActionResult> GetComboBoxViajes()
         {
             var viajes = await _viajeReadRepository.GetComboBoxViajes();
