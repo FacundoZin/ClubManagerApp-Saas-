@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
+import { usePeriodosDisponibles } from '@/composables/usePeriodosDisponibles'
 
 const props = defineProps({
   socio: {
@@ -10,33 +11,12 @@ const props = defineProps({
 
 const emit = defineEmits(['pay', 'edit', 'delete'])
 
-// Estado local para periodos seleccionados
 const selectedPeriods = ref([])
 
-// Inicializar con todos los periodos seleccionados por defecto (solo los adeudados)
 selectedPeriods.value = [...(props.socio.periodosAdeudados || [])]
 
-const futurePeriods = computed(() => {
-  const now = new Date()
-  const currentYear = now.getFullYear()
-  const currentMonth = now.getMonth() + 1 // 1-12
-  const currentSemester = currentMonth <= 6 ? 1 : 2
-
-  let p1, p2
-  if (currentSemester === 1) {
-    p1 = { anio: currentYear, semestre: 2 }
-    p2 = { anio: currentYear + 1, semestre: 1 }
-  } else {
-    p1 = { anio: currentYear + 1, semestre: 1 }
-    p2 = { anio: currentYear + 1, semestre: 2 }
-  }
-
-  // Filtrar si ya están en periodosAdeudados
-  const deudas = props.socio.periodosAdeudados || []
-  return [p1, p2].filter(
-    (fp) => !deudas.some((d) => d.anio === fp.anio && d.semestre === fp.semestre),
-  )
-})
+const periodosAdeudadosRef = computed(() => props.socio.periodosAdeudados || [])
+const { futurePeriods } = usePeriodosDisponibles(periodosAdeudadosRef)
 
 const togglePeriod = (period) => {
   const index = selectedPeriods.value.findIndex(

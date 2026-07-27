@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
+import { usePeriodosDisponibles } from '@/composables/usePeriodosDisponibles'
 
 const props = defineProps({
   socio: {
@@ -12,7 +13,9 @@ const emit = defineEmits(['view', 'update-selection'])
 
 const selectedPeriods = ref([])
 
-// Inicializar con todos por defecto
+const periodosAdeudadosRef = computed(() => props.socio.periodosAdeudados || [])
+const { futurePeriods } = usePeriodosDisponibles(periodosAdeudadosRef)
+
 onMounted(() => {
   if (props.socio.periodosAdeudados) {
     selectedPeriods.value = [...props.socio.periodosAdeudados]
@@ -20,7 +23,6 @@ onMounted(() => {
   }
 })
 
-// Vigilamos si cambia el socio para resetear selección
 watch(
   () => props.socio.id,
   () => {
@@ -28,28 +30,6 @@ watch(
     emit('update-selection', selectedPeriods.value)
   },
 )
-
-const futurePeriods = computed(() => {
-  const now = new Date()
-  const currentYear = now.getFullYear()
-  const currentMonth = now.getMonth() + 1 // 1-12
-  const currentSemester = currentMonth <= 6 ? 1 : 2
-
-  let p1, p2
-  if (currentSemester === 1) {
-    p1 = { anio: currentYear, semestre: 2 }
-    p2 = { anio: currentYear + 1, semestre: 1 }
-  } else {
-    p1 = { anio: currentYear + 1, semestre: 1 }
-    p2 = { anio: currentYear + 1, semestre: 2 }
-  }
-
-  // Filtrar si ya están en periodosAdeudados (por si acaso el backend los incluyó)
-  const deudas = props.socio.periodosAdeudados || []
-  return [p1, p2].filter(
-    (fp) => !deudas.some((d) => d.anio === fp.anio && d.semestre === fp.semestre),
-  )
-})
 
 const togglePeriod = (period) => {
   const index = selectedPeriods.value.findIndex(
