@@ -5,6 +5,7 @@ import ConfirmModal from '../../components/Common/ConfirmModal.vue'
 import DataTable from '../../components/Common/DataTable.vue'
 import InscripcionConfirmModal from '../../components/ModuloGestionViajes/InscripcionConfirmModal.vue'
 import PagoViajeModal from '../../components/ModuloGestionViajes/PagoViajeModal.vue'
+import EditarPagoViajeModal from '../../components/ModuloGestionViajes/EditarPagoViajeModal.vue'
 import VarianteFormModal from '../../components/ModuloGestionViajes/VarianteFormModal.vue'
 import HistorialPagosModal from '../../components/ModuloGestionViajes/HistorialPagosModal.vue'
 import ViajesService from '../../services/viajesService'
@@ -23,9 +24,14 @@ const isVarianteModalOpen = ref(false)
 const isInscripcionModalOpen = ref(false)
 const isPagoModalOpen = ref(false)
 const isConfirmCancelOpen = ref(false)
+const isViajeFormModalOpen = ref(false)
+const selectedVariante = ref(null)
+
 
 const selectedInscripto = ref(null)
 const selectedInscriptoId = ref(null)
+const selectedVarianteParaEdicion = ref(null)
+const isEditarPagoModalOpen = ref(false)
 
 // Toast state (using simple approach consistent with Dashboard)
 const toast = ref({
@@ -40,6 +46,12 @@ const selectedInscriptoParaHistorial = ref(null)
 const openHistorialModal = (inscripto) => {
   selectedInscriptoParaHistorial.value = inscripto
   isHistorialModalOpen.value = true
+}
+
+const handleOpenEditarPago = (inscripto, variante) => {
+  selectedInscripto.value = inscripto
+  selectedVarianteParaEdicion.value = variante
+  isEditarPagoModalOpen.value = true
 }
 
 const showToast = (message, type = 'success') => {
@@ -106,11 +118,25 @@ const confirmCancelInscripcion = async () => {
 
 const handleSaveAction = () => {
   isVarianteModalOpen.value = false
+  isViajeFormModalOpen.value = false
   isInscripcionModalOpen.value = false
   isPagoModalOpen.value = false
+  isEditarPagoModalOpen.value = false
+  selectedVariante.value = null
   showToast('Operación realizada con éxito')
   fetchViajeCompleto()
 }
+
+const handleEditVariante = (variante) => {
+  selectedVariante.value = variante
+  isVarianteModalOpen.value = true
+}
+
+const handleCloseVarianteModal = () => {
+  isVarianteModalOpen.value = false
+  selectedVariante.value = null
+}
+
 
 const goBack = () => {
   router.push('/viajes')
@@ -212,7 +238,16 @@ const goBack = () => {
               </div>
             </div>
             <div class="flex gap-2">
+              <button @click="isViajeFormModalOpen = true"
+                class="px-4 py-2 bg-white text-slate-600 font-bold rounded-xl border border-slate-200 hover:bg-slate-50 transition-all flex items-center shadow-sm text-sm">
+                <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5m-7-7l7 7-7 7M4 4l16 16" />
+                </svg>
+                Editar Viaje
+              </button>
               <button @click="isVarianteModalOpen = true"
+
                 class="px-4 py-2 bg-white text-teal-600 font-bold rounded-xl border border-teal-100 hover:border-teal-200 hover:bg-teal-50 transition-all flex items-center shadow-sm text-sm">
                 <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -314,7 +349,14 @@ const goBack = () => {
                   </p>
                 </div>
               </div>
-              <div class="flex gap-4">
+              <div class="flex items-center gap-4">
+                <button @click="handleEditVariante(variante)" class="p-2 text-slate-400 hover:text-teal-600 transition-colors">
+                   <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                   </svg>
+                </button>
+                <div class="flex gap-4">
+
                 <div class="text-right">
                   <p class="text-[10px] uppercase font-bold text-slate-400">Valor Viaje</p>
                   <p class="text-sm font-bold text-slate-700">
@@ -328,6 +370,7 @@ const goBack = () => {
                   </p>
                 </div>
               </div>
+            </div>
             </div>
 
             <!-- Inscriptos Table -->
@@ -387,6 +430,14 @@ const goBack = () => {
                             </svg>
                           </button>
                           <template v-if="!item.cancelado">
+                            <button @click="handleOpenEditarPago(item, variante)"
+                              class="p-1.5 text-sky-600 hover:bg-sky-50 rounded-lg transition-colors"
+                              title="Editar Seña">
+                              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5m-7-7l7 7-7 7M4 4l16 16" />
+                              </svg>
+                            </button>
                             <button v-if="item.montoPendiente > 0" @click="handleOpenPago(item)"
                               class="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
                               title="Registrar Pago">
@@ -418,14 +469,20 @@ const goBack = () => {
     </main>
 
     <!-- Modals -->
-    <VarianteFormModal :is-open="isVarianteModalOpen" :id-viaje="viajeId" @close="isVarianteModalOpen = false"
+    <ViajeFormModal :is-open="isViajeFormModalOpen" :viaje="viaje" @close="isViajeFormModalOpen = false" @save="handleSaveAction" />
+
+    <VarianteFormModal :is-open="isVarianteModalOpen" :id-viaje="viajeId" :variante="selectedVariante" @close="handleCloseVarianteModal"
       @save="handleSaveAction" />
+
 
     <InscripcionConfirmModal v-if="isInscripcionModalOpen" :is-open="isInscripcionModalOpen" :socio="null"
       :id-viaje="viajeId" @close="isInscripcionModalOpen = false" @save="handleSaveAction" />
 
     <PagoViajeModal v-if="isPagoModalOpen" :is-open="isPagoModalOpen" :inscripto="selectedInscripto"
       @close="isPagoModalOpen = false" @save="handleSaveAction" />
+
+    <EditarPagoViajeModal v-if="isEditarPagoModalOpen" :is-open="isEditarPagoModalOpen" :inscripto="selectedInscripto"
+      :variante="selectedVarianteParaEdicion" @close="isEditarPagoModalOpen = false" @save="handleSaveAction" />
 
     <ConfirmModal :is-open="isConfirmCancelOpen" title="Cancelar Inscripción"
       message="¿Está seguro que desea cancelar esta inscripción? Al cancelar, se registrará automáticamente el pago completo del viaje. El monto total quedará como recaudado."
