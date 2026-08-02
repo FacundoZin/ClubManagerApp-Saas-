@@ -21,5 +21,7 @@ namespace APIClub.Application.Dtos.Socios
 
         [Required(ErrorMessage = "Porfavor seleccione la preferencia de pago del socio")]
         public MetodosDePago PreferenciaDePago { get; set; }
+
+        public DateOnly? FechaAsociacion { get; set; }
     }
 }
