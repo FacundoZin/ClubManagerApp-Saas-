@@ -30,6 +30,14 @@ namespace APIClub.Application.Services
                 return Result<object?>.Error(result.Errormessage, result.Errorcode);
             }
 
+            var hoy = DateOnly.FromDateTime(DateTime.Now);
+            var fechaAsociacion = _dto.FechaAsociacion ?? hoy;
+
+            if (fechaAsociacion > hoy)
+            {
+                return Result<object?>.Error("La fecha de asociación no puede ser mayor a la fecha actual.", 400);
+            }
+
             var socio = new Socio
             {
                 Nombre = _dto.Nombre,
@@ -39,7 +47,7 @@ namespace APIClub.Application.Services
                 Direcccion = _dto.Direcccion,
                 LoteId = _dto.IdLote,
                 Localidad = _dto.Localidad,
-                FechaAsociacion = DateOnly.FromDateTime(DateTime.Now),
+                FechaAsociacion = fechaAsociacion,
                 IsActivo = true,
                 PreferenciaDePago = _dto.PreferenciaDePago
             };

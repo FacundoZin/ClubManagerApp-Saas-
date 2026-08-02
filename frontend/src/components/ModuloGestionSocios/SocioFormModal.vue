@@ -19,10 +19,11 @@ const form = reactive({
   apellido: null,
   dni: null,
   telefono: null,
-  direcccion: null, // Note: keeping typo to match DTO
+  direcccion: null,
   idLote: null,
   localidad: null,
   preferenciaDePago: null,
+  fechaAsociacion: null,
 })
 
 const paymentOptions = [
@@ -64,6 +65,8 @@ watch(
 const isSubmitting = ref(false)
 const errorMessage = ref('')
 
+const todayDate = new Date().toISOString().split('T')[0]
+
 const resetForm = () => {
   form.nombre = null
   form.apellido = null
@@ -73,6 +76,7 @@ const resetForm = () => {
   form.idLote = null
   form.localidad = null
   form.preferenciaDePago = null
+  form.fechaAsociacion = null
   errorMessage.value = ''
 }
 
@@ -301,6 +305,23 @@ const handleSubmit = async () => {
                   placeholder="Morón"
                 />
               </div>
+            </div>
+
+            <div class="space-y-1">
+              <label for="fechaAsociacion" class="block text-sm font-bold text-slate-700">
+                Fecha de Asociación
+                <span class="font-normal text-slate-400">(opcional)</span>
+              </label>
+              <input
+                type="date"
+                id="fechaAsociacion"
+                v-model="form.fechaAsociacion"
+                :max="todayDate"
+                class="block w-full rounded-xl border-slate-200 bg-slate-50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 sm:text-sm px-3 py-2 border transition-all"
+              />
+              <p class="text-xs text-slate-400 mt-1">
+                Si no se completa, se usará la fecha actual. No puede ser una fecha futura.
+              </p>
             </div>
 
             <div class="space-y-1">
