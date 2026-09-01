@@ -67,6 +67,9 @@ namespace APIClub.Contrrollers
         [HttpGet("estado-socio/{dni}")]
         public async Task<IActionResult> ObtenerEstadoAlquilerSocio(string dni)
         {
+            dni = System.Text.RegularExpressions.Regex.Replace(dni ?? string.Empty, @"\s+", "").Trim();
+            if (string.IsNullOrWhiteSpace(dni))
+                return BadRequest("Debe indicar un DNI válido.");
             var result = await _alquilerQueries.ObtenerEstadoAlquilerSocio(dni);
 
             if (!result.Exit)
@@ -80,6 +83,9 @@ namespace APIClub.Contrrollers
         [HttpGet("socio/{socioDni}")]
         public async Task<IActionResult> GetAlquilerBySocio(string socioDni)
         {
+            socioDni = System.Text.RegularExpressions.Regex.Replace(socioDni ?? string.Empty, @"\s+", "").Trim();
+            if (string.IsNullOrWhiteSpace(socioDni))
+                return BadRequest("Debe indicar un DNI válido.");
             var result = await _alquilerQueries.GetAlquilerBySocio(socioDni);
 
             if (!result.Exit)

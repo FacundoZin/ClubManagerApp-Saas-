@@ -68,6 +68,9 @@ namespace APIClub.Contrrollers
         [HttpGet("{dni}")]
         public async Task<IActionResult> GetSocioByDni(string dni)
         {
+            dni = string.IsNullOrWhiteSpace(dni) ? string.Empty : System.Text.RegularExpressions.Regex.Replace(dni, @"\s+", "").Trim();
+            if (string.IsNullOrWhiteSpace(dni))
+                return BadRequest(new { mensaje = "Debe indicar un DNI válido." });
             var result = await _SocioService.GetSocioByDni(dni);
 
             if (result.Exit != true)

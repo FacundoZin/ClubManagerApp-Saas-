@@ -223,6 +223,9 @@ namespace APIClub.Application.Services
 
         public async Task<Result<StatusAlquileresSociosDto>> ObtenerEstadoAlquilerSocio(string dni)
         {
+            dni = System.Text.RegularExpressions.Regex.Replace(dni ?? string.Empty, @"\s+", "").Trim();
+            if (string.IsNullOrWhiteSpace(dni))
+                return Result<StatusAlquileresSociosDto>.Error("Debe indicar un DNI válido.", 400);
             var socio = await _UnitOfWork._SocioRepository.GetSocioByDni(dni);
 
             if (socio == null)
@@ -311,6 +314,9 @@ namespace APIClub.Application.Services
 
         public async Task<Result<AlquilerPreviewDto?>> GetAlquilerBySocio(string socioDni)
         {
+            socioDni = System.Text.RegularExpressions.Regex.Replace(socioDni ?? string.Empty, @"\s+", "").Trim();
+            if (string.IsNullOrWhiteSpace(socioDni))
+                return Result<AlquilerPreviewDto?>.Error("Debe indicar un DNI válido.", 400);
             var socio = await _UnitOfWork._SocioRepository.GetSocioByDni(socioDni);
 
             if (socio == null)

@@ -38,13 +38,14 @@ const loadArticulos = async () => {
 
 // Methods - Search Socio
 const handleSearchSocio = async () => {
-  if (!searchSocioDni.value) return
+  const dniClean = searchSocioDni.value.replace(/\s/g, '').trim()
+  if (!dniClean) return
   searchingSocio.value = true
   foundSocio.value = null
   rentCheckStatus.value = null
   searchError.value = ''
   try {
-    rentCheckStatus.value = await AlquilerService.getAlquilerStatusBySocio(searchSocioDni.value)
+    rentCheckStatus.value = await AlquilerService.getAlquilerStatusBySocio(dniClean)
   } catch (e) {
     searchError.value = e.message
   } finally {
@@ -53,9 +54,11 @@ const handleSearchSocio = async () => {
 }
 
 const startNewAlquiler = async () => {
+  const dniClean = searchSocioDni.value.replace(/\s/g, '').trim()
+  if (!dniClean) return
   searchingSocio.value = true
   try {
-    const socio = await SociosService.getByDni(searchSocioDni.value)
+    const socio = await SociosService.getByDni(dniClean)
     foundSocio.value = socio
     rentCheckStatus.value = null
   } catch (e) {

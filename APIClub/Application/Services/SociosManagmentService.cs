@@ -47,7 +47,7 @@ namespace APIClub.Application.Services
             {
                 Nombre = _dto.Nombre,
                 Apellido = _dto.Apellido,
-                Dni = _dto.Dni,
+                Dni = System.Text.RegularExpressions.Regex.Replace(_dto.Dni ?? string.Empty, @"\s+", "").Trim(),
                 Telefono = _dto.Telefono?.FormatearForWhatsapp().Data,
                 Direcccion = _dto.Direcccion,
                 LoteId = _dto.IdLote,
@@ -91,6 +91,7 @@ namespace APIClub.Application.Services
 
         public async Task<Result<SocioDebtPreviewDto>> GetSocioByDni(string dni)
         {
+            dni = string.IsNullOrWhiteSpace(dni) ? string.Empty : System.Text.RegularExpressions.Regex.Replace(dni, @"\s+", "").Trim();
             if (string.IsNullOrWhiteSpace(dni))
             {
                 return Result<SocioDebtPreviewDto>.Error("Debe indicar un DNI válido.", 400);
@@ -186,7 +187,7 @@ namespace APIClub.Application.Services
             // Actualizar propiedades
             socio.Nombre = dto.Nombre;
             socio.Apellido = dto.Apellido;
-            socio.Dni = dto.Dni;
+            socio.Dni = System.Text.RegularExpressions.Regex.Replace(dto.Dni ?? string.Empty, @"\s+", "").Trim();
             socio.Telefono = dto.Telefono?.FormatearForWhatsapp().Data;
             socio.Direcccion = dto.Direcccion;
             socio.LoteId = dto.IdLote;

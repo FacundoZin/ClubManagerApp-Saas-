@@ -31,7 +31,9 @@ export default {
     },
 
     async getBySocio(dni) {
-        const response = await fetch(`${API_URL}/socio/${dni}`, { credentials: 'include' });
+        const clean = String(dni).replace(/\s/g, '').trim()
+        if (!clean) throw new Error('Debe indicar un DNI válido')
+        const response = await fetch(`${API_URL}/socio/${encodeURIComponent(clean)}`, { credentials: 'include' });
         
         if (!response.ok) {
             if (response.status >= 500) {
@@ -121,7 +123,9 @@ export default {
     },
 
     async getAlquilerStatusBySocio(dni) {
-        const response = await fetch(`${API_URL}/estado-socio/${dni}`, { credentials: 'include' });
+        const clean = String(dni).replace(/\s/g, '').trim()
+        if (!clean) throw new Error('Debe indicar un DNI válido')
+        const response = await fetch(`${API_URL}/estado-socio/${encodeURIComponent(clean)}`, { credentials: 'include' });
         
         if (!response.ok) {
             if (response.status >= 500) {

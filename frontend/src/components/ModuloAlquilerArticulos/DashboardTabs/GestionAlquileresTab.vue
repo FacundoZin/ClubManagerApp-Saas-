@@ -49,7 +49,8 @@ const handlePageChange = (newPage) => {
 }
 
 const handleSearch = async () => {
-  if (!searchDni.value) {
+  const dniClean = searchDni.value.replace(/\s/g, '').trim()
+  if (!dniClean) {
     loadAlquileresActivos()
     return
   }
@@ -58,7 +59,7 @@ const handleSearch = async () => {
   isSearching.value = true
   searchError.value = ''
   try {
-    const result = await AlquilerService.getBySocio(searchDni.value)
+    const result = await AlquilerService.getBySocio(dniClean)
     searchResultAlquileres.value = result
   } catch (e) {
     searchError.value = e.message

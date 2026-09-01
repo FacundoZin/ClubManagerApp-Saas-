@@ -36,7 +36,9 @@ export default {
   },
 
   async getByDni(dni) {
-    const response = await fetch(`${API_URL}/${dni}`, { credentials: 'include' })
+    const clean = String(dni).replace(/\s/g, '').trim()
+    if (!clean) throw new Error('Debe indicar un DNI válido')
+    const response = await fetch(`${API_URL}/${encodeURIComponent(clean)}`, { credentials: 'include' })
 
     if (!response.ok) {
       const msg = await handleError(response, 'Error al buscar socio')

@@ -130,7 +130,10 @@ namespace APIClub.Application.Services
                 );
 
 
-            var socio = await _SocioRepository.GetSocioByDni(dto.DniSocio);
+            var dniClean = System.Text.RegularExpressions.Regex.Replace(dto.DniSocio ?? string.Empty, @"\s+", "").Trim();
+            if (string.IsNullOrWhiteSpace(dniClean))
+                return Result<object?>.Error("Debe indicar un DNI válido.", 400);
+            var socio = await _SocioRepository.GetSocioByDni(dniClean);
 
             if (socio == null) 
                 return Result<object?>.Error("el socio que esta cargando para hacer la reserva no existe, verifique si ingreso bien  su dni", 404);

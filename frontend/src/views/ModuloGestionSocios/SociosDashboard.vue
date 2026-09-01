@@ -139,14 +139,15 @@ const handleSaveSocio = (savedSocio) => {
 
 // Search Logic
 const handleSearch = async () => {
-  if (!searchDni.value) return
+  const dniClean = searchDni.value.replace(/\s/g, '').trim()
+  if (!dniClean) return
 
   isSearching.value = true
   searchError.value = ''
   searchResult.value = null
 
   try {
-    const data = await SociosService.getByDni(searchDni.value)
+    const data = await SociosService.getByDni(dniClean)
 
     searchResult.value = data
   } catch (error) {

@@ -26,6 +26,7 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
 
         public async Task<Socio?> GetSocioByDni(string dni)
         {
+            dni = System.Text.RegularExpressions.Regex.Replace(dni ?? string.Empty, @"\s+", "").Trim();
             return await _Dbcontext.Socios
                 .Include(s => s.HistorialCuotas)
                 .Include(s => s.Lote)
@@ -35,6 +36,7 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
 
         public async Task<Socio?> GetSocioByDniIgnoreFilter(string dni)
         {
+            dni = System.Text.RegularExpressions.Regex.Replace(dni ?? string.Empty, @"\s+", "").Trim();
             return await _Dbcontext.Socios
                 .IgnoreQueryFilters()
                 .AsNoTracking()
@@ -43,11 +45,13 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
 
         public async Task<bool> SocioExists(string dni)
         {
+            dni = System.Text.RegularExpressions.Regex.Replace(dni ?? string.Empty, @"\s+", "").Trim();
             return await _Dbcontext.Socios.IgnoreQueryFilters().AnyAsync(s => s.Dni == dni);
         }
 
         public async Task<bool> SocioExistsForUpdate(string dni, int id)
         {
+            dni = System.Text.RegularExpressions.Regex.Replace(dni ?? string.Empty, @"\s+", "").Trim();
             return await _Dbcontext.Socios.IgnoreQueryFilters().AnyAsync(s => s.Dni == dni && s.Id != id);
         }
 
