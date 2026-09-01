@@ -22,6 +22,7 @@ const form = reactive({
   idLote: '',
   localidad: '',
   preferenciaDePago: '',
+  fechaAsociacion: '',
 })
 
 const paymentOptions = [
@@ -48,6 +49,9 @@ onMounted(() => {
   fetchLotesList()
 })
 
+const todayDate = new Date().toLocaleDateString('en-CA')
+const MIN_DATE = '1900-01-01'
+
 const isSubmitting = ref(false)
 const isLoading = ref(false)
 const errorMessage = ref('')
@@ -61,6 +65,7 @@ const resetForm = () => {
   form.idLote = ''
   form.localidad = ''
   form.preferenciaDePago = ''
+  form.fechaAsociacion = ''
   errorMessage.value = ''
 }
 
@@ -82,6 +87,7 @@ const fetchSocioData = async (id) => {
     form.idLote = data.idLote || ''
     form.localidad = data.localidad || ''
     form.preferenciaDePago = data.preferenciaDePago !== undefined ? data.preferenciaDePago : ''
+    form.fechaAsociacion = data.fechaAsociacion ? data.fechaAsociacion.split('T')[0] : ''
   } catch (error) {
     errorMessage.value = error.message
   } finally {
@@ -106,6 +112,21 @@ const handleSubmit = async () => {
   errorMessage.value = ''
 
   try {
+    if (form.fechaAsociacion) {
+      const [y, m, d] = form.fechaAsociacion.split('-')
+      if (y.length !== 4) {
+        throw new Error('La fecha de asociación debe tener un año entre 1900 y el año actual')
+      }
+      const year = parseInt(y, 10)
+      const currentYear = new Date().getFullYear()
+      if (year < 1900 || year > currentYear) {
+        throw new Error('La fecha de asociación debe tener un año entre 1900 y el año actual')
+      }
+      if (form.fechaAsociacion > todayDate) {
+        throw new Error('La fecha no puede ser futura')
+      }
+    }
+
     // Sanitize data: convert empty strings to null for ALL fields dynamically
     const sanitizedForm = Object.fromEntries(
       Object.entries(form).map(([key, value]) => [
@@ -325,6 +346,21 @@ const handleSubmit = async () => {
                   placeholder="Ciudad"
                 />
               </div>
+            </div>
+
+            <div class="space-y-1">
+              <label for="edit-fechaAsociacion" class="block text-sm font-bold text-slate-700">
+                Fecha de Asociación
+              </label>
+              <input
+                type="date"
+                id="edit-fechaAsociacion"
+                v-model="form.fechaAsociacion"
+                :min="MIN_DATE"
+                :max="todayDate"
+                class="block w-full rounded-xl border-slate-200 bg-slate-50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 sm:text-sm px-3 py-2 border transition-all"
+              />
+              <p class="text-xs text-slate-400 mt-1">No puede ser futura. Año mínimo 1900.</p>
             </div>
 
             <div class="space-y-1.5">

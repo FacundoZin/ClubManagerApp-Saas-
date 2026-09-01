@@ -19,6 +19,8 @@ namespace APIClub.Application.Dtos.Socios
         public int? IdLote { get; set; }
         public string? Localidad { get; set; }
 
+        public DateOnly? FechaAsociacion { get; set; }
+
         [Required(ErrorMessage = "La forma de pago es requerida")]
         public MetodosDePago PreferenciaDePago { get; set; }
     }

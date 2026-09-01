@@ -38,6 +38,11 @@ namespace APIClub.Application.Services
                 return Result<object?>.Error("La fecha de asociación no puede ser mayor a la fecha actual.", 400);
             }
 
+            if (fechaAsociacion.Year < 1900)
+            {
+                return Result<object?>.Error("La fecha de asociación no es válida (año debe ser >= 1900).", 400);
+            }
+
             var socio = new Socio
             {
                 Nombre = _dto.Nombre,
@@ -190,6 +195,14 @@ namespace APIClub.Application.Services
             socio.Localidad = dto.Localidad;
             socio.PreferenciaDePago = dto.PreferenciaDePago;
 
+            if (dto.FechaAsociacion.HasValue)
+            {
+                var hoy = DateOnly.FromDateTime(DateTime.Now);
+                if (dto.FechaAsociacion.Value > hoy) return Result<object>.Error("La fecha de asociación no puede ser mayor a la fecha actual.", 400);
+                if (dto.FechaAsociacion.Value.Year < 1900) return Result<object>.Error("La fecha de asociación no es válida (año debe ser >= 1900).", 400);
+                socio.FechaAsociacion = dto.FechaAsociacion.Value;
+            }
+
             await _SocioRepository.UpdateSocio(socio);
 
             return Result<object>.Exito(new
@@ -226,6 +239,7 @@ namespace APIClub.Application.Services
                 IdLote = socio.LoteId,
                 Localidad = socio.Localidad,
                 PreferenciaDePago = socio.PreferenciaDePago,
+                FechaAsociacion = socio.FechaAsociacion,
                 AdeudaCuotas = false // Tendriamos que calcularlo si fuera necesario, pero para el form no hace falta
             };
 

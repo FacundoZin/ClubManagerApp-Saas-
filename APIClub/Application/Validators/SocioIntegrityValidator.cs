@@ -61,6 +61,14 @@ namespace APIClub.Application.Validators
             if (dto.PreferenciaDePago == MetodosDePago.Cobrador && dto.IdLote == null)
                 return Result<object?>.Error("si elsocio va a pagar con cobrador es necesario asignarle un lote", 400);
 
+            if (dto.FechaAsociacion.HasValue)
+            {
+                var fecha = dto.FechaAsociacion.Value;
+                var hoy = DateOnly.FromDateTime(DateTime.Now);
+                if (fecha > hoy) return Result<object?>.Error("La fecha de asociación no puede ser mayor a la fecha actual.", 400);
+                if (fecha.Year < 1900) return Result<object?>.Error("La fecha de asociación no es válida (año debe ser >= 1900).", 400);
+            }
+
             return Result<object?>.Exito(null);
         }
 
@@ -122,6 +130,14 @@ namespace APIClub.Application.Validators
 
             if (dto.PreferenciaDePago == MetodosDePago.Cobrador && dto.IdLote == null)
                 return Result<Socio>.Error("si el socio quiere pagar con cobrador es necesario asignarle un lote", 400);
+
+            if (dto.FechaAsociacion.HasValue)
+            {
+                var fecha = dto.FechaAsociacion.Value;
+                var hoy = DateOnly.FromDateTime(DateTime.Now);
+                if (fecha > hoy) return Result<Socio>.Error("La fecha de asociación no puede ser mayor a la fecha actual.", 400);
+                if (fecha.Year < 1900) return Result<Socio>.Error("La fecha de asociación no es válida (año debe ser >= 1900).", 400);
+            }
 
             // Validar que el nuevo DNI no esté asignado a otro socio
             if (socio.Dni != dto.Dni)

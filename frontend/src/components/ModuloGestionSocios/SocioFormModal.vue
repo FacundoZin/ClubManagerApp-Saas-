@@ -65,7 +65,8 @@ watch(
 const isSubmitting = ref(false)
 const errorMessage = ref('')
 
-const todayDate = new Date().toISOString().split('T')[0]
+const todayDate = new Date().toLocaleDateString('en-CA')
+const MIN_DATE = '1900-01-01'
 
 const resetForm = () => {
   form.nombre = null
@@ -113,6 +114,21 @@ const handleSubmit = async () => {
         value === '' || value === null ? null : key === 'idLote' ? Number(value) : value,
       ]),
     )
+
+    if (sanitizedForm.fechaAsociacion) {
+      const [y, m, d] = sanitizedForm.fechaAsociacion.split('-')
+      if (y.length !== 4) {
+        throw new Error('La fecha de asociación debe tener un año entre 1900 y el año actual')
+      }
+      const year = parseInt(y, 10)
+      const currentYear = new Date().getFullYear()
+      if (year < 1900 || year > currentYear) {
+        throw new Error('La fecha de asociación debe tener un año entre 1900 y el año actual')
+      }
+      if (sanitizedForm.fechaAsociacion > todayDate) {
+        throw new Error('La fecha no puede ser futura')
+      }
+    }
 
     const data = await SociosService.create(sanitizedForm)
     emit('save', data)
@@ -316,11 +332,12 @@ const handleSubmit = async () => {
                 type="date"
                 id="fechaAsociacion"
                 v-model="form.fechaAsociacion"
+                :min="MIN_DATE"
                 :max="todayDate"
                 class="block w-full rounded-xl border-slate-200 bg-slate-50 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 sm:text-sm px-3 py-2 border transition-all"
               />
               <p class="text-xs text-slate-400 mt-1">
-                Si no se completa, se usará la fecha actual. No puede ser una fecha futura.
+                Si no se completa, se usará la fecha actual. No puede ser futura. Año mínimo 1900.
               </p>
             </div>
 
