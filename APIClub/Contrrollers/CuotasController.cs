@@ -77,5 +77,14 @@ namespace APIClub.Contrrollers
 
             return Ok(new { data = result.Data });
         }
+
+        [HttpDelete("{id:int}")]
+        [Authorize]
+        public async Task<IActionResult> EliminarCuota(int id)
+        {
+            var result = await _CuotasService.EliminarCuotaAsync(id);
+            if (!result.Exit) return StatusCode(result.Errorcode, new { mensaje = result.Errormessage });
+            return Ok(result.Data);
+        }
     }
 }

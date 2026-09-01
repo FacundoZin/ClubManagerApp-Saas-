@@ -10,5 +10,6 @@ namespace APIClub.Application.Dtos.Socios
         public int anio {  get; set; }
         public int semestre { get; set; }
         public bool pagado { get; set; }
+        public int? cuotaId { get; set; }
     }
 }

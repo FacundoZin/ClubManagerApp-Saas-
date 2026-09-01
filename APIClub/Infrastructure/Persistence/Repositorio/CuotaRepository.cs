@@ -98,5 +98,9 @@ namespace APIClub.Infrastructure.Persistence.Repositorio
 
             return new PagedResult<CuotaConSocioDto>(items, totalCount, pageNumber, pageSize);
         }
+
+        public async Task<Cuota?> ObtenerCuotaPorIdAsync(int id) => await _dbcontext.Cuotas.FirstOrDefaultAsync(c => c.Id == id);
+
+        public void EliminarCuota(Cuota cuota) => _dbcontext.Cuotas.Remove(cuota);
     }
 }

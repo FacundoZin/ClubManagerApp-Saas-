@@ -188,5 +188,24 @@ namespace APIClub.Application.Services
 
             return Result<PagedResult<CuotaConSocioDto>>.Exito(resultado);
         }
+
+        public async Task<Result<object>> EliminarCuotaAsync(int cuotaId)
+        {
+            var cuota = await _CuotaRepository.ObtenerCuotaPorIdAsync(cuotaId);
+            if (cuota == null)
+            {
+                return Result<object>.Error("Cuota no encontrada", 404);
+            }
+
+            // TODO: Si FormaDePago == Cobrador, el RegistroCobrador asociado queda huérfano.
+            // No hay método Remove en IHistorialCobradoresRepository; si se añade, eliminar aquí por heurística
+            // (FechaCobro == cuota.FechaPago && MontoCobrado == cuota.Monto && NombreSocio coincide).
+            // Por ahora solo se elimina la cuota.
+
+            _CuotaRepository.EliminarCuota(cuota);
+            await _UnitOfWork.SaveChangesAsync();
+
+            return Result<object>.Exito(new { mensaje = "Cuota eliminada correctamente." });
+        }
     }
 }

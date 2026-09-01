@@ -12,5 +12,7 @@ namespace APIClub.Domain.GestionSocios.Repositories
 
         Task<PagedResult<CuotaConSocioDto>> ObtenerCuotasPorFechaPago(DateOnly fechaPago, int pageNumber, int pageSize);
         Task<PagedResult<CuotaConSocioDto>> ObtenerCuotasPorPeriodo(int anio, int semestre, int pageNumber, int pageSize);
+        Task<Cuota?> ObtenerCuotaPorIdAsync(int id);
+        void EliminarCuota(Cuota cuota);
     }
 }

@@ -288,6 +288,7 @@ namespace APIClub.Application.Services
                             anio = anio,
                             semestre = sem,
                             pagado = false,
+                            cuotaId = null,
                         });
                     }
                     else
@@ -300,6 +301,7 @@ namespace APIClub.Application.Services
                             anio = anio,
                             semestre = sem,
                             pagado = true,
+                            cuotaId = cuota.Id,
                         });
                     }
                 }

@@ -13,5 +13,6 @@ namespace APIClub.Domain.ModuloGestionCuotas.UseCases
         Task<Result<object>> ActualizarValorCuota(decimal nuevoValor);
         Task<Result<object?>> RegistrarPagosCuotasCobrador(int idSocio, List<PeriodoAdeudadoDto> periodos, int idCobrador);
         Task<Result<PagedResult<CuotaConSocioDto>>> VerHistorialCuotas(HistorialCuotasRequestDto request);
+        Task<Result<object>> EliminarCuotaAsync(int cuotaId);
     }
 }

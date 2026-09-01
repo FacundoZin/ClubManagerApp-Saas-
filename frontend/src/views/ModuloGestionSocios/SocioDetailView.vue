@@ -2,6 +2,8 @@
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SociosService from '../../services/SociosService'
+import CuotasService from '../../services/CuotasService'
+import ConfirmModal from '../../components/Common/ConfirmModal.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -10,6 +12,10 @@ const socioId = route.params.id
 const socio = ref(null)
 const isLoading = ref(true)
 const error = ref('')
+
+const cuotaAEliminar = ref(null)
+const isConfirmOpen = ref(false)
+const isDeleting = ref(false)
 
 const fetchSocioDetails = async () => {
   isLoading.value = true
@@ -53,6 +59,26 @@ const getMetodoPagoLabel = (metodo) => {
     2: 'Sede',
   }
   return labels[metodo] || 'Otro'
+}
+
+const abrirConfirmEliminar = (cuota) => {
+  cuotaAEliminar.value = cuota
+  isConfirmOpen.value = true
+}
+
+const confirmarEliminar = async () => {
+  if (!cuotaAEliminar.value?.cuotaId) return
+  isDeleting.value = true
+  try {
+    await CuotasService.eliminarCuota(cuotaAEliminar.value.cuotaId)
+    isConfirmOpen.value = false
+    cuotaAEliminar.value = null
+    await fetchSocioDetails()
+  } catch (err) {
+    error.value = err.message
+  } finally {
+    isDeleting.value = false
+  }
 }
 </script>
 
@@ -223,8 +249,12 @@ const getMetodoPagoLabel = (metodo) => {
                       Método
                     </th>
                     <th
-                      class="px-8 md:px-4 py-4 text-xs font-black text-slate-400 uppercase tracking-widest text-right whitespace-nowrap">
+                      class="px-8 md:px-4 py-4 text-xs font-black text-slate-400 uppercase tracking-widest text-right whitespace-nowrap md:border-r md:border-slate-200">
                       Estado
+                    </th>
+                    <th
+                      class="px-8 md:px-4 py-4 text-xs font-black text-slate-400 uppercase tracking-widest text-center whitespace-nowrap">
+                      Acción
                     </th>
                   </tr>
                 </thead>
@@ -335,9 +365,25 @@ const getMetodoPagoLabel = (metodo) => {
                         {{ cuota.pagado ? 'PAGADO' : 'PENDIENTE' }}
                       </span>
                     </td>
+                    <td class="px-8 md:px-4 md:py-5 text-sm whitespace-nowrap pt-2 md:pt-5 text-center pb-4 md:pb-5">
+                      <div class="flex justify-between md:justify-center items-center md:block">
+                        <span
+                          class="md:hidden text-slate-400 font-bold text-[10px] uppercase tracking-widest">Acción:</span>
+                        <button v-if="cuota.pagado && cuota.cuotaId" @click="abrirConfirmEliminar(cuota)"
+                          class="p-2 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+                          title="Eliminar pago">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                        <span v-else class="text-slate-300">-</span>
+                      </div>
+                    </td>
                   </tr>
                   <tr v-if="socio.historialCuotas.length === 0">
-                    <td colspan="5" class="px-8 py-12 text-center text-slate-400 font-medium italic">
+                    <td colspan="6" class="px-8 py-12 text-center text-slate-400 font-medium italic">
                       No se registran periodos para este socio.
                     </td>
                   </tr>
@@ -348,6 +394,11 @@ const getMetodoPagoLabel = (metodo) => {
         </div>
       </div>
     </main>
+
+    <ConfirmModal :is-open="isConfirmOpen" title="Eliminar pago de cuota"
+      :message="cuotaAEliminar ? `¿Eliminar el pago del ${cuotaAEliminar.semestre === 1 ? 'Primer' : 'Segundo'} semestre ${cuotaAEliminar.anio}? Pasará a PENDIENTE.` : ''"
+      confirm-text="Eliminar" type="danger" @close="isConfirmOpen = false; cuotaAEliminar = null"
+      @confirm="confirmarEliminar" />
   </div>
 </template>
 

@@ -1,5 +1,23 @@
 const API_URL = `${import.meta.env.VITE_API_URL}/Cuotas`;
 
+const handleError = async (response, defaultMessage) => {
+    if (response.status >= 500) {
+        return 'Algo salió mal en el servidor. Por favor intente más tarde.'
+    }
+    const errorText = await response.text()
+    if (!errorText) return defaultMessage
+    try {
+        const errorObj = JSON.parse(errorText)
+        if (errorObj.errors) {
+            const firstErrorKey = Object.keys(errorObj.errors)[0]
+            return errorObj.errors[firstErrorKey][0]
+        }
+        return errorObj.mensaje || errorObj.message || errorText || defaultMessage
+    } catch (e) {
+        return errorText || defaultMessage
+    }
+}
+
 export default {
     async registrarCuota(paymentData) {
         if (!paymentData || !paymentData.socioId) {
@@ -159,6 +177,20 @@ export default {
             return result.data;
         } catch (error) {
             console.error("Error en obtenerHistorialCuotas:", error);
+            throw error;
+        }
+    },
+
+    async eliminarCuota(cuotaId) {
+        try {
+            const response = await fetch(`${API_URL}/${cuotaId}`, { method: 'DELETE', credentials: 'include' })
+            if (!response.ok) {
+                const msg = await handleError(response, 'Error al eliminar cuota')
+                throw new Error(msg)
+            }
+            return await response.json()
+        } catch (error) {
+            console.error("Error en eliminarCuota:", error);
             throw error;
         }
     }
